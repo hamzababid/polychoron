@@ -1,7 +1,8 @@
-import { Outlet, useParams } from 'react-router-dom';
+import { Outlet, useNavigate, useParams } from 'react-router-dom';
 import { usePlatformRegistry } from './usePlatformRegistry';
 import { SuiteSwitcher } from './SuiteSwitcher';
 import { FeatureSwitcher } from './FeatureSwitcher';
+import { useAuth } from '../auth/AuthContext';
 import './shell.css';
 
 /**
@@ -13,6 +14,13 @@ import './shell.css';
 export function NavigationShell() {
   const { suiteCode = '' } = useParams();
   const { suites, loading, error } = usePlatformRegistry();
+  const { session, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login', { replace: true });
+  };
 
   if (loading) {
     return <div className="shell-status">Loading Polychoron AI…</div>;
@@ -31,6 +39,16 @@ export function NavigationShell() {
       <header className="shell__topbar">
         <span className="shell__brand">Polychoron AI</span>
         <SuiteSwitcher suites={suites} activeSuiteCode={activeSuite.suiteCode} />
+        <div className="shell__user">
+          {session && (
+            <>
+              <span className="shell__userName">{session.user.displayName}</span>
+              <button className="shell__logout" onClick={handleLogout}>
+                Log out
+              </button>
+            </>
+          )}
+        </div>
       </header>
       <div className="shell__subbar">
         <FeatureSwitcher suiteCode={activeSuite.suiteCode} features={activeSuite.features} />
