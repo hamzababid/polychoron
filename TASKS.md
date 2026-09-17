@@ -167,27 +167,134 @@ looks broken that automated tests wouldn't catch.
       bulk-clear, and unverified browser rendering)
 
 ## Demo Readiness Gate
-- [ ] Run the full walkthrough in
+- [x] Run the full walkthrough in
       `phase-1-aml-core/demo-script.md` live, start to finish
-- [ ] Fix anything that breaks the "what must not happen" list in that
-      script
-- [ ] Confirm the suite/feature switcher is visibly present and
+      (live in a browser by the user; environment reset to a clean
+      state via `agent-service/scripts/reset_demo_environment.py`
+      first — both scenarios verified producing the expected,
+      visibly-different outcomes: Recommend STR / risk 85 vs.
+      Escalate / risk 70)
+- [x] Fix anything that breaks the "what must not happen" list in that
+      script (found + fixed: no way to log out and switch demo users
+      — added a logout control to the nav shell)
+- [x] Confirm the suite/feature switcher is visibly present and
       functional in the demo, even with only one option in each
-- [ ] **Gate: do not start AML Phase 2 or platform Phase 3 until this
-      demo runs cleanly**
+- [x] **Gate: demo runs cleanly — proceeding to AML Phase 2**
 
 ---
 
 ## AML Detection — Phase 2 (Full Feature Set)
-(Expand into task-level detail once Phase 1 is demo-complete — write
-`phase-2-full-aml/api-contracts-phase2.md` first.)
-- [ ] Typology & Rules Console — spec: `screens/06-typology-rules-console.md`
-- [ ] Sanctions & PEP Screening Hub — spec: `screens/07-screening-hub.md`
-- [ ] Customer 360 — spec: `screens/08-customer-360.md`
-- [ ] Model Governance & Audit — spec: `screens/09-model-governance-audit.md`
-- [ ] Reporting & MI — spec: `screens/10-reporting-mi.md`
-- [ ] Full MLOps tracing layer (Langfuse/Phoenix + OpenTelemetry)
-- [ ] Shadow-mode backtesting implementation
+- [x] Write `phase-2-full-aml/api-contracts-phase2.md` — three scope
+      decisions made explicitly with the project owner first (demo-stub
+      RBAC extension for model_risk_audit/external_examiner rather than
+      real Phase 3 SSO; Screening Hub's freeze action built but
+      server-disabled with 501, never a silent no-op; Reporting & MI
+      ships generic PDF/CSV only, no SBP-specific template yet)
+
+### Platform — Demo Auth Stub extension (needed by Typology Console + Model Governance)
+- [ ] Seed 2 more demo users: `platform.model_risk_audit`,
+      `platform.external_examiner` — same stub as Phase 1's 2 AML
+      users, not a new mechanism
+
+### Typology & Rules Console — spec: `screens/06-typology-rules-console.md`
+- [ ] `TypologyConfig` + `TypologyConfigVersion` tables; migrate the
+      Phase 1 hardcoded `typology_catalog.py` catalog into seeded rows
+- [ ] Swap the Pattern Matching Agent's typology-lookup tool
+      (`agent-service`) from the hardcoded catalog to a DB read —
+      confirm this doesn't change either seed scenario's outcome
+- [ ] `GET .../typologies` with computed metrics (alert_volume_30d,
+      str_conversion_rate, false_positive_rate) derived from
+      Case/Disposition, not hand-maintained
+- [ ] `GET .../typologies/{code}/history`
+- [ ] `TypologyBacktestJob` table + `POST .../typologies/{code}/backtest`
+      (async) + `GET .../typologies/backtest-jobs/{job_id}` — shadow-mode
+      comparison logic per `agent-implementation.md`
+- [ ] `TypologyPromotion` table + `POST .../typologies/{code}/promote`,
+      gated to `aml_detection.mlro_compliance_head`; flag (don't block)
+      a promotion with no linked backtest job
+- [ ] Active/inactive toggle writes a version-history row, same as a
+      rule-logic edit
+- [ ] Screen: live-vs-draft visually unmistakable; backtest job status
+      shown (queued/running/complete), not a static spinner
+- [ ] Test: `promote` returns 403 for every role except
+      `aml_detection.mlro_compliance_head`
+
+### Sanctions & PEP Screening Hub — spec: `screens/07-screening-hub.md`
+- [ ] `ScreeningHit` table (separate from the `ScreeningResult` embedded
+      in `EvidenceBundle`) — this is Phase 2's first standalone
+      screening queue, not case-embedded data
+- [ ] `GET .../screening/hits?status=held`, `GET .../screening/hits/{hit_id}`
+      with side-by-side customer-vs-watchlist field comparison, matching
+      fields visually highlighted
+- [ ] `POST .../screening/hits/{hit_id}/disposition` — `true_match` path
+      returns `501` with a clear "not yet available" message (never a
+      silent no-op); every disposition, including `false_match`, writes
+      an audit entry with officer identity
+- [ ] Screen: freeze vs. release actions visually distinct enough to
+      minimize mis-click risk — flagged in the spec as the platform's
+      single highest-consequence UI risk; get a second look at this
+      button layout specifically before calling it done
+- [ ] Live "time held" counter per row, not a static timestamp
+
+### Customer 360 — spec: `screens/08-customer-360.md`
+- [ ] `GET .../customers/{customer_id}/360` — aggregates across all of
+      a customer's cases (KYC, derived accounts list, prior cases,
+      screening history, linked entities)
+- [ ] Reuse `LinkedEntityGraph` (already built for Case Workspace) fed
+      from this customer's aggregated linked entities — do not
+      reimplement
+- [ ] Reachable as a real bookmarkable route from Alert Queue, Case
+      Workspace, and Screening Hub — not a modal
+- [ ] "No screening history" renders as an explicit clean-state message,
+      not an empty section
+- [ ] Test: confirm no write endpoints exist on this route — read-only
+      by construction
+
+### Model Governance & Audit — spec: `screens/09-model-governance-audit.md`
+- [ ] `SamplingReview` table (already modeled in `data-models.py`,
+      table deliberately deferred from Phase 1's migration — add now)
+- [ ] A simple random-sample selection job over newly-CLEARED
+      dispositions (no stratification yet)
+- [ ] `GET .../governance/sampling` — real agreement-rate trend from
+      actual `SamplingReview` rows, never a placeholder series (this
+      number is the reason the screen exists)
+- [ ] `POST .../governance/sampling/{case_id}/review`
+- [ ] `GET .../governance/consistency` — STR conversion rate by
+      typology, broken out by branch
+- [ ] `GET .../governance/model-versions` — current agent_version per
+      node, with change history
+- [ ] `GET .../governance/data-lineage` — mock bank / Temporal /
+      inference-provider status + last-refresh, labeled honestly as
+      what Phase 1/2 actually has (not fictional real-integration names)
+- [ ] Every figure on screen carries an "as of [timestamp]" label
+- [ ] RBAC: `aml_detection.mlro_compliance_head` full;
+      `platform.model_risk_audit` read-only;
+      `platform.external_examiner` read-only, sampling data only —
+      test that examiner access never leaks full case content
+
+### Reporting & MI — spec: `screens/10-reporting-mi.md`
+- [ ] `GET .../reports/summary` — same computation `DashboardService`
+      already has, at full granularity; test that Dashboard and
+      Reporting figures match exactly for the same period
+- [ ] `POST .../reports/generate` (PDF/CSV only, see scope decision
+      above), async job; generated reports persisted and
+      re-downloadable byte-for-byte, never regenerated on request
+- [ ] `GET .../reports/history`, `GET .../reports/{report_id}/download`
+- [ ] Screen: report generation in progress doesn't block the rest of
+      the screen
+- [ ] RBAC: `aml_detection.mlro_compliance_head`
+
+### MLOps tracing layer (platform-wide, not a screen)
+- [ ] OpenTelemetry spans for every agent node execution
+      (`agent-service`)
+- [ ] Langfuse (or Phoenix) spans specifically for LLM calls — prompt,
+      completion, token cost, latency
+- [ ] Link every span to `case_id`; confirm `platform_agent_activity_log`
+      (Phase 1's constitution rule 3 audit-of-record) is unchanged by
+      this — tracing is additive observability, not a replacement audit
+      source
+- [ ] Case Workspace's activity-log expansion and the new Agent
+      Activity Log detail view read from this tracing data
 
 ---
 
