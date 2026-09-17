@@ -4,14 +4,21 @@ import { AlertQueueScreen } from './alert-queue/AlertQueueScreen';
 import { CaseWorkspaceScreen } from './case-workspace/CaseWorkspaceScreen';
 import { FilingConsoleScreen } from './filing-console/FilingConsoleScreen';
 import { GoamlTrackerScreen } from './goaml-tracker/GoamlTrackerScreen';
+import { TypologyRulesConsoleScreen } from './typology-console/TypologyRulesConsoleScreen';
+import { useAuth } from '../../auth/AuthContext';
 import './aml-theme.css';
 
+const TYPOLOGY_CONSOLE_ROLES = ['aml_detection.mlro_compliance_head', 'platform.model_risk_audit'];
+
 /** The AML Detection feature's own sub-navigation, below the platform
- * nav shell's suite/feature switcher. Only Phase 1's screens are
- * linked here — Customer 360 / Screening Hub / Typology Console /
- * Model Governance / Reporting are Phase 2, not built yet
+ * nav shell's suite/feature switcher. Phase 1's screens plus Phase 2's
+ * Typology & Rules Console — Customer 360 / Screening Hub / Model
+ * Governance / Reporting are still Phase 2 not-yet-built
  * (constitution rule 9, phase discipline). */
 export function AmlDetectionRoutes() {
+  const { session } = useAuth();
+  const canSeeTypologyConsole = session ? TYPOLOGY_CONSOLE_ROLES.some((r) => session.user.roleCodes.includes(r)) : false;
+
   return (
     <div className="aml-page">
       <nav className="aml-subnav">
@@ -24,6 +31,11 @@ export function AmlDetectionRoutes() {
         <NavLink to="filings" className={({ isActive }) => (isActive ? 'active' : undefined)}>
           goAML Tracker
         </NavLink>
+        {canSeeTypologyConsole && (
+          <NavLink to="typologies" className={({ isActive }) => (isActive ? 'active' : undefined)}>
+            Typology Console
+          </NavLink>
+        )}
       </nav>
       <Routes>
         <Route index element={<Navigate to="dashboard" replace />} />
@@ -32,6 +44,7 @@ export function AmlDetectionRoutes() {
         <Route path="cases/:caseId" element={<CaseWorkspaceScreen />} />
         <Route path="cases/:caseId/filing" element={<FilingConsoleScreen />} />
         <Route path="filings" element={<GoamlTrackerScreen />} />
+        <Route path="typologies" element={<TypologyRulesConsoleScreen />} />
       </Routes>
     </div>
   );

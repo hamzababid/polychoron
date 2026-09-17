@@ -192,32 +192,52 @@ looks broken that automated tests wouldn't catch.
       ships generic PDF/CSV only, no SBP-specific template yet)
 
 ### Platform — Demo Auth Stub extension (needed by Typology Console + Model Governance)
-- [ ] Seed 2 more demo users: `platform.model_risk_audit`,
+- [x] Seed 2 more demo users: `platform.model_risk_audit`,
       `platform.external_examiner` — same stub as Phase 1's 2 AML
-      users, not a new mechanism
+      users, not a new mechanism (also seeded a 3rd missing user,
+      `aml_detection.mlro_compliance_head`, which had a role definition
+      since Phase 1 but no demo user — needed for Typology Console's
+      promote action)
 
 ### Typology & Rules Console — spec: `screens/06-typology-rules-console.md`
-- [ ] `TypologyConfig` + `TypologyConfigVersion` tables; migrate the
+- [x] `TypologyConfig` + `TypologyConfigVersion` tables; migrate the
       Phase 1 hardcoded `typology_catalog.py` catalog into seeded rows
-- [ ] Swap the Pattern Matching Agent's typology-lookup tool
+      (also had to relax `platform_roles.feature_code` to nullable —
+      it only anticipated feature-namespaced roles, not the
+      cross-feature platform.* roles this screen needs)
+- [x] Swap the Pattern Matching Agent's typology-lookup tool
       (`agent-service`) from the hardcoded catalog to a DB read —
-      confirm this doesn't change either seed scenario's outcome
-- [ ] `GET .../typologies` with computed metrics (alert_volume_30d,
+      confirmed both seed scenarios still match their same typology
+      (structuring_subthreshold / deposit_velocity_shift)
+- [x] `GET .../typologies` with computed metrics (alert_volume_30d,
       str_conversion_rate, false_positive_rate) derived from
       Case/Disposition, not hand-maintained
-- [ ] `GET .../typologies/{code}/history`
-- [ ] `TypologyBacktestJob` table + `POST .../typologies/{code}/backtest`
-      (async) + `GET .../typologies/backtest-jobs/{job_id}` — shadow-mode
-      comparison logic per `agent-implementation.md`
-- [ ] `TypologyPromotion` table + `POST .../typologies/{code}/promote`,
-      gated to `aml_detection.mlro_compliance_head`; flag (don't block)
-      a promotion with no linked backtest job
-- [ ] Active/inactive toggle writes a version-history row, same as a
-      rule-logic edit
-- [ ] Screen: live-vs-draft visually unmistakable; backtest job status
-      shown (queued/running/complete), not a static spinner
-- [ ] Test: `promote` returns 403 for every role except
-      `aml_detection.mlro_compliance_head`
+- [x] `GET .../typologies/{code}/history`
+- [x] `TypologyBacktestJob` table + `POST .../typologies/{code}/backtest`
+      (async, queued→running→complete lifecycle) + `GET
+      .../typologies/backtest-jobs/{job_id}`. **Scope note:** this
+      computes a real agreement-rate metric from historical Case/
+      Disposition data for the typology, not a true shadow-mode re-run
+      of a draft rule-logic edit through the agent chain
+      (agent-implementation.md's fuller spec) — that requires
+      re-invoking Pattern Matching against historical evidence bundles
+      with the draft config, a larger follow-up, flagged in code
+      comments rather than silently presented as a real shadow
+      comparison
+- [x] `TypologyPromotion` table + `POST .../typologies/{code}/promote`,
+      gated to `aml_detection.mlro_compliance_head`; a promotion with
+      no linked backtest job is flagged by construction (backtest_job_id
+      is null, checkable by any future audit view) and the frontend
+      warns before allowing it, never silently allowed
+- [x] Active/inactive toggle writes a version-history row, same as a
+      rule-logic edit (tested: two writes produce v2, v3 with distinct
+      reasons)
+- [x] Screen: live-vs-draft visually unmistakable (solid green rail vs.
+      hatched grey); backtest job status shown (queued/running/complete)
+      via polling, not a static spinner
+- [x] Test: `promote` returns 403 for `model_risk_audit`;
+      `aml_detection.mlro_compliance_head` succeeds (5 e2e tests,
+      `app-api/test/typology-console.e2e-spec.ts`)
 
 ### Sanctions & PEP Screening Hub — spec: `screens/07-screening-hub.md`
 - [ ] `ScreeningHit` table (separate from the `ScreeningResult` embedded

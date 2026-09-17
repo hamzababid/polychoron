@@ -5,6 +5,10 @@ import { AmlDisposition } from './entities/aml-disposition.entity.js';
 import { AmlStrFiling } from './entities/aml-str-filing.entity.js';
 import { AmlFilingEdit } from './entities/aml-filing-edit.entity.js';
 import { AmlFmuFollowup } from './entities/aml-fmu-followup.entity.js';
+import { AmlTypologyConfig } from './entities/aml-typology-config.entity.js';
+import { AmlTypologyConfigVersion } from './entities/aml-typology-config-version.entity.js';
+import { AmlTypologyBacktestJob } from './entities/aml-typology-backtest-job.entity.js';
+import { AmlTypologyPromotion } from './entities/aml-typology-promotion.entity.js';
 import { FeatureCaseEnvelope, PlatformSession, PlatformUser } from '../../platform/entities/index.js';
 import { AmlDetectionController } from './aml-detection.controller.js';
 import { AmlDetectionService } from './aml-detection.service.js';
@@ -16,6 +20,8 @@ import { GoamlTrackerController } from './goaml-tracker/goaml-tracker.controller
 import { GoamlTrackerService } from './goaml-tracker/goaml-tracker.service.js';
 import { DashboardController } from './dashboard/dashboard.controller.js';
 import { DashboardService } from './dashboard/dashboard.service.js';
+import { TypologyConsoleController } from './typology-console/typology-console.controller.js';
+import { TypologyConsoleService } from './typology-console/typology-console.service.js';
 import { TemporalModule } from '../../common/temporal/temporal.module.js';
 import { CommonAuthModule } from '../../common/auth/common-auth.module.js';
 
@@ -27,6 +33,10 @@ import { CommonAuthModule } from '../../common/auth/common-auth.module.js';
       AmlStrFiling,
       AmlFilingEdit,
       AmlFmuFollowup,
+      AmlTypologyConfig,
+      AmlTypologyConfigVersion,
+      AmlTypologyBacktestJob,
+      AmlTypologyPromotion,
       FeatureCaseEnvelope,
       PlatformUser,
       PlatformSession,
@@ -34,7 +44,21 @@ import { CommonAuthModule } from '../../common/auth/common-auth.module.js';
     TemporalModule,
     CommonAuthModule,
   ],
-  controllers: [AmlDetectionController, FilingConsoleController, GoamlTrackerController, DashboardController],
-  providers: [AmlDetectionService, AlertQueueService, CaseWorkspaceService, FilingConsoleService, GoamlTrackerService, DashboardService],
+  controllers: [
+    AmlDetectionController,
+    FilingConsoleController,
+    GoamlTrackerController,
+    DashboardController,
+    TypologyConsoleController,
+  ],
+  providers: [
+    AmlDetectionService,
+    AlertQueueService,
+    CaseWorkspaceService,
+    FilingConsoleService,
+    GoamlTrackerService,
+    DashboardService,
+    TypologyConsoleService,
+  ],
 })
 export class AmlDetectionModule {}

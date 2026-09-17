@@ -19,12 +19,21 @@ import { AmlTypologyMatch } from '../../features/aml-detection/entities/aml-typo
 import { AmlCaseAssessment } from '../../features/aml-detection/entities/aml-case-assessment.entity.js';
 import { AmlFilingEdit } from '../../features/aml-detection/entities/aml-filing-edit.entity.js';
 import { AmlFmuFollowup } from '../../features/aml-detection/entities/aml-fmu-followup.entity.js';
+import { AmlTypologyConfig } from '../../features/aml-detection/entities/aml-typology-config.entity.js';
+import { AmlTypologyConfigVersion } from '../../features/aml-detection/entities/aml-typology-config-version.entity.js';
+import { AmlTypologyBacktestJob } from '../../features/aml-detection/entities/aml-typology-backtest-job.entity.js';
+import { AmlTypologyPromotion } from '../../features/aml-detection/entities/aml-typology-promotion.entity.js';
 
 /**
  * Schema is owned by infra/db/migrations/*.sql, never by TypeORM
  * (synchronize is always false) — see
  * specs/platform/09-backend-service-boundary-spec.md. TypeORM here is
  * strictly a typed mapping onto a schema that already exists.
+ *
+ * Every entity must be listed in the `entities` array below *and* in
+ * whichever feature module's TypeOrmModule.forFeature([...]) uses it
+ * — these are two separate registrations; forgetting this one throws
+ * a runtime EntityMetadataNotFoundError, not a build-time error.
  */
 @Module({
   imports: [
@@ -56,6 +65,10 @@ import { AmlFmuFollowup } from '../../features/aml-detection/entities/aml-fmu-fo
           AmlCaseAssessment,
           AmlFilingEdit,
           AmlFmuFollowup,
+          AmlTypologyConfig,
+          AmlTypologyConfigVersion,
+          AmlTypologyBacktestJob,
+          AmlTypologyPromotion,
         ],
       }),
     }),

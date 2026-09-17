@@ -1,9 +1,10 @@
 """Node 2 — Pattern Matching Agent.
 specs/suites/bfsi/features/aml-detection/agent-implementation.md
 
-Tool allowlist: typology config lookup only (the Phase 1 catalog in
-typology_catalog.py — see that module's docstring for why this stands
-in for the real Typology & Rules Console). No external API access."""
+Tool allowlist: typology config lookup only — reads the active
+typology catalog from aml_typology_configs (the real Typology & Rules
+Console, Phase 2), via typology_config_repository.py. No external API
+access."""
 
 from __future__ import annotations
 
@@ -12,7 +13,7 @@ from typing import ClassVar
 from uuid import UUID
 
 from app.features.aml_detection.schemas import EvidenceBundle, TypologyMatch
-from app.features.aml_detection.typology_catalog import catalog_as_prompt_block
+from app.features.aml_detection.typology_config_repository import active_catalog_as_prompt_block
 from app.platform.agent_node import PlatformAgentNode
 from app.platform.inference.clients import InferenceClient
 
@@ -46,14 +47,14 @@ class PatternMatchingNode(PlatformAgentNode[EvidenceBundle, TypologyMatch]):
     feature_code = "aml_detection"
     input_schema = EvidenceBundle
     output_schema = TypologyMatch
-    tool_allowlist: ClassVar[list[str]] = ["typology_catalog"]
+    tool_allowlist: ClassVar[list[str]] = ["aml_typology_configs"]
 
     def _invoke(
         self, input: EvidenceBundle, tenant_id: str, external_case_ref: str | UUID, client: InferenceClient
     ) -> tuple[dict, list[str]]:
         evidence_json = input.model_dump(mode="json")
         prompt = (
-            f"{catalog_as_prompt_block()}\n\n"
+            f"{active_catalog_as_prompt_block()}\n\n"
             f"Evidence bundle:\n{json.dumps(evidence_json, indent=2)}\n\n"
             "Respond with only the JSON object described in the system prompt."
         )
@@ -63,7 +64,7 @@ class PatternMatchingNode(PlatformAgentNode[EvidenceBundle, TypologyMatch]):
 
         parsed["case_id"] = str(external_case_ref)
         parsed["agent_version"] = AGENT_VERSION
-        return parsed, ["typology_catalog"]
+        return parsed, ["aml_typology_configs"]
 
 
 def _safe_json_parse(raw_text: str) -> dict:

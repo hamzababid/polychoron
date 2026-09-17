@@ -1,10 +1,12 @@
 /**
- * Seeds the platform_roles catalog entries from
- * suites/bfsi/features/aml-detection/role-manifest.md and the 2 Phase 1
- * demo users, mapped per that manifest's "DemoRole -> real role"
- * note: DemoRole.ANALYST -> aml_detection.analyst_l1,
- * DemoRole.COMPLIANCE_OFFICER -> aml_detection.senior_officer_l2.
- * PlatformUser/PlatformRole are owned (writes) by app-api per
+ * Seeds the platform_roles catalog (feature-level AML roles from
+ * role-manifest.md, plus the platform-level roles from
+ * 05-rbac-platform-spec.md that Phase 2's Typology Console / Model
+ * Governance screens gate on) and one demo user per role — the same
+ * Phase 1 demo-login stub extended, not a second auth mechanism, per
+ * the explicit Phase 2 scope decision in
+ * phase-2-full-aml/api-contracts-phase2.md. PlatformUser/PlatformRole
+ * are owned (writes) by app-api per
  * specs/platform/09-backend-service-boundary-spec.md. Idempotent.
  *
  * Usage (after `npm run build`): node dist/scripts/seed-demo-users.js
@@ -36,6 +38,16 @@ const ROLES: Partial<PlatformRole>[] = [
     displayName: 'MLRO / Compliance Head',
     description: 'All AML screens + promote_typology_rule, export_report, view_dashboard',
   },
+  {
+    roleCode: 'platform.model_risk_audit',
+    displayName: 'Model Risk & Audit',
+    description: 'Read-only, cross-feature: Agent Activity Log and Model Governance & Audit views. Cannot see live case content unless part of a sampling review pool.',
+  },
+  {
+    roleCode: 'platform.external_examiner',
+    displayName: 'External Examiner',
+    description: 'Time-boxed, read-only, cross-feature (Phase 1/2 demo stub: not actually time-boxed — real auto-expiring credentials are Phase 3 scope).',
+  },
 ];
 
 const USERS: Partial<PlatformUser>[] = [
@@ -52,6 +64,27 @@ const USERS: Partial<PlatformUser>[] = [
     displayName: 'Bilal Siddiqui (Demo Compliance Officer)',
     email: 'demo-compliance-officer@example.test',
     roleCodes: ['aml_detection.senior_officer_l2'],
+  },
+  {
+    userId: 'demo-mlro-1',
+    tenantId: DEMO_TENANT_ID,
+    displayName: 'Fatima Noor (Demo MLRO)',
+    email: 'demo-mlro@example.test',
+    roleCodes: ['aml_detection.mlro_compliance_head'],
+  },
+  {
+    userId: 'demo-model-risk-audit-1',
+    tenantId: DEMO_TENANT_ID,
+    displayName: 'Usman Ali (Demo Model Risk & Audit)',
+    email: 'demo-model-risk-audit@example.test',
+    roleCodes: ['platform.model_risk_audit'],
+  },
+  {
+    userId: 'demo-external-examiner-1',
+    tenantId: DEMO_TENANT_ID,
+    displayName: 'Sana Iqbal (Demo External Examiner)',
+    email: 'demo-external-examiner@example.test',
+    roleCodes: ['platform.external_examiner'],
   },
 ];
 

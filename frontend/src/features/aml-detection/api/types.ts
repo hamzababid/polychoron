@@ -218,3 +218,50 @@ export interface DashboardSummary {
   agentVsHumanOverrideRate: number;
   branchRiskHeatmap: Array<{ branchCode: string; riskTier: RiskTier; openCaseCount: number }>;
 }
+
+export interface TypologyRow {
+  typologyCode: string;
+  typologyLabel: string;
+  ruleLogicDescription: string;
+  active: boolean;
+  productionVersion: number;
+  alertVolume30d: number;
+  strConversionRate: number;
+  falsePositiveRate: number;
+}
+
+export interface TypologyConfigVersion {
+  versionId: string;
+  typologyCode: string;
+  version: number;
+  ruleLogicDescription: string;
+  active: boolean;
+  changedBy: string;
+  changedAt: string;
+  changeReason: string;
+}
+
+export type BacktestJobStatus = 'queued' | 'running' | 'complete' | 'failed';
+
+export interface BacktestJob {
+  jobId: string;
+  typologyCode: string;
+  status: BacktestJobStatus;
+  startedAt: string;
+  completedAt: string | null;
+  comparisonReport: {
+    method: string;
+    sampleSize: number;
+    productionAgreementRate: number | null;
+    computedAt: string;
+  } | null;
+}
+
+export interface TypologyPromotion {
+  promotionId: string;
+  typologyCode: string;
+  promotedVersion: number;
+  backtestJobId: string | null;
+  promotedBy: string;
+  promotedAt: string;
+}
