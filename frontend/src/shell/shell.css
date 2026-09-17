@@ -10,7 +10,7 @@
 .shell__topbar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 1.5rem;
   padding: 0.75rem 1.5rem;
   background: #101828;
   color: #fff;
@@ -19,6 +19,33 @@
 .shell__brand {
   font-weight: 600;
   letter-spacing: 0.01em;
+}
+
+.shell__user {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.85rem;
+}
+
+.shell__userName {
+  color: #cbd5e1;
+}
+
+.shell__logout {
+  background: transparent;
+  color: #fff;
+  border: 1px solid #475467;
+  border-radius: 6px;
+  padding: 0.3rem 0.6rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.shell__logout:hover {
+  background: #1d2939;
+  border-color: #98a2b3;
 }
 
 .shell__subbar {
