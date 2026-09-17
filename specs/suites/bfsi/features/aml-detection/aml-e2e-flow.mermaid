@@ -1,0 +1,21 @@
+flowchart TD
+    A[Bank's existing TMS / rule engine] -->|Alert webhook: alert ID, txn refs, rule fired| B[GenosAI ingestion API]
+    B --> C{Alert accepted}
+    C -->|On-demand API call| D[Bank core banking API]
+    C -->|On-demand API call| E[Bank KYC/CDD API]
+    D --> F[Evidence Gathering Agent]
+    E --> F
+    F --> G[Pattern Matching Agent]
+    G --> H[Case and Narrative Agent]
+    H --> I[Alert Queue screen]
+    I -->|Analyst claims| J[Case Workspace screen]
+    J -->|Officer disposition| K{Suspicion found}
+    K -->|No| L[Clear - case closed]
+    K -->|Yes| M[Filing Console screen]
+    M -->|Attestation complete| N[goAML submission]
+    N --> O[goAML Submission Tracker screen]
+    L --> P[Model Governance and Audit: sampling]
+    O --> P
+    P --> Q[Typology and Rules Console: retuning]
+    P --> R[Reporting and MI: Board/SBP rollup]
+    Q --> A2[Updated detection logic feeds back]

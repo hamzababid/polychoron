@@ -1,0 +1,92 @@
+.filing-console {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 720px;
+}
+
+.filing-console__fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.filing-console__fields label {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 11px;
+  color: var(--aml-neutral-700);
+}
+
+.filing-console__fields input,
+.filing-console__fields select {
+  font-size: 13px;
+  padding: 5px 7px;
+  border: 1px solid var(--aml-divider);
+}
+
+.filing-console__narrative {
+  width: 100%;
+  box-sizing: border-box;
+  font-family: inherit;
+  font-size: 13px;
+  padding: 8px;
+  border: 1px solid var(--aml-accent-300);
+  margin-top: 6px;
+  resize: vertical;
+}
+
+/* Attestation panel: amber, most visually prominent element on the
+   screen per screens/04-filing-console.md. */
+.filing-console__attestation {
+  border: 2px solid #b8860b;
+  background: #fdf6e3;
+  padding: 14px 16px;
+}
+
+.filing-console__attestationTitle {
+  font-weight: 700;
+  font-size: 13px;
+  color: #7a5c00;
+  margin-bottom: 8px;
+}
+
+.filing-console__check {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 12.5px;
+  margin-bottom: 6px;
+  cursor: pointer;
+}
+
+.filing-console__check--main {
+  font-weight: 600;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #e2cf8f;
+}
+
+.filing-console__actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.filing-console__submit--disabled {
+  opacity: 0.4;
+  filter: grayscale(1);
+}
+
+.filing-console__final {
+  max-width: 480px;
+}
+
+.filing-console__finalStatus {
+  font-size: 20px;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin: 4px 0 8px;
+}

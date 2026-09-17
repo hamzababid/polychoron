@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/industry-92a524b8-8757-4847-a147-3c04a6398262/styles.css">
+<script src="_ds/industry-92a524b8-8757-4847-a147-3c04a6398262/_ds_bundle.js"></script>
+<link rel="stylesheet" href="brand.css">
+<style>
+body{margin:0;background:var(--color-bg)}
+.ai-hatch{background-image:repeating-linear-gradient(135deg,color-mix(in srgb,var(--color-accent) 14%,transparent) 0 2px,transparent 2px 7px)}
+.amber-hatch{background-image:repeating-linear-gradient(135deg,rgba(20,36,81,.10) 0 3px,transparent 3px 9px)}
+.scrollcol{overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--color-neutral-400) transparent}
+.fgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--color-divider)}
+.fcell{background:var(--color-bg);padding:8px 11px;min-width:0}
+.flab{font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-neutral-700)}
+.fval{font-size:13.5px;line-height:1.35;margin-top:2px}
+.fsrc{font-size:10px;color:var(--color-neutral-600);margin-top:2px}
+</style>
+</helmet>
+<div style="height:100vh;min-height:900px;overflow-x:auto;overflow-y:hidden"><div style="height:100%;min-width:1360px;display:flex;flex-direction:column;font-family:var(--font-body);color:var(--color-text);background:var(--color-bg);overflow:hidden">
+
+  <div style="display:flex;align-items:center;gap:24px;padding:0 18px;height:44px;flex:none;background:var(--color-accent-900);color:var(--color-bg)">
+    <span style="display:flex;align-items:center;gap:9px;font-family:var(--font-heading);font-weight:600;font-size:17px;letter-spacing:0.06em"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.2" style="flex:none"><path d="M12 1.6 20.6 6.6v10.8L12 22.4 3.4 17.4V6.6z"></path><path d="M12 7.2 16.6 9.9v5.4L12 18l-4.6-2.7V9.9z"></path><path d="M12 1.6v5.6M20.6 6.6l-4 3.3M20.6 17.4l-4-2.1M12 22.4V18M3.4 17.4l4-2.1M3.4 6.6l4 3.3"></path></svg>POLYCHORON<span style="opacity:.6">AI</span></span>
+    <span style="width:1px;height:18px;background:rgba(255,255,255,.22)"></span>
+    <div style="display:flex;gap:18px;font-size:13px;letter-spacing:.01em">
+      <a href="Command Dashboard.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Dashboard</a>
+      <a href="Alert Queue.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Queue</a>
+      <a href="Case Workspace.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Cases</a>
+      <a href="Customer 360.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Customers</a>
+      <a href="Screening Hub.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Screening</a>
+      <a href="Typology Rules Console.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Typologies</a>
+      <span style="padding-bottom:2px;border-bottom:2px solid var(--color-accent-400)">Filings</span>
+      <a href="goAML Tracker.dc.html" style="opacity:.6;color:inherit;text-decoration:none">goAML tracker</a>
+      <a href="Model Governance.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Governance</a>
+      <a href="Reporting MI.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Reporting</a>
+    </div>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:14px;font-size:12px">
+      <span style="opacity:.7">Habib Metropolitan · Compliance Ops</span>
+      <span style="width:1px;height:18px;background:rgba(255,255,255,.22)"></span>
+      <span>A. Raza · Senior Compliance Officer</span>
+      <span style="width:26px;height:26px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.3);font-family:var(--font-heading);font-size:12px">AR</span>
+    </div>
+  </div>
+
+  <!-- filing identity strip -->
+  <div style="display:flex;align-items:stretch;flex:none;border-bottom:1px solid var(--color-divider);background:var(--color-neutral-100)">
+    <div style="padding:10px 18px;border-right:1px solid var(--color-divider);min-width:300px">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-family:var(--font-heading);font-size:19px;letter-spacing:.02em">STR-F / 2026 / 00318</span>
+        <span class="tag tag-outline" style="font-size:10px">DRAFT — NOT FILED</span>
+      </div>
+      <div style="font-size:12px;color:var(--color-neutral-700)">goAML XML schema 4.9 · FMU reporting entity ID HMB-0114</div>
+    </div>
+    <div style="padding:10px 18px;border-right:1px solid var(--color-divider)">
+      <div style="font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-neutral-700)">Originating case</div>
+      <div style="font-size:13px">ALT-2026-04417 · escalated by R. Qureshi, 24 Aug 09:47 · <a href="Case Workspace.dc.html" style="color:var(--color-accent-700)">open Case Workspace ↗</a></div>
+    </div>
+    <div style="padding:10px 18px;border-right:1px solid var(--color-divider)">
+      <div style="font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-accent-700)">Statutory deadline</div>
+      <div style="font-size:13px">27 Aug 2026 · 3 d 04 h remaining <span style="color:var(--color-neutral-700)">(AMLA 2010 s.7)</span></div>
+    </div>
+    <div style="margin-left:auto;padding:10px 18px;display:flex;align-items:center;gap:8px">
+      <button class="btn btn-secondary" style="font-size:12.5px;padding:5px 10px">Validate XML</button>
+      <button class="btn btn-secondary" style="font-size:12.5px;padding:5px 10px">Filing history</button>
+      <button class="btn btn-secondary" style="font-size:12.5px;padding:5px 10px">Withdraw to case</button>
+    </div>
+  </div>
+
+  <div class="scrollcol" style="flex:1;padding:22px 0 0">
+    <div style="max-width:1080px;margin:0 auto;padding:0 24px 28px;display:flex;flex-direction:column;gap:20px">
+
+      <!-- case summary -->
+      <div>
+        <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:8px">
+          <span style="font-family:var(--font-heading);font-size:12px;letter-spacing:.14em;color:var(--color-neutral-700)">SECTION 1</span>
+          <h4 style="margin:0">Case summary — read-only</h4>
+          <span style="margin-left:auto;font-size:11px;color:var(--color-neutral-700)">Pulled from ALT-2026-04417 at escalation. Locked at 24 Aug 2026 09:47 PKT.</span>
+        </div>
+        <div class="blueprint" style="padding:0">
+          <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+          <div class="fgrid" style="grid-template-columns:repeat(4,1fr)">
+            <div class="fcell"><div class="flab">Customer</div><div class="fval">Bilal Ahmed</div><div class="fsrc">individual · resident · CNIC 42101-•••••-7</div></div>
+            <div class="fcell"><div class="flab">Account</div><div class="fval">0231-7788-4</div><div class="fsrc">current account · Jodia Bazar, Karachi</div></div>
+            <div class="fcell"><div class="flab">Matched typology</div><div class="fval">Structuring — sub-threshold cash deposits</div><div class="fsrc">FMU-ST-04 · agent v2.4</div></div>
+            <div class="fcell"><div class="flab">Composite risk score</div><div class="fval">78 / 100 · high band</div><div class="fsrc">officer disposition: File STR</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- party details -->
+      <div>
+        <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:8px">
+          <span style="font-family:var(--font-heading);font-size:12px;letter-spacing:.14em;color:var(--color-neutral-700)">SECTION 2</span>
+          <h4 style="margin:0">Party &amp; account details</h4>
+          <span class="tag tag-accent" style="font-size:10px">AUTO-FILLED FROM CORE BANKING</span>
+          <span style="margin-left:auto;font-size:11px;color:var(--color-neutral-700)">Corrections here do not write back to CBS — raise a KYC ticket separately.</span>
+        </div>
+        <div class="blueprint" style="padding:0">
+          <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+          <div class="fgrid">
+            <div class="fcell"><div class="flab">Full name (as per CNIC)</div><div class="fval">Bilal Ahmed</div><div class="fsrc">CBS · verified 19 Jan 2024</div></div>
+            <div class="fcell"><div class="flab">CNIC</div><div class="fval">42101-8834192-7</div><div class="fsrc">NADRA verisys pass</div></div>
+            <div class="fcell"><div class="flab">Date of birth</div><div class="fval">14 Mar 1981</div><div class="fsrc">CBS</div></div>
+            <div class="fcell"><div class="flab">Occupation</div><div class="fval">Wholesale textile trader</div><div class="fsrc">self-declared, 2023</div></div>
+            <div class="fcell" style="grid-column:span 2"><div class="flab">Registered address</div><div class="fval">Shop 214, Cloth Market, Jodia Bazar, Karachi 74000</div><div class="fsrc">shared with linked party Zeeshan Ahmed (A/C 0231-9043-1)</div></div>
+            <div class="fcell"><div class="flab">Contact</div><div class="fval">+92 300 •••• 214</div><div class="fsrc">no contact made — see attestation</div></div>
+            <div class="fcell"><div class="flab">Account opened</div><div class="fval">19 Jan 2024</div><div class="fsrc">2 yr 7 mo</div></div>
+            <div class="fcell"><div class="flab">Declared turnover</div><div class="fval">PKR 4,500,000 / month</div><div class="fsrc">onboarding declaration</div></div>
+            <div class="fcell" style="padding:6px 11px">
+              <div class="flab">Nationality / residency</div>
+              <select class="input" style="font-size:13px;min-height:30px;margin-top:2px"><option>Pakistan — resident</option><option>Pakistan — non-resident</option><option>Dual national</option></select>
+              <div class="fsrc">lightly editable · change is logged</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- transactions -->
+      <div>
+        <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:8px">
+          <span style="font-family:var(--font-heading);font-size:12px;letter-spacing:.14em;color:var(--color-neutral-700)">SECTION 3</span>
+          <h4 style="margin:0">Transactions reported</h4>
+          <span class="tag tag-accent" style="font-size:10px">AUTO-FILLED · 4 OF 4 INCLUDED</span>
+          <span style="margin-left:auto;font-size:11px;color:var(--color-neutral-700)">Total reported value PKR 11,330,000 · currency PKR</span>
+        </div>
+        <div class="blueprint" style="padding:0">
+          <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+          <table class="table" style="font-size:13px">
+            <thead>
+              <tr>
+                <th style="padding:6px 11px">Date / time (PKT)</th>
+                <th style="padding:6px 11px">Type</th>
+                <th style="padding:6px 11px">Channel / location</th>
+                <th style="padding:6px 11px">Counterparty</th>
+                <th style="padding:6px 11px;text-align:right">Amount (PKR)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td style="padding:6px 11px">21 Aug 2026 · 09:14</td><td style="padding:6px 11px">Cash deposit</td><td style="padding:6px 11px">Teller — Jodia Bazar br.</td><td style="padding:6px 11px;color:var(--color-neutral-700)">self (customer-presented)</td><td style="padding:6px 11px;text-align:right;font-variant-numeric:tabular-nums">1,940,000</td></tr>
+              <tr><td style="padding:6px 11px">21 Aug 2026 · 12:02</td><td style="padding:6px 11px">Cash deposit</td><td style="padding:6px 11px">CDM — Shahrah-e-Faisal</td><td style="padding:6px 11px;color:var(--color-neutral-700)">self (customer-presented)</td><td style="padding:6px 11px;text-align:right;font-variant-numeric:tabular-nums">1,880,000</td></tr>
+              <tr><td style="padding:6px 11px">21 Aug 2026 · 15:47</td><td style="padding:6px 11px">Cash deposit</td><td style="padding:6px 11px">Teller — Saddar br.</td><td style="padding:6px 11px;color:var(--color-neutral-700)">self (customer-presented)</td><td style="padding:6px 11px;text-align:right;font-variant-numeric:tabular-nums">1,910,000</td></tr>
+              <tr style="background:color-mix(in srgb,var(--color-accent) 7%,transparent)"><td style="padding:6px 11px">22 Aug 2026 · 10:20</td><td style="padding:6px 11px">Outward transfer (IBFT)</td><td style="padding:6px 11px">Digital banking</td><td style="padding:6px 11px">Al-Barq Currency Exchange · A/C 0119-2245-8</td><td style="padding:6px 11px;text-align:right;font-variant-numeric:tabular-nums">5,600,000</td></tr>
+            </tbody>
+          </table>
+          <div style="padding:7px 11px;border-top:1px solid var(--color-divider);font-size:11.5px;color:var(--color-neutral-700)">Three deposits within 6 h 33 m, each 3–6% below the PKR 2,000,000 CTR threshold · 97.7% of the aggregate moved out within 19 hours.</div>
+        </div>
+      </div>
+
+      <!-- typology + narrative -->
+      <div>
+        <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:8px">
+          <span style="font-family:var(--font-heading);font-size:12px;letter-spacing:.14em;color:var(--color-neutral-700)">SECTION 4</span>
+          <h4 style="margin:0">Reported reason &amp; suspicion narrative</h4>
+          <span style="margin-left:auto;font-size:11px;color:var(--color-neutral-700)">Goes to the FMU verbatim. This is the part a regulator reads first.</span>
+        </div>
+        <div class="blueprint" style="padding:0;background:var(--color-bg)">
+          <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--color-divider)">
+            <div class="fcell" style="padding:9px 11px">
+              <div class="flab">Red-flag typology reported (goAML code)</div>
+              <select class="input" onChange="{{ onTypology }}" style="font-size:13.5px;min-height:32px;margin-top:3px">
+                <option>ST-04 · Structuring — sub-threshold cash deposits</option>
+                <option>ST-11 · Rapid movement of funds / pass-through</option>
+                <option>TB-02 · Trade-based ML — invoice manipulation</option>
+                <option>CI-07 · Cash-intensive business inconsistency</option>
+                <option>DR-01 · Dormant account reactivation</option>
+              </select>
+              <div class="fsrc">{{ typologySrc }}</div>
+            </div>
+            <div class="fcell" style="padding:9px 11px">
+              <div class="flab">Secondary indicators (multi-select)</div>
+              <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:5px">
+                <span class="tag tag-accent" style="font-size:11px">Threshold avoidance</span>
+                <span class="tag tag-accent" style="font-size:11px">Geographic dispersion</span>
+                <span class="tag tag-accent" style="font-size:11px">Inconsistent with profile</span>
+                <span class="tag tag-outline" style="font-size:11px">+ add indicator</span>
+              </div>
+              <div class="fsrc">3 of 3 agent-proposed indicators retained</div>
+            </div>
+          </div>
+
+          <div class="ai-hatch" style="border-top:1px solid var(--color-divider);background-color:var(--color-accent-100)">
+            <div style="display:flex;align-items:center;gap:8px;padding:7px 11px;border-bottom:1px solid color-mix(in srgb,var(--color-accent) 45%,transparent)">
+              <span style="font-family:var(--font-heading);font-size:11px;letter-spacing:.12em;color:var(--color-accent-800)">AI-DRAFTED — REVIEW BEFORE SUBMITTING</span>
+              <span style="margin-left:auto;font-size:10.5px;color:var(--color-neutral-700)">{{ narrStatus }}</span>
+              <span onClick="{{ revertNarr }}" style="font-size:11px;color:var(--color-accent-700);cursor:pointer;text-decoration:underline;text-underline-offset:2px">revert to agent draft</span>
+            </div>
+            <textarea class="input" onInput="{{ onNarr }}" ref="{{ narrRef }}" defaultValue="On 21 August 2026, customer Bilal Ahmed (CNIC 42101-8834192-7, A/C 0231-7788-4, wholesale textile trader, Jodia Bazar branch, Karachi) made three cash deposits totalling PKR 5,730,000 at three separate locations within 6 hours 33 minutes. Each deposit — PKR 1,940,000 at 09:14, PKR 1,880,000 at 12:02 and PKR 1,910,000 at 15:47 — fell 3% to 6% below the PKR 2,000,000 currency transaction reporting threshold. All three were customer-presented; no third-party depositor was observed.
+
+On 22 August 2026 at 10:20, PKR 5,600,000 (97.7% of the aggregate) was transferred by IBFT to Al-Barq Currency Exchange (A/C 0119-2245-8), a counterparty with no declared commercial relationship to the customer's stated business and itself the subject of two open alerts at this institution.
+
+The pattern is inconsistent with the customer's declared monthly turnover of PKR 4,500,000 and with 24 months of prior account conduct, during which no single-day cash aggregate exceeded PKR 900,000. No invoices, supplier ledger or other commercial documentation supporting the deposits has been provided. Sanctions, MoI Schedule IV and PEP screening returned no match; one adverse-media partial match (62%) relates to a namesake with a different CNIC and is assessed as a false positive. A prior alert on this customer (14 November 2025, rapid movement of funds) was cleared on documentary evidence; no comparable documentation exists for the present activity.
+
+The structuring of the deposits, their geographic dispersion and the rapid onward movement of funds to a currency exchange are, in the reporting officer's assessment, consistent with deliberate avoidance of reporting thresholds and are reported as suspicious under section 7 of the Anti-Money Laundering Act 2010." style="width:100%;min-height:300px;border:0;background:transparent;font-family:var(--font-body);font-size:13.5px;line-height:1.6;padding:12px 14px;resize:vertical"></textarea>
+            <div style="display:flex;align-items:center;gap:10px;padding:6px 11px;border-top:1px solid color-mix(in srgb,var(--color-accent) 45%,transparent);font-size:10.5px;color:var(--color-neutral-700)">
+              <span>The agent draft and your edited version are both retained and diffed in the audit log.</span>
+              <span style="margin-left:auto">{{ narrChars }} characters · {{ narrWords }} words</span>
+            </div>
+          </div>
+          <div style="padding:8px 11px;border-top:1px solid var(--color-divider);display:flex;gap:10px;align-items:center">
+            <span style="font-family:var(--font-heading);font-size:11px;letter-spacing:.12em">OFFICER ADDENDUM · A. RAZA</span>
+            <span style="font-size:11px;color:var(--color-neutral-700)">Optional. Appended below the narrative, attributed to you separately from the agent text.</span>
+          </div>
+          <textarea class="input" placeholder="Anything you wish to state in your own words — enquiries made since escalation, documents requested, or qualifications to the agent's reading." style="width:100%;min-height:72px;border:0;border-top:1px solid var(--color-divider);background:var(--color-bg);font-family:var(--font-body);font-size:13px;line-height:1.55;padding:10px 13px;resize:vertical"></textarea>
+        </div>
+      </div>
+
+      <!-- attestation -->
+      <div>
+        <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:8px">
+          <span style="font-family:var(--font-heading);font-size:12px;letter-spacing:.14em;color:var(--color-accent-700)">SECTION 5</span>
+          <h4 style="margin:0;color:var(--color-accent-800)">Attestation — required before submission</h4>
+          <span style="margin-left:auto;font-size:11px;color:var(--color-accent-700)">{{ attestProgress }}</span>
+        </div>
+        <div class="blueprint amber-hatch" style="border:2px solid var(--color-accent-700);background-color:var(--color-accent-100);padding:0;box-shadow:var(--shadow-md)">
+          <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+          <div style="display:flex;align-items:center;gap:10px;padding:9px 14px;background:var(--color-accent-700)">
+            <span style="font-family:var(--font-heading);font-size:13px;letter-spacing:.14em;color:var(--color-bg)">TIPPING-OFF CHECK &amp; OFFICER ATTESTATION</span>
+            <span style="margin-left:auto;font-size:11px;color:var(--color-bg);opacity:.85">AMLA 2010 s.33 — disclosure to the customer is a criminal offence</span>
+          </div>
+
+          <div style="padding:14px 16px;display:flex;flex-direction:column;gap:11px">
+            <div style="font-size:12.5px;color:var(--color-accent-800);line-height:1.5;max-width:840px">Confirm each statement below from your own knowledge of the account. Nothing here is pre-checked, and the platform cannot verify these facts for you — they rest on your review of branch activity since the alert was raised on 21 August 2026.</div>
+
+            <div onClick="{{ toggleT1 }}" style="display:flex;align-items:flex-start;gap:11px;cursor:pointer;border:1px solid var(--color-accent-300);background:var(--color-bg);padding:9px 11px" style-hover="border-color:var(--color-accent-700)">
+              <span style="flex:none;display:grid;place-items:center;width:17px;height:17px;border:1.5px solid var(--color-accent-700);font-size:11px;color:var(--color-accent-800);background:#fff;margin-top:1px">{{ t1box }}</span>
+              <div>
+                <div style="font-size:13.5px;line-height:1.35">No freeze, hold, closure or restriction has been applied to this account since the alert was raised.</div>
+                <div style="font-size:11px;color:var(--color-accent-700);margin-top:2px">Account status check · last CBS action: none since 19 Aug 2026</div>
+              </div>
+            </div>
+
+            <div onClick="{{ toggleT2 }}" style="display:flex;align-items:flex-start;gap:11px;cursor:pointer;border:1px solid var(--color-accent-300);background:var(--color-bg);padding:9px 11px" style-hover="border-color:var(--color-accent-700)">
+              <span style="flex:none;display:grid;place-items:center;width:17px;height:17px;border:1.5px solid var(--color-accent-700);font-size:11px;color:var(--color-accent-800);background:#fff;margin-top:1px">{{ t2box }}</span>
+              <div>
+                <div style="font-size:13.5px;line-height:1.35">No branch staff, relationship manager or call-centre agent has contacted the customer about these transactions, and no document request has been made that would disclose the enquiry.</div>
+                <div style="font-size:11px;color:var(--color-accent-700);margin-top:2px">Contact log shows no outbound customer contact since 20 Aug 2026 — verify with the branch if unsure</div>
+              </div>
+            </div>
+
+            <div onClick="{{ toggleT3 }}" style="display:flex;align-items:flex-start;gap:11px;cursor:pointer;border:1px solid var(--color-accent-300);background:var(--color-bg);padding:9px 11px" style-hover="border-color:var(--color-accent-700)">
+              <span style="flex:none;display:grid;place-items:center;width:17px;height:17px;border:1.5px solid var(--color-accent-700);font-size:11px;color:var(--color-accent-800);background:#fff;margin-top:1px">{{ t3box }}</span>
+              <div>
+                <div style="font-size:13.5px;line-height:1.35">The existence of this report, and of the underlying investigation, has not been disclosed to the customer or to any person outside the compliance function.</div>
+                <div style="font-size:11px;color:var(--color-accent-700);margin-top:2px">Case access log: 3 viewers — R. Qureshi, A. Raza, S. Iqbal</div>
+              </div>
+            </div>
+
+            <div style="border-top:1px solid var(--color-accent-300);padding-top:11px;display:flex;gap:16px;align-items:flex-start">
+              <div style="flex:none;width:250px;border:1px solid var(--color-accent-300);background:var(--color-bg);padding:9px 11px">
+                <div style="font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-accent-700)">Reporting officer</div>
+                <div style="font-family:var(--font-heading);font-size:18px;line-height:1.2;margin-top:2px">Ayesha Raza</div>
+                <div style="font-size:12px;color:var(--color-accent-800)">Senior Compliance Officer</div>
+                <div style="font-size:11px;color:var(--color-accent-700);margin-top:5px">Filing authority: MLRO delegate<br>Employee ID HMB-4417 · session 09:31 PKT</div>
+              </div>
+              <div style="flex:1">
+                <div onClick="{{ toggleAttest }}" style="display:flex;align-items:flex-start;gap:11px;cursor:pointer;border:1.5px solid var(--color-accent-700);background:var(--color-bg);padding:11px 12px" style-hover="background:#faf1da">
+                  <span style="flex:none;display:grid;place-items:center;width:19px;height:19px;border:2px solid var(--color-accent-700);font-size:12px;color:var(--color-accent-800);background:#fff;margin-top:1px">{{ attestBox }}</span>
+                  <div>
+                    <div style="font-family:var(--font-heading);font-size:16px;line-height:1.25">I, Ayesha Raza, Senior Compliance Officer, have reviewed this filing in full and it reflects my own professional judgment.</div>
+                    <div style="font-size:12px;color:var(--color-accent-800);margin-top:4px;line-height:1.45">I understand that this report is submitted to the Financial Monitoring Unit under section 7 of the Anti-Money Laundering Act 2010, that the narrative above — including any text drafted by the platform's agent — is adopted as my own statement, and that this attestation is recorded against my name and cannot be withdrawn after submission.</div>
+                  </div>
+                </div>
+                <div style="font-size:11px;color:var(--color-accent-700);margin-top:6px">{{ attestHint }}</div>
+                <sc-if value="{{ coSignRequired }}">
+                  <div onClick="{{ toggleCoSign }}" style="display:flex;align-items:flex-start;gap:11px;cursor:pointer;border:1px solid var(--color-accent-300);background:var(--color-bg);padding:9px 11px;margin-top:9px" style-hover="border-color:var(--color-accent-700)">
+                    <span style="flex:none;display:grid;place-items:center;width:17px;height:17px;border:1.5px solid var(--color-accent-700);font-size:11px;color:var(--color-accent-800);background:#fff;margin-top:1px">{{ coSignBox }}</span>
+                    <div>
+                      <div style="font-size:13.5px;line-height:1.35">Second-officer co-sign obtained: S. Iqbal, MLRO.</div>
+                      <div style="font-size:11px;color:var(--color-accent-700);margin-top:2px">Institution policy requires MLRO co-sign on filings with a reported value above PKR 10 M</div>
+                    </div>
+                  </div>
+                </sc-if>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- action bar -->
+  <div style="flex:none;border-top:2px solid var(--color-neutral-400);background:var(--color-bg);padding:11px 24px">
+    <div style="max-width:1080px;margin:0 auto;display:flex;align-items:center;gap:16px">
+      <div style="min-width:0">
+        <div style="font-size:12px;color:{{ gateColor }};line-height:1.4">{{ gateLine }}</div>
+        <div style="font-size:11px;color:var(--color-neutral-700)">Draft last saved 09:44 PKT · autosave stores the draft only and never submits.</div>
+      </div>
+      <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+        <button class="btn btn-secondary" style="font-size:13px">Save as draft</button>
+        <button class="btn btn-secondary" style="font-size:13px">Route to MLRO for co-sign</button>
+        <button class="btn btn-primary" disabled="{{ submitDisabled }}" onClick="{{ openConfirm }}" style="font-size:13.5px;padding:9px 20px">Submit to goAML</button>
+      </div>
+    </div>
+  </div>
+
+  <sc-if value="{{ confirmOpen }}">
+    <div class="dialog-backdrop" style="z-index:20">
+      <div class="dialog blueprint" style="width:min(560px,100%);background:var(--color-bg);border:2px solid var(--color-accent-700)">
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+        <div class="dialog-title">Submit STR-F / 2026 / 00318 to the FMU?</div>
+        <div class="dialog-body" style="font-size:13px">
+          <p style="margin:0 0 8px">This transmits the filing to the Financial Monitoring Unit over the goAML channel and records Ayesha Raza as the reporting officer. Submission cannot be recalled; a correction requires a superseding filing.</p>
+          <div style="border:1px solid var(--color-divider);background:var(--color-neutral-100);padding:9px 11px;font-size:12.5px;line-height:1.6">
+            Subject Bilal Ahmed · A/C 0231-7788-4<br>
+            Typology ST-04 — structuring, sub-threshold cash deposits<br>
+            4 transactions · PKR 11,330,000 reported<br>
+            Narrative {{ narrWords }} words ({{ narrOrigin }})
+          </div>
+        </div>
+        <div class="dialog-actions">
+          <button class="btn btn-secondary" onClick="{{ closeConfirm }}" style="font-size:13px">Back to review</button>
+          <button class="btn btn-primary" onClick="{{ doSubmit }}" style="font-size:13px">Submit filing</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ submitted }}">
+    <div class="dialog-backdrop" style="z-index:21">
+      <div class="dialog blueprint" style="width:min(520px,100%);background:var(--color-bg)">
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+        <div class="dialog-title">Filed with the FMU</div>
+        <div class="dialog-body" style="font-size:13px">
+          <p style="margin:0 0 8px">STR-F / 2026 / 00318 submitted 24 Aug 2026 09:58 PKT. goAML acknowledgement REF-FMU-2026-118420 received. Reporting officer: Ayesha Raza, Senior Compliance Officer.</p>
+          <p style="margin:0;font-size:12px;color:var(--color-neutral-700)">Case ALT-2026-04417 is now locked to "STR filed"; the evidence pack, agent draft, your edits and the attestation record are retained for ten years.</p>
+        </div>
+        <div class="dialog-actions">
+          <a class="btn btn-secondary" href="Alert Queue.dc.html" style="font-size:13px">Back to queue</a>
+          <button class="btn btn-primary" onClick="{{ closeSubmitted }}" style="font-size:13px">View filing record</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+</div></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;requireCoSign&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Policy&quot;}}">
+const DRAFT_LEN = 1990;
+
+class Component extends DCLogic {
+  state = { t1: false, t2: false, t3: false, attest: false, coSign: false, narrChars: DRAFT_LEN, narrWords: 318, narrEdited: false, typologyChanged: false, confirmOpen: false, submitted: false };
+
+  renderVals() {
+    const s = this.state;
+    const checks = [s.t1, s.t2, s.t3].filter(Boolean).length;
+    const coSignRequired = this.props.requireCoSign ?? false;
+    const complete = checks === 3 && s.attest && (!coSignRequired || s.coSign);
+    const box = v => (v ? "✕" : "");
+    return {
+      coSignRequired, coSignBox: box(s.coSign),
+      toggleCoSign: () => this.setState({ coSign: !s.coSign }),
+      t1box: box(s.t1), t2box: box(s.t2), t3box: box(s.t3), attestBox: box(s.attest),
+      toggleT1: () => this.setState({ t1: !s.t1 }),
+      toggleT2: () => this.setState({ t2: !s.t2 }),
+      toggleT3: () => this.setState({ t3: !s.t3 }),
+      toggleAttest: () => this.setState({ attest: !s.attest }),
+      attestProgress: checks + " of 3 tipping-off checks · attestation " + (s.attest ? "signed" : "not signed"),
+      attestHint: s.attest
+        ? "Attestation recorded for this session at 09:31 PKT. Unticking it withdraws the signature and re-locks submission."
+        : "Nothing is pre-ticked. This box is the officer's signature — tick it only after reading the filing in full.",
+
+      narrChars: s.narrChars, narrWords: s.narrWords,
+      narrStatus: s.narrEdited ? "edited by A. Raza · agent draft retained" : "unedited agent draft",
+      narrOrigin: s.narrEdited ? "agent draft, edited by officer" : "agent draft, unedited",
+      onNarr: e => {
+        const v = e.target.value;
+        this.setState({ narrChars: v.length, narrWords: v.trim().split(/\s+/).filter(Boolean).length, narrEdited: true });
+      },
+      narrRef: el => { this.narrEl = el; },
+      revertNarr: () => {
+        if (!this.narrEl) return;
+        this.narrEl.value = this.narrEl.defaultValue;
+        const v = this.narrEl.defaultValue;
+        this.setState({ narrChars: v.length, narrWords: v.trim().split(/\s+/).filter(Boolean).length, narrEdited: false });
+      },
+      onTypology: () => this.setState({ typologyChanged: true }),
+      typologySrc: s.typologyChanged
+        ? "Overridden by A. Raza — deviation from the agent's ST-04 match is logged"
+        : "Agent match, confidence 0.86 · override is logged against your name",
+
+      submitDisabled: !complete,
+      gateColor: complete ? "var(--color-text)" : "var(--color-accent-700)",
+      gateLine: complete
+        ? "Attestation complete. Submitting transmits the filing to the FMU and cannot be recalled."
+        : "Submission is locked: " + [
+            (3 - checks) > 0 ? (3 - checks) + " tipping-off check" + (3 - checks === 1 ? "" : "s") + " outstanding" : null,
+            s.attest ? null : "officer attestation unsigned",
+            coSignRequired && !s.coSign ? "MLRO co-sign outstanding" : null
+          ].filter(Boolean).join(" · ") + ".",
+
+      confirmOpen: s.confirmOpen,
+      openConfirm: () => { if (complete) this.setState({ confirmOpen: true }); },
+      closeConfirm: () => this.setState({ confirmOpen: false }),
+      doSubmit: () => this.setState({ confirmOpen: false, submitted: true }),
+      submitted: s.submitted,
+      closeSubmitted: () => this.setState({ submitted: false })
+    };
+  }
+}
+</script>
+</body>
+</html>

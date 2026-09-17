@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/industry-92a524b8-8757-4847-a147-3c04a6398262/styles.css">
+<script src="_ds/industry-92a524b8-8757-4847-a147-3c04a6398262/_ds_bundle.js"></script>
+<link rel="stylesheet" href="brand.css">
+<style>
+body{margin:0;background:var(--color-bg)}
+.ai-hatch{background-image:repeating-linear-gradient(135deg,color-mix(in srgb,var(--color-accent) 14%,transparent) 0 2px,transparent 2px 7px)}
+.scrollcol{overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--color-neutral-400) transparent}
+.qrow{display:grid;grid-template-columns:36px 86px 208px 1fr 136px 132px 120px 96px;align-items:center;border-bottom:1px solid color-mix(in srgb,var(--color-text) 9%,transparent);cursor:pointer;position:relative}
+.qrow:hover{background:color-mix(in srgb,var(--color-accent) 7%,transparent)}
+.qcell{padding:8px 10px;min-width:0}
+</style>
+</helmet>
+<div style="height:100vh;min-height:900px;overflow-x:auto;overflow-y:hidden"><div style="height:100%;min-width:1360px;display:flex;flex-direction:column;font-family:var(--font-body);color:var(--color-text);background:var(--color-bg);overflow:hidden">
+
+  <div style="display:flex;align-items:center;gap:24px;padding:0 18px;height:44px;flex:none;background:var(--color-accent-900);color:var(--color-bg)">
+    <span style="display:flex;align-items:center;gap:9px;font-family:var(--font-heading);font-weight:600;font-size:17px;letter-spacing:0.06em"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.2" style="flex:none"><path d="M12 1.6 20.6 6.6v10.8L12 22.4 3.4 17.4V6.6z"></path><path d="M12 7.2 16.6 9.9v5.4L12 18l-4.6-2.7V9.9z"></path><path d="M12 1.6v5.6M20.6 6.6l-4 3.3M20.6 17.4l-4-2.1M12 22.4V18M3.4 17.4l4-2.1M3.4 6.6l4 3.3"></path></svg>POLYCHORON<span style="opacity:.6">AI</span></span>
+    <span style="width:1px;height:18px;background:rgba(255,255,255,.22)"></span>
+    <div style="display:flex;gap:18px;font-size:13px;letter-spacing:.01em">
+      <a href="Command Dashboard.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Dashboard</a>
+      <span style="padding-bottom:2px;border-bottom:2px solid var(--color-accent-400)">Queue</span>
+      <a href="Case Workspace.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Cases</a>
+      <a href="Customer 360.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Customers</a>
+      <a href="Screening Hub.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Screening</a>
+      <a href="Typology Rules Console.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Typologies</a>
+      <a href="Filing Console.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Filings</a>
+      <a href="goAML Tracker.dc.html" style="opacity:.6;color:inherit;text-decoration:none">goAML tracker</a>
+      <a href="Model Governance.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Governance</a>
+      <a href="Reporting MI.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Reporting</a>
+    </div>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:14px;font-size:12px">
+      <span style="opacity:.7">Habib Metropolitan · Compliance Ops</span>
+      <span style="width:1px;height:18px;background:rgba(255,255,255,.22)"></span>
+      <span>R. Qureshi · Analyst L2</span>
+      <span style="width:26px;height:26px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.3);font-family:var(--font-heading);font-size:12px">RQ</span>
+    </div>
+  </div>
+
+  <!-- summary bar -->
+  <div style="display:flex;align-items:stretch;flex:none;border-bottom:1px solid var(--color-divider);background:var(--color-neutral-100)">
+    <div style="padding:9px 18px;border-right:1px solid var(--color-divider);min-width:190px">
+      <div style="font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-neutral-700)">Open alerts</div>
+      <div style="display:flex;align-items:baseline;gap:7px">
+        <span style="font-family:var(--font-heading);font-size:24px;line-height:1.05">142</span>
+        <span style="font-size:11px;color:var(--color-neutral-700)">my queue 31 · unassigned 44</span>
+      </div>
+    </div>
+    <div style="padding:9px 18px;border-right:1px solid var(--color-divider);display:flex;gap:22px">
+      <div>
+        <div style="font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-alert)">Critical 80+</div>
+        <div style="font-family:var(--font-heading);font-size:20px;line-height:1.1">9</div>
+      </div>
+      <div>
+        <div style="font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-accent-700)">High 50–79</div>
+        <div style="font-family:var(--font-heading);font-size:20px;line-height:1.1">27</div>
+      </div>
+      <div>
+        <div style="font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-neutral-700)">Medium 25–49</div>
+        <div style="font-family:var(--font-heading);font-size:20px;line-height:1.1">58</div>
+      </div>
+      <div>
+        <div style="font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-neutral-700)">Low &lt;25</div>
+        <div style="font-family:var(--font-heading);font-size:20px;line-height:1.1">48</div>
+      </div>
+    </div>
+    <div style="padding:9px 18px;border-right:1px solid var(--color-divider);display:flex;gap:22px">
+      <div>
+        <div style="font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-accent-700)">Approaching SLA &lt;24 h</div>
+        <div style="font-family:var(--font-heading);font-size:20px;line-height:1.1">6</div>
+      </div>
+      <div>
+        <div style="font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-alert)">Past SLA</div>
+        <div style="display:flex;align-items:baseline;gap:6px">
+          <span style="font-family:var(--font-heading);font-size:20px;line-height:1.1;color:var(--color-alert)">1</span>
+          <span style="font-size:11px;color:var(--color-alert)">ALT-2026-04352</span>
+        </div>
+      </div>
+    </div>
+    <div style="padding:9px 18px;display:flex;flex-direction:column;justify-content:center;gap:2px">
+      <div style="font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-neutral-700)">Agent-recommended STR</div>
+      <div style="font-size:12px">4 pending officer decision · median agent-to-decision 1 d 09 h</div>
+    </div>
+    <div style="margin-left:auto;padding:9px 18px;display:flex;align-items:center;gap:8px">
+      <span style="font-size:11px;color:var(--color-neutral-700);text-align:right;max-width:150px;line-height:1.35">{{ pendingLine }}</span>
+      <button class="btn btn-secondary" onClick="{{ loadNew }}" style="font-size:12.5px;padding:5px 10px">{{ loadLabel }}</button>
+    </div>
+  </div>
+
+  <!-- filter bar -->
+  <div style="flex:none;padding:9px 18px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;border-bottom:1px solid var(--color-divider);background:var(--color-bg)">
+    <span style="font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-neutral-700);margin-right:2px">Filter</span>
+    <div style="display:flex;align-items:center;gap:6px;border:1px solid var(--color-divider);padding:4px 9px;font-size:12.5px;cursor:pointer;background:var(--color-neutral-100)" style-hover="border-color:var(--color-accent)">Typology <span style="color:var(--color-accent-800)">2</span> <span style="color:var(--color-neutral-600);font-size:10px">▾</span></div>
+    <div style="display:flex;align-items:center;gap:6px;border:1px solid var(--color-divider);padding:4px 9px;font-size:12.5px;cursor:pointer;background:var(--color-neutral-100)" style-hover="border-color:var(--color-accent)">Risk tier <span style="color:var(--color-neutral-600)">all</span> <span style="color:var(--color-neutral-600);font-size:10px">▾</span></div>
+    <div style="display:flex;align-items:center;gap:6px;border:1px solid var(--color-divider);padding:4px 9px;font-size:12.5px;cursor:pointer;background:var(--color-neutral-100)" style-hover="border-color:var(--color-accent)">Branch <span style="color:var(--color-neutral-600)">all</span> <span style="color:var(--color-neutral-600);font-size:10px">▾</span></div>
+    <div style="display:flex;align-items:center;gap:6px;border:1px solid var(--color-divider);padding:4px 9px;font-size:12.5px;cursor:pointer;background:var(--color-neutral-100)" style-hover="border-color:var(--color-accent)">Product line <span style="color:var(--color-neutral-600)">all</span> <span style="color:var(--color-neutral-600);font-size:10px">▾</span></div>
+    <div style="display:flex;align-items:center;gap:6px;border:1px solid var(--color-divider);padding:4px 9px;font-size:12.5px;cursor:pointer;background:var(--color-neutral-100)" style-hover="border-color:var(--color-accent)">Flagged 01–24 Aug 2026 <span style="color:var(--color-neutral-600);font-size:10px">▾</span></div>
+    <div style="display:flex;align-items:center;gap:7px;border:1px solid var(--color-accent-800);background:var(--color-accent-100);padding:4px 9px;font-size:12.5px">
+      <span>Structuring</span><span style="color:var(--color-accent-800);cursor:pointer">✕</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:7px;border:1px solid var(--color-accent-800);background:var(--color-accent-100);padding:4px 9px;font-size:12.5px">
+      <span>TBML</span><span style="color:var(--color-accent-800);cursor:pointer">✕</span>
+    </div>
+    <span style="width:1px;height:22px;background:var(--color-divider);margin:0 2px"></span>
+    <div onClick="{{ toggleStrOnly }}" style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:12.5px;padding:3px 4px" style-hover="background:color-mix(in srgb,var(--color-accent) 8%,transparent)">
+      <span style="width:34px;height:17px;border:1px solid var(--color-neutral-500);position:relative;flex:none;background:var(--color-neutral-200)">
+        <span style="position:absolute;top:1px;bottom:1px;width:14px;background:var(--color-neutral-600);left:{{ strKnob }}"></span>
+      </span>
+      Agent-recommended STR only
+    </div>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+      <input class="input" placeholder="Customer name, CNIC or account number" style="width:290px;font-size:12.5px;min-height:31px;background:var(--color-neutral-100)">
+      <button class="btn btn-secondary" style="font-size:12.5px;padding:5px 10px">Saved views</button>
+      <button class="btn btn-secondary" style="font-size:12.5px;padding:5px 10px">Export queue</button>
+    </div>
+  </div>
+
+  <!-- sort / bulk strip -->
+  <div style="flex:none;display:flex;align-items:center;gap:12px;padding:6px 18px;border-bottom:1px solid var(--color-divider);background:var(--color-neutral-100);min-height:38px">
+    <span style="font-size:11.5px;color:var(--color-neutral-700)">Showing <strong>10</strong> of 142 · sorted by <strong>risk score, descending</strong> · order changes only when you re-sort</span>
+    <sc-if value="{{ hasSelection }}">
+      <div style="margin-left:auto;display:flex;align-items:center;gap:10px">
+        <span style="font-size:12px">{{ selectionLine }}</span>
+        <button class="btn btn-secondary" onClick="{{ clearSelection }}" style="font-size:12.5px;padding:4px 10px">Deselect</button>
+        <button class="btn btn-primary" onClick="{{ openBulk }}" style="font-size:12.5px;padding:4px 12px">Bulk clear…</button>
+      </div>
+    </sc-if>
+    <sc-if value="{{ noSelection }}" hint-placeholder-val="{{ true }}">
+      <span style="margin-left:auto;font-size:11.5px;color:var(--color-neutral-700)">Bulk clear is available only for agent-cleared alerts scoring under 50, and always asks for confirmation.</span>
+    </sc-if>
+  </div>
+
+  <!-- column heads -->
+  <div class="qrow" style="cursor:default;background:var(--color-bg);border-bottom:1px solid var(--color-text)">
+    <div class="qcell" style="padding:7px 10px"><span onClick="{{ toggleAll }}" style="display:inline-grid;place-items:center;width:14px;height:14px;border:1px solid var(--color-neutral-500);font-size:10px;cursor:pointer;background:var(--color-bg)">{{ allBox }}</span></div>
+    <div class="qcell" style="padding:7px 10px;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--color-neutral-700);cursor:pointer">Risk ▼</div>
+    <div class="qcell" style="padding:7px 10px;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--color-neutral-700);cursor:pointer">Matched typology</div>
+    <div class="qcell" style="padding:7px 10px;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--color-neutral-700);cursor:pointer">Customer / account / branch</div>
+    <div class="qcell" style="padding:7px 10px;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--color-accent-800)">Agent recommendation</div>
+    <div class="qcell" style="padding:7px 10px;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--color-neutral-700);cursor:pointer">SLA remaining</div>
+    <div class="qcell" style="padding:7px 10px;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--color-neutral-700)">Assigned</div>
+    <div class="qcell" style="padding:7px 10px;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--color-neutral-700);text-align:right">Alert</div>
+  </div>
+
+  <!-- rows -->
+  <div class="scrollcol" style="flex:1">
+    <sc-for list="{{ rows }}" as="r" hint-placeholder-count="10">
+      <div class="qrow" onClick="{{ r.open }}">
+        <div class="qcell" style="padding:7px 10px">
+          <span onClick="{{ r.toggle }}" style="display:inline-grid;place-items:center;width:14px;height:14px;border:1px solid {{ r.boxBorder }};font-size:10px;cursor:{{ r.boxCursor }};color:{{ r.boxColor }};background:var(--color-bg)">{{ r.box }}</span>
+        </div>
+        <div class="qcell" style="display:flex;align-items:center;gap:6px">
+          <span style="display:grid;place-items:center;width:38px;height:26px;font-family:var(--font-heading);font-size:16px;border:1px solid {{ r.scoreBorder }};background:{{ r.scoreBg }};color:{{ r.scoreColor }}">{{ r.score }}</span>
+          <span onMouseEnter="{{ r.enter }}" onMouseLeave="{{ r.leave }}" style="display:grid;place-items:center;width:15px;height:15px;border:1px solid var(--color-neutral-500);border-radius:50%;font-size:9.5px;color:var(--color-neutral-700);cursor:help">i</span>
+          <sc-if value="{{ r.showWhy }}">
+            <span style="position:absolute;left:130px;top:calc(50% - 14px);z-index:5;background:var(--color-accent-900);color:var(--color-bg);font-size:11.5px;padding:5px 9px;white-space:nowrap;box-shadow:var(--shadow-md)">{{ r.why }}</span>
+          </sc-if>
+        </div>
+        <div class="qcell">
+          <span class="tag tag-accent" style="font-size:10.5px;max-width:100%">{{ r.typology }}</span>
+        </div>
+        <div class="qcell" style="display:flex;align-items:baseline;gap:9px">
+          <span style="font-size:13.5px;font-weight:500;white-space:nowrap">{{ r.customer }}</span>
+          <span style="font-size:11.5px;color:var(--color-neutral-700);white-space:nowrap">A/C {{ r.account }} · {{ r.branch }}</span>
+        </div>
+        <div class="qcell">
+          <span style="display:inline-flex;align-items:center;gap:5px;font-size:12px;color:{{ r.recColor }}">
+            <span style="width:5px;height:5px;background:{{ r.recColor }}"></span>{{ r.rec }}
+          </span>
+          <div style="font-size:10px;color:var(--color-neutral-600)">conf. {{ r.conf }}</div>
+        </div>
+        <div class="qcell">
+          <div style="font-size:12.5px;color:{{ r.slaColor }};font-variant-numeric:tabular-nums">{{ r.sla }}</div>
+          <div style="height:3px;background:var(--color-neutral-300);margin-top:3px"><span style="display:block;height:3px;width:{{ r.slaPct }};background:{{ r.slaColor }}"></span></div>
+        </div>
+        <div class="qcell">
+          <sc-if value="{{ r.assigned }}">
+            <span style="display:inline-flex;align-items:center;gap:6px;font-size:12px">
+              <span style="width:22px;height:22px;display:grid;place-items:center;border:1px solid var(--color-neutral-500);font-family:var(--font-heading);font-size:11px;background:var(--color-neutral-100)">{{ r.initials }}</span>{{ r.analyst }}
+            </span>
+          </sc-if>
+          <sc-if value="{{ r.unassigned }}">
+            <span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--color-neutral-600)">
+              <span style="width:22px;height:22px;display:grid;place-items:center;border:1px dashed var(--color-neutral-500);font-size:11px">–</span>
+              <span onClick="{{ r.claim }}" class="btn btn-secondary" style="font-size:11.5px;padding:2px 8px">Claim</span>
+            </span>
+          </sc-if>
+        </div>
+        <div class="qcell" style="text-align:right">
+          <div style="font-size:11.5px;color:var(--color-neutral-700);font-variant-numeric:tabular-nums">{{ r.id }}</div>
+          <div style="font-size:10.5px;color:var(--color-accent-700)">open case →</div>
+        </div>
+      </div>
+    </sc-for>
+    <div style="padding:10px 18px;font-size:11.5px;color:var(--color-neutral-700);display:flex;align-items:center;gap:12px">
+      <span>Rows 1–10 of 142 · page size 10</span>
+      <button class="btn btn-secondary" style="font-size:12px;padding:3px 10px;margin-left:auto">Next 10 →</button>
+    </div>
+  </div>
+
+  <sc-if value="{{ bulkOpen }}">
+    <div class="dialog-backdrop" style="z-index:20">
+      <div class="dialog blueprint" style="width:min(520px,100%);background:var(--color-bg)">
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+        <div class="dialog-title">Confirm bulk clear</div>
+        <div class="dialog-body" style="font-size:13px">
+          <p style="margin:0 0 8px">{{ bulkBody }}</p>
+          <div style="border:1px solid var(--color-divider);background:var(--color-neutral-100);padding:8px 10px;font-size:12.5px">{{ bulkList }}</div>
+          <p style="margin:8px 0 0;font-size:12px;color:var(--color-neutral-700)">Clearing records a "no suspicion" disposition against your user for each alert. It does not file a CTR and cannot be undone from the queue — a cleared alert must be reopened by a senior officer.</p>
+          <label style="display:flex;align-items:flex-start;gap:8px;margin-top:10px;font-size:12.5px;cursor:pointer">
+            <span onClick="{{ toggleAck }}" style="flex:none;display:inline-grid;place-items:center;width:15px;height:15px;border:1px solid var(--color-text);font-size:10px;margin-top:2px;background:var(--color-bg)">{{ ackBox }}</span>
+            <span>I have reviewed each of these alerts individually and record no suspicion.</span>
+          </label>
+        </div>
+        <div class="dialog-actions">
+          <button class="btn btn-secondary" onClick="{{ closeBulk }}" style="font-size:13px">Cancel</button>
+          <button class="btn btn-primary" disabled="{{ bulkDisabled }}" onClick="{{ doBulk }}" style="font-size:13px">{{ bulkConfirmLabel }}</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ toast }}">
+    <div style="position:fixed;right:18px;bottom:16px;z-index:15;display:flex;align-items:flex-start;gap:12px;max-width:520px;border:1px solid var(--color-accent-800);background:var(--color-accent-100);padding:8px 12px;font-size:12.5px;box-shadow:var(--shadow-md)">
+      <span>{{ toastMsg }}</span>
+      <span onClick="{{ dismissToast }}" style="flex:none;cursor:pointer;color:var(--color-accent-800);font-size:12px;line-height:1.4" style-hover="color:var(--color-text)">✕</span>
+    </div>
+  </sc-if>
+</div></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;colorCodeRisk&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Display&quot;}}">
+const RED = "var(--color-alert)", AMBER = "var(--color-accent-700)", GREEN = "var(--color-accent-700)";
+
+const DATA = [
+  { id:"ALT-2026-04390", score:91, typology:"TBML — over-invoiced textile exports", customer:"Sana Textiles (Pvt) Ltd", account:"0448-1120-9", branch:"Jodia Bazar, Karachi", rec:"Recommend STR", conf:"0.91", sla:"04 h 12 m", slaPct:"14%", slaTier:"amber", analyst:null, why:"Invoice value 3.1× market unit price on 6 shipments to one buyer" },
+  { id:"ALT-2026-04352", score:88, typology:"High-velocity account", customer:"Al-Barq Currency Exchange", account:"0119-2245-8", branch:"Saddar, Karachi", rec:"Escalate", conf:"0.79", sla:"past due 1 d 06 h", slaPct:"100%", slaTier:"red", analyst:"A. Farooq", why:"214 transfers in 9 days, 96% of inflow passed out same day" },
+  { id:"ALT-2026-04401", score:84, typology:"Dormant reactivation", customer:"Nadia Malik", account:"0655-4417-3", branch:"Gulberg III, Lahore", rec:"Escalate", conf:"0.74", sla:"1 d 22 h", slaPct:"48%", slaTier:"amber", analyst:null, why:"Dormant 26 months, then PKR 8.4 M inbound across 3 days" },
+  { id:"ALT-2026-04417", score:78, typology:"Structuring — sub-threshold cash deposits", customer:"Bilal Ahmed", account:"0231-7788-4", branch:"Jodia Bazar, Karachi", rec:"Recommend STR", conf:"0.86", sla:"3 d 04 h", slaPct:"32%", slaTier:"green", analyst:"R. Qureshi", why:"3 cash deposits 3–6% under the CTR threshold within 6 h 33 m" },
+  { id:"ALT-2026-04409", score:67, typology:"Structuring — third-party depositors", customer:"Rehman Poultry Farms", account:"0902-6631-7", branch:"Faisalabad Main", rec:"Escalate", conf:"0.68", sla:"2 d 09 h", slaPct:"41%", slaTier:"green", analyst:"M. Shafiq", why:"5 unrelated depositors, every deposit under PKR 2.0 M" },
+  { id:"ALT-2026-04412", score:61, typology:"Cross-border — high-risk corridor", customer:"Imran Shah", account:"0338-9902-5", branch:"Peshawar Cantt", rec:"Escalate", conf:"0.63", sla:"2 d 18 h", slaPct:"36%", slaTier:"green", analyst:null, why:"7 inbound remittances from a jurisdiction under increased monitoring" },
+  { id:"ALT-2026-04421", score:54, typology:"Cash-intensive business", customer:"Zam Zam General Store", account:"0774-2210-8", branch:"Sukkur City", rec:"Clear", conf:"0.71", sla:"4 d 01 h", slaPct:"22%", slaTier:"green", analyst:"R. Qureshi", why:"Cash ratio 0.82, in line with 18-month retail baseline" },
+  { id:"ALT-2026-04425", score:38, typology:"Round-amount transfers", customer:"Hina Aslam", account:"0512-8890-1", branch:"DHA Phase 5, Karachi", rec:"Clear", conf:"0.88", sla:"5 d 11 h", slaPct:"12%", slaTier:"green", analyst:null, why:"4 round transfers to a declared family beneficiary" },
+  { id:"ALT-2026-04428", score:31, typology:"Salary-pattern anomaly", customer:"Tariq Javed", account:"0287-1123-6", branch:"Blue Area, Islamabad", rec:"Clear", conf:"0.90", sla:"5 d 20 h", slaPct:"9%", slaTier:"green", analyst:null, why:"Employer bulk-credit ran two days late in July and August" },
+  { id:"ALT-2026-04431", score:24, typology:"Threshold proximity — single txn", customer:"Faisal Traders", account:"0771-3390-2", branch:"Jodia Bazar, Karachi", rec:"Clear", conf:"0.93", sla:"6 d 03 h", slaPct:"6%", slaTier:"green", analyst:null, why:"One deposit of PKR 1.97 M, matched to a filed invoice" }
+];
+
+const initials = n => n.split(/\s+/).map(w => w[0]).join("").slice(0, 2).toUpperCase();
+
+class Component extends DCLogic {
+  state = { sel: [], hover: null, claimed: [], cleared: [], bulkOpen: false, ack: false, toast: null, strOnly: false, loaded: false };
+
+  bulkEligible(r) { return r.score < 50 && r.rec === "Clear"; }
+
+  toast(msg) {
+    clearTimeout(this._t);
+    this.setState({ toast: msg });
+    this._t = setTimeout(() => this.setState({ toast: null }), 6000);
+  }
+  componentWillUnmount() { clearTimeout(this._t); }
+
+  renderVals() {
+    const s = this.state, color = this.props.colorCodeRisk ?? true;
+    const scoreStyle = sc => {
+      if (!color) return { border: "var(--color-neutral-500)", bg: "var(--color-neutral-100)", fg: "var(--color-text)" };
+      if (sc >= 80) return { border: RED, bg: "color-mix(in srgb, " + RED + " 12%, transparent)", fg: RED };
+      if (sc >= 50) return { border: AMBER, bg: "color-mix(in srgb, " + AMBER + " 12%, transparent)", fg: AMBER };
+      return { border: "var(--color-neutral-400)", bg: "var(--color-neutral-100)", fg: "var(--color-neutral-700)" };
+    };
+    const slaColor = t => !color ? "var(--color-text)" : t === "red" ? RED : t === "amber" ? AMBER : GREEN;
+
+    const visible = s.strOnly ? DATA.filter(r => r.rec === "Recommend STR") : DATA;
+    const rows = visible.filter(r => !s.cleared.includes(r.id)).map(r => {
+      const claimed = s.claimed.includes(r.id);
+      const analyst = claimed ? "R. Qureshi" : r.analyst;
+      const elig = this.bulkEligible(r);
+      const sel = s.sel.includes(r.id);
+      const st = scoreStyle(r.score);
+      return {
+        ...r, score: String(r.score), analyst,
+        assigned: !!analyst, unassigned: !analyst,
+        initials: analyst ? initials(analyst) : "",
+        scoreBorder: st.border, scoreBg: st.bg, scoreColor: st.fg,
+        recColor: r.rec === "Recommend STR" ? "var(--color-accent-800)" : r.rec === "Escalate" ? "var(--color-neutral-800)" : "var(--color-neutral-600)",
+        slaColor: slaColor(r.slaTier),
+        box: sel ? "✕" : elig ? "" : "–",
+        boxBorder: sel ? "var(--color-accent-800)" : elig ? "var(--color-neutral-500)" : "var(--color-neutral-300)",
+        boxColor: sel ? "var(--color-accent-800)" : "var(--color-neutral-400)",
+        boxCursor: elig ? "pointer" : "not-allowed",
+        showWhy: s.hover === r.id,
+        enter: () => this.setState({ hover: r.id }),
+        leave: () => this.setState({ hover: null }),
+        toggle: e => {
+          e.stopPropagation();
+          if (!elig) { this.toast("Only agent-cleared alerts scoring under 50 can be bulk-cleared. " + r.id + " must be dispositioned in the Case Workspace."); return; }
+          clearTimeout(this._t);
+          this.setState({ sel: sel ? s.sel.filter(x => x !== r.id) : s.sel.concat(r.id), toast: null });
+        },
+        claim: e => { e.stopPropagation(); this.toast(r.id + " claimed — added to your queue (31 → 32)."); this.setState({ claimed: s.claimed.concat(r.id) }); },
+        open: () => { window.location.href = "Case Workspace.dc.html"; }
+      };
+    });
+
+    const selRows = DATA.filter(r => s.sel.includes(r.id));
+    return {
+      rows,
+      hasSelection: s.sel.length > 0,
+      noSelection: s.sel.length === 0,
+      selectionLine: s.sel.length + " selected · all agent-cleared, score < 50",
+      clearSelection: () => this.setState({ sel: [] }),
+      allBox: "",
+      toggleAll: () => {
+        const elig = DATA.filter(r => this.bulkEligible(r) && !s.cleared.includes(r.id)).map(r => r.id);
+        this.setState({ sel: s.sel.length ? [] : elig });
+      },
+      strOnly: s.strOnly,
+      strKnob: s.strOnly ? "17px" : "1px",
+      toggleStrOnly: () => this.setState({ strOnly: !s.strOnly, sel: [] }),
+
+      pendingLine: s.loaded ? "Queue refreshed 09:52 · no new alerts" : "4 new alerts held back so the list does not move while you work",
+      loadLabel: s.loaded ? "Up to date" : "Load 4 new alerts",
+      loadNew: () => { this.toast("4 alerts merged into the list. Sort order unchanged."); this.setState({ loaded: true }); },
+
+      bulkOpen: s.bulkOpen,
+      openBulk: () => this.setState({ bulkOpen: true, ack: false }),
+      closeBulk: () => this.setState({ bulkOpen: false, ack: false }),
+      bulkBody: "You are about to clear " + s.sel.length + " alert" + (s.sel.length === 1 ? "" : "s") + " as no suspicion. Each was recommended for clearing by the agent and scores below 50.",
+      bulkList: selRows.map(r => r.id + " · " + r.customer + " · " + r.score).join("   |   "),
+      ackBox: s.ack ? "✕" : "",
+      toggleAck: () => this.setState({ ack: !s.ack }),
+      bulkDisabled: !s.ack || s.sel.length === 0,
+      bulkConfirmLabel: "Clear " + s.sel.length + " alert" + (s.sel.length === 1 ? "" : "s"),
+      doBulk: () => {
+        if (!s.ack) return;
+        const n = s.sel.length;
+        this.toast(n + " alert" + (n === 1 ? "" : "s") + " cleared — no suspicion recorded against R. Qureshi, audit entr" + (n === 1 ? "y" : "ies") + " written.");
+        this.setState({ cleared: s.cleared.concat(s.sel), sel: [], bulkOpen: false, ack: false });
+      },
+
+      toast: !!s.toast,
+      toastMsg: s.toast || "",
+      dismissToast: () => { clearTimeout(this._t); this.setState({ toast: null }); }
+    };
+  }
+}
+</script>
+</body>
+</html>

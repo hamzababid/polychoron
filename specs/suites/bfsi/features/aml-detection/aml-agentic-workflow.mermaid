@@ -1,0 +1,20 @@
+flowchart TD
+    Start[Alert received from bank TMS] --> A1[Evidence Gathering Agent]
+    A1 -->|Structured evidence bundle| A2[Pattern Matching Agent]
+    A2 -->|Matched typology + rationale| A3[Case and Narrative Agent]
+    A3 -->|Risk score + draft narrative + STR-F fields| Gate{Confidence check}
+    Gate -->|High confidence match| Human[Human checkpoint: analyst review]
+    Gate -->|Low/ambiguous confidence| Human
+    Human -->|Accept| Accept[Disposition recorded]
+    Human -->|Edit| Edit[Officer edits narrative/typology]
+    Human -->|Override| Override[Mandatory override reason logged]
+    Edit --> Accept
+    Override --> Accept
+    Accept --> Log[Agent Activity Log: full reasoning chain persisted]
+    Log --> Sample{Random sampling draw}
+    Sample -->|Selected| Review[Secondary human re-review]
+    Sample -->|Not selected| Feed[Feedback aggregator]
+    Review --> Feed
+    Feed --> Drift[Drift and agreement-rate metrics]
+    Drift --> Rules[Typology and Rules Console: retuning]
+    Drift --> Gov[Model Governance and Audit dashboard]

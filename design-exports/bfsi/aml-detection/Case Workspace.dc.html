@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/industry-92a524b8-8757-4847-a147-3c04a6398262/styles.css">
+<script src="_ds/industry-92a524b8-8757-4847-a147-3c04a6398262/_ds_bundle.js"></script>
+<link rel="stylesheet" href="brand.css">
+<style>
+body{margin:0;background:var(--color-bg)}
+.ai-hatch{background-image:repeating-linear-gradient(135deg,color-mix(in srgb,var(--color-accent) 14%,transparent) 0 2px,transparent 2px 7px)}
+.scrollcol{overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--color-neutral-400) transparent}
+</style>
+</helmet>
+<div style="height:100vh;min-height:900px;overflow-x:auto;overflow-y:hidden"><div style="height:100%;min-width:1360px;display:flex;flex-direction:column;font-family:var(--font-body);color:var(--color-text);background:var(--color-bg);overflow:hidden">
+
+  <div style="display:flex;align-items:center;gap:24px;padding:0 18px;height:44px;flex:none;background:var(--color-accent-900);color:var(--color-bg)">
+    <span style="display:flex;align-items:center;gap:9px;font-family:var(--font-heading);font-weight:600;font-size:17px;letter-spacing:0.06em"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.2" style="flex:none"><path d="M12 1.6 20.6 6.6v10.8L12 22.4 3.4 17.4V6.6z"></path><path d="M12 7.2 16.6 9.9v5.4L12 18l-4.6-2.7V9.9z"></path><path d="M12 1.6v5.6M20.6 6.6l-4 3.3M20.6 17.4l-4-2.1M12 22.4V18M3.4 17.4l4-2.1M3.4 6.6l4 3.3"></path></svg>POLYCHORON<span style="opacity:.6">AI</span></span>
+    <span style="width:1px;height:18px;background:rgba(255,255,255,.22)"></span>
+    <div style="display:flex;gap:18px;font-size:13px;letter-spacing:.01em">
+      <a href="Command Dashboard.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Dashboard</a>
+      <a href="Alert Queue.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Queue</a>
+      <span style="padding-bottom:2px;border-bottom:2px solid var(--color-accent-400)">Cases</span>
+      <a href="Customer 360.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Customers</a>
+      <a href="Screening Hub.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Screening</a>
+      <a href="Typology Rules Console.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Typologies</a>
+      <a href="Filing Console.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Filings</a>
+      <a href="goAML Tracker.dc.html" style="opacity:.6;color:inherit;text-decoration:none">goAML tracker</a>
+      <a href="Model Governance.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Governance</a>
+      <a href="Reporting MI.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Reporting</a>
+    </div>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:14px;font-size:12px">
+      <span style="opacity:.7">Habib Metropolitan · Compliance Ops</span>
+      <span style="width:1px;height:18px;background:rgba(255,255,255,.22)"></span>
+      <span>R. Qureshi · Analyst L2</span>
+      <span style="width:26px;height:26px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.3);font-family:var(--font-heading);font-size:12px">RQ</span>
+    </div>
+  </div>
+
+  <div style="display:flex;align-items:stretch;flex:none;border-bottom:1px solid var(--color-divider);background:var(--color-neutral-100)">
+    <div style="padding:10px 18px;display:flex;flex-direction:column;gap:2px;min-width:290px;border-right:1px solid var(--color-divider)">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span style="font-family:var(--font-heading);font-size:19px;letter-spacing:.02em">ALT-2026-04417</span>
+        <span class="tag tag-outline" style="font-size:10px">UNDER REVIEW</span>
+      </div>
+      <div style="font-size:12px;color:var(--color-neutral-700)">Bilal Ahmed · A/C 0231-7788-4 · Jodia Bazar, Karachi</div>
+    </div>
+    <div style="padding:10px 18px;display:flex;flex-direction:column;gap:4px;min-width:230px;border-right:1px solid var(--color-divider)">
+      <div style="display:flex;justify-content:space-between;align-items:baseline">
+        <span style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-neutral-700)">Composite risk score</span>
+        <span style="font-family:var(--font-heading);font-size:17px">78<span style="font-size:11px;color:var(--color-neutral-600)">/100</span></span>
+      </div>
+      <div style="height:6px;background:var(--color-neutral-300);position:relative">
+        <div style="position:absolute;inset:0 22% 0 0;background:var(--color-accent-800)"></div>
+        <div style="position:absolute;left:65%;top:-3px;bottom:-3px;width:1px;background:var(--color-text)"></div>
+      </div>
+      <div style="font-size:10.5px;color:var(--color-neutral-600)">High band · escalation threshold 65</div>
+    </div>
+    <div style="padding:10px 18px;display:flex;gap:26px;border-right:1px solid var(--color-divider)">
+      <div>
+        <div style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-neutral-700)">Flagged</div>
+        <div style="font-size:13px">21 Aug 2026 · 15:52 PKT</div>
+      </div>
+      <div>
+        <div style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-neutral-700)">Assigned</div>
+        <div style="font-size:13px">22 Aug 2026 · R. Qureshi</div>
+      </div>
+      <div>
+        <div style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-neutral-700)">FMU filing window</div>
+        <div style="font-size:13px">3 d 04 h remaining</div>
+      </div>
+    </div>
+    <div style="margin-left:auto;padding:10px 18px;display:flex;align-items:center;gap:8px">
+      <button class="btn btn-secondary" style="font-size:12.5px;padding:5px 10px">Case file (14)</button>
+      <button class="btn btn-secondary" style="font-size:12.5px;padding:5px 10px">Reassign</button>
+      <button class="btn btn-secondary" style="font-size:12.5px;padding:5px 10px">Print pack</button>
+    </div>
+  </div>
+
+  <div style="flex:1;display:flex;min-height:0">
+
+    <!-- ══ LEFT: EVIDENCE ══ -->
+    <div style="flex:0 0 55%;display:flex;flex-direction:column;min-height:0;border-right:2px solid var(--color-neutral-400)">
+      <div style="flex:none;display:flex;align-items:center;gap:10px;padding:8px 18px;border-bottom:1px solid var(--color-divider);background:var(--color-bg)">
+        <h5 style="margin:0;letter-spacing:.1em;text-transform:uppercase;font-size:13px">Evidence</h5>
+        <span class="tag tag-accent" style="font-size:10px;letter-spacing:.08em">AI-ASSEMBLED · READ-ONLY</span>
+        <span style="margin-left:auto;font-size:11px;color:var(--color-neutral-600)">Compiled 24 Aug 2026 09:12 by Agent v2.4 · 14 sources · <span style="color:var(--color-accent-700)">provenance</span></span>
+      </div>
+      <div class="scrollcol" style="flex:1;padding:16px 18px 40px;display:flex;flex-direction:column;gap:18px">
+
+        <!-- customer strip -->
+        <div style="display:grid;grid-template-columns:repeat(6,1fr);border:1px solid var(--color-divider);background:var(--color-neutral-100)">
+          <div style="padding:8px 10px;border-right:1px solid var(--color-divider)">
+            <div style="font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-neutral-700)">KYC risk rating</div>
+            <div style="font-family:var(--font-heading);font-size:16px">HIGH</div>
+            <div style="font-size:10px;color:var(--color-neutral-600)">rescored 12 Jun 2026</div>
+          </div>
+          <div style="padding:8px 10px;border-right:1px solid var(--color-divider)">
+            <div style="font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-neutral-700)">Occupation</div>
+            <div style="font-size:13px;line-height:1.25">Wholesale textile trader</div>
+            <div style="font-size:10px;color:var(--color-neutral-600)">self-declared, 2023</div>
+          </div>
+          <div style="padding:8px 10px;border-right:1px solid var(--color-divider)">
+            <div style="font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-neutral-700)">Expected turnover</div>
+            <div style="font-size:13px;line-height:1.25">PKR 4.5 M / month</div>
+            <div style="font-size:10px;color:var(--color-neutral-600)">declared at onboarding</div>
+          </div>
+          <div style="padding:8px 10px;border-right:1px solid var(--color-divider)">
+            <div style="font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-neutral-700)">Observed 90-day avg</div>
+            <div style="font-size:13px;line-height:1.25">PKR 11.8 M / month</div>
+            <div style="font-size:10px;color:var(--color-accent-700)">2.6× declared</div>
+          </div>
+          <div style="padding:8px 10px;border-right:1px solid var(--color-divider)">
+            <div style="font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-neutral-700)">Account age</div>
+            <div style="font-size:13px;line-height:1.25">2 yr 7 mo</div>
+            <div style="font-size:10px;color:var(--color-neutral-600)">opened 19 Jan 2024</div>
+          </div>
+          <div style="padding:8px 10px">
+            <div style="font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-neutral-700)">Identity</div>
+            <div style="font-size:13px;line-height:1.25">CNIC 42101-•••••-7</div>
+            <div style="font-size:10px;color:var(--color-neutral-600)">PEP: no · resident</div>
+          </div>
+        </div>
+
+        <!-- timeline -->
+        <div class="blueprint" style="padding:12px 14px 14px">
+          <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+            <h6 style="margin:0">Transaction timeline</h6>
+            <span style="font-size:11px;color:var(--color-neutral-600)">daily cash + transfer aggregate, PKR millions</span>
+            <div class="seg" style="margin-left:auto">
+              <label class="seg-opt" style="font-size:11px;padding:3px 9px"><input type="radio" name="tlwin"><span>7 d</span></label>
+              <label class="seg-opt" style="font-size:11px;padding:3px 9px"><input type="radio" name="tlwin" checked><span>30 d</span></label>
+              <label class="seg-opt" style="font-size:11px;padding:3px 9px"><input type="radio" name="tlwin"><span>90 d</span></label>
+            </div>
+          </div>
+          <div style="position:relative;height:118px;display:flex;align-items:flex-end;gap:3px;border-bottom:1px solid var(--color-text);padding-bottom:0">
+            <div style="position:absolute;left:0;right:0;top:22px;border-top:1px dashed var(--color-accent-600)"></div>
+            <div style="position:absolute;left:0;top:4px;font-size:9.5px;color:var(--color-accent-700);letter-spacing:.04em;background:var(--color-bg);padding-right:6px">CTR THRESHOLD · PKR 2.0 M / TXN</div>
+            <div style="flex:1;height:7px;background:var(--color-neutral-400)"></div>
+            <div style="flex:1;height:12px;background:var(--color-neutral-400)"></div>
+            <div style="flex:1;height:5px;background:var(--color-neutral-400)"></div>
+            <div style="flex:1;height:18px;background:var(--color-neutral-400)"></div>
+            <div style="flex:1;height:9px;background:var(--color-neutral-400)"></div>
+            <div style="flex:1;height:3px;background:var(--color-neutral-400)"></div>
+            <div style="flex:1;height:14px;background:var(--color-neutral-400)"></div>
+            <div style="flex:1;height:21px;background:var(--color-neutral-400)"></div>
+            <div style="flex:1;height:8px;background:var(--color-neutral-400)"></div>
+            <div style="flex:1;height:11px;background:var(--color-neutral-400)"></div>
+            <div style="flex:1;height:6px;background:var(--color-neutral-400)"></div>
+            <div style="flex:1;height:16px;background:var(--color-neutral-400)"></div>
+            <div style="flex:1;height:24px;background:var(--color-neutral-400)"></div>
+            <div style="flex:1;height:10px;background:var(--color-neutral-400)"></div>
+            <div style="flex:1;height:4px;background:var(--color-neutral-400)"></div>
+            <div style="flex:1;height:13px;background:var(--color-neutral-400)"></div>
+            <div style="flex:1;height:19px;background:var(--color-neutral-400)"></div>
+            <div style="flex:1;height:7px;background:var(--color-neutral-400)"></div>
+            <div style="flex:1;height:15px;background:var(--color-neutral-400)"></div>
+            <div style="flex:1;height:9px;background:var(--color-neutral-400)"></div>
+            <div style="flex:1;height:22px;background:var(--color-neutral-400)"></div>
+            <div style="flex:1;height:12px;background:var(--color-neutral-400)"></div>
+            <div style="flex:1;height:5px;background:var(--color-neutral-400)"></div>
+            <div style="flex:1;height:17px;background:var(--color-neutral-400)"></div>
+            <div style="flex:1;height:8px;background:var(--color-neutral-400)"></div>
+            <div style="flex:1;height:26px;background:var(--color-neutral-400)"></div>
+            <div style="flex:1;height:11px;background:var(--color-neutral-400)"></div>
+            <div style="flex:1;height:96px;background:var(--color-accent-800);position:relative">
+              <span style="position:absolute;top:5px;right:calc(100% + 5px);white-space:nowrap;font-family:var(--font-heading);font-size:11px;color:var(--color-accent-800)">5.73 M</span>
+            </div>
+            <div style="flex:1;height:88px;background:var(--color-accent-500)"></div>
+            <div style="flex:1;height:10px;background:var(--color-neutral-400)"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--color-neutral-600);margin-top:5px">
+            <span>26 Jul</span><span>02 Aug</span><span>09 Aug</span><span>16 Aug</span><span style="color:var(--color-accent-800)">21 Aug — flagged cluster</span><span>24 Aug</span>
+          </div>
+
+          <div style="margin-top:14px;border:1px solid var(--color-divider);background:var(--color-neutral-100)">
+            <div style="display:flex;align-items:center;gap:8px;padding:7px 10px;border-bottom:1px solid var(--color-divider)">
+              <span style="font-family:var(--font-heading);font-size:14px;letter-spacing:.02em">Flagged cluster — 21 Aug 2026</span>
+              <span class="tag tag-neutral" style="font-size:10px">3 deposits · 6 h 33 m · 3 locations</span>
+              <span style="margin-left:auto;font-size:11px;color:var(--color-neutral-700)">aggregate PKR 5,730,000</span>
+            </div>
+            <table class="table" style="font-size:12.5px">
+              <thead>
+                <tr>
+                  <th style="padding:5px 10px">Time</th><th style="padding:5px 10px">Type</th>
+                  <th style="padding:5px 10px">Channel / location</th>
+                  <th style="padding:5px 10px;text-align:right">Amount (PKR)</th>
+                  <th style="padding:5px 10px;text-align:right">vs threshold</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td style="padding:5px 10px">09:14</td><td style="padding:5px 10px">Cash deposit</td><td style="padding:5px 10px">Teller — Jodia Bazar br.</td><td style="padding:5px 10px;text-align:right;font-variant-numeric:tabular-nums">1,940,000</td><td style="padding:5px 10px;text-align:right;color:var(--color-accent-700)">−3.0%</td></tr>
+                <tr><td style="padding:5px 10px">12:02</td><td style="padding:5px 10px">Cash deposit</td><td style="padding:5px 10px">CDM — Shahrah-e-Faisal</td><td style="padding:5px 10px;text-align:right;font-variant-numeric:tabular-nums">1,880,000</td><td style="padding:5px 10px;text-align:right;color:var(--color-accent-700)">−6.0%</td></tr>
+                <tr><td style="padding:5px 10px">15:47</td><td style="padding:5px 10px">Cash deposit</td><td style="padding:5px 10px">Teller — Saddar br.</td><td style="padding:5px 10px;text-align:right;font-variant-numeric:tabular-nums">1,910,000</td><td style="padding:5px 10px;text-align:right;color:var(--color-accent-700)">−4.5%</td></tr>
+                <tr style="background:color-mix(in srgb,var(--color-accent) 7%,transparent)"><td style="padding:5px 10px">22 Aug 10:20</td><td style="padding:5px 10px">Outward transfer</td><td style="padding:5px 10px">IBFT — Al-Barq Currency Exch.</td><td style="padding:5px 10px;text-align:right;font-variant-numeric:tabular-nums">5,600,000</td><td style="padding:5px 10px;text-align:right;color:var(--color-neutral-600)">n/a</td></tr>
+              </tbody>
+            </table>
+            <div style="padding:6px 10px;font-size:11px;color:var(--color-neutral-700);border-top:1px solid var(--color-divider)">Prior 24 months: highest single-day cash aggregate PKR 900,000 · no deposit above PKR 620,000</div>
+          </div>
+        </div>
+
+        <!-- entity graph -->
+        <div class="blueprint" style="padding:12px 14px 8px">
+          <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+            <h6 style="margin:0">Linked entities</h6>
+            <span style="font-size:11px;color:var(--color-neutral-600)">4 accounts · 1 shared signatory · 1 shared address</span>
+            <span style="margin-left:auto;font-size:11px;color:var(--color-accent-700)">expand to 2 hops</span>
+          </div>
+          <svg viewBox="0 0 700 300" style="width:100%;height:auto;font-family:var(--font-body)">
+            <g stroke="var(--color-neutral-500)" fill="none">
+              <line x1="330" y1="140" x2="160" y2="62"></line>
+              <line x1="370" y1="140" x2="545" y2="70"></line>
+              <line x1="330" y1="162" x2="160" y2="232"></line>
+              <line x1="370" y1="162" x2="545" y2="238" stroke="var(--color-accent-700)" stroke-width="2"></line>
+              <line x1="160" y1="90" x2="160" y2="205" stroke-dasharray="4 4"></line>
+              <line x1="590" y1="98" x2="590" y2="212" stroke-dasharray="4 4"></line>
+            </g>
+            <g font-size="9.5" fill="var(--color-neutral-700)" letter-spacing=".04em">
+              <text x="232" y="92">SHARED SIGNATORY</text>
+              <text x="452" y="98">11 INBOUND TXN · PKR 9.4 M</text>
+              <text x="222" y="215">SHARED ADDRESS</text>
+              <text x="440" y="212" fill="var(--color-accent-800)">OUTWARD PKR 5.6 M · 22 AUG</text>
+              <text x="168" y="152">same premises</text>
+              <text x="598" y="158">common director</text>
+            </g>
+
+            <g>
+              <rect x="270" y="118" width="160" height="64" fill="var(--color-accent-900)"></rect>
+              <text x="282" y="138" font-size="13" font-family="var(--font-heading)" font-weight="600" fill="#f2f2f3" letter-spacing=".03em">BILAL AHMED</text>
+              <text x="282" y="153" font-size="10" fill="#f2f2f3" opacity=".8">A/C 0231-7788-4 · individual</text>
+              <text x="282" y="169" font-size="10" fill="#f2f2f3" opacity=".8">SUBJECT OF ALERT · risk 78</text>
+            </g>
+
+            <g fill="none" stroke="var(--color-text)">
+              <rect x="40" y="26" width="176" height="64" fill="var(--color-bg)"></rect>
+              <rect x="40" y="205" width="176" height="64" fill="var(--color-bg)"></rect>
+              <rect x="500" y="34" width="180" height="64" fill="var(--color-bg)"></rect>
+              <rect x="500" y="212" width="180" height="64" fill="var(--color-bg)" stroke="var(--color-accent-800)" stroke-width="2"></rect>
+            </g>
+            <g font-size="11.5" font-family="var(--font-heading)" font-weight="600" fill="var(--color-text)">
+              <text x="52" y="47">SANA TEXTILES (PVT) LTD</text>
+              <text x="52" y="226">ZEESHAN AHMED</text>
+              <text x="512" y="55">FAISAL TRADERS</text>
+              <text x="512" y="233">AL-BARQ CURRENCY EXCH.</text>
+            </g>
+            <g font-size="10" fill="var(--color-neutral-700)">
+              <text x="52" y="63">A/C 0448-1120-9 · corporate</text>
+              <text x="52" y="80">signatory: B. Ahmed · KYC med</text>
+              <text x="52" y="242">A/C 0231-9043-1 · individual</text>
+              <text x="52" y="259">brother · KYC low · no alerts</text>
+              <text x="512" y="71">A/C 0771-3390-2 · corporate</text>
+              <text x="512" y="88">counterparty · KYC med</text>
+              <text x="512" y="249">A/C 0119-2245-8 · exchange co.</text>
+              <text x="512" y="266" fill="var(--color-accent-800)">2 open alerts on entity</text>
+            </g>
+            <g stroke="var(--color-neutral-500)" fill="var(--color-bg)">
+              <rect x="34" y="52" width="12" height="12"></rect>
+              <rect x="34" y="231" width="12" height="12"></rect>
+              <rect x="674" y="60" width="12" height="12"></rect>
+              <rect x="674" y="238" width="12" height="12" stroke="var(--color-accent-800)"></rect>
+            </g>
+          </svg>
+          <div style="display:flex;gap:16px;font-size:10px;color:var(--color-neutral-700);border-top:1px solid var(--color-divider);padding-top:6px;margin-top:2px">
+            <span>—— transactional link</span><span>- - - static attribute link</span><span style="color:var(--color-accent-800)">—— material to this alert</span>
+          </div>
+        </div>
+
+        <!-- prior alerts -->
+        <div style="border:1px solid var(--color-divider)">
+          <div onClick="{{ togglePrior }}" style="display:flex;align-items:center;gap:9px;padding:8px 12px;cursor:pointer;background:var(--color-neutral-100)" style-hover="background:var(--color-neutral-200)">
+            <span style="font-family:var(--font-heading);font-size:11px;width:9px">{{ priorGlyph }}</span>
+            <h6 style="margin:0">Prior alerts &amp; cases</h6>
+            <span class="tag tag-neutral" style="font-size:10px">1 closed · 0 open</span>
+            <span style="margin-left:auto;font-size:11px;color:var(--color-neutral-700)">lookback 36 months</span>
+          </div>
+          <sc-if value="{{ priorOpen }}" hint-placeholder-val="{{ true }}">
+            <div style="padding:10px 12px;display:flex;flex-direction:column;gap:8px">
+              <div style="display:flex;gap:14px;align-items:flex-start">
+                <div style="flex:none;width:132px">
+                  <div style="font-family:var(--font-heading);font-size:13px">ALT-2025-08812</div>
+                  <div style="font-size:11px;color:var(--color-neutral-600)">14 Nov 2025</div>
+                </div>
+                <div style="flex:1">
+                  <div style="font-size:12.5px">Typology: rapid movement of funds — cash in / transfer out within 48 h</div>
+                  <div style="font-size:11.5px;color:var(--color-neutral-700);margin-top:2px">Closed 21 Nov 2025 by S. Iqbal, Senior Compliance Officer. Rationale: deposits corroborated by three invoices and a bank-attested supplier ledger; volumes consistent with declared trade cycle.</div>
+                </div>
+                <div style="flex:none;display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+                  <span class="tag tag-outline" style="font-size:10px">CLEARED — NO SUSPICION</span>
+                  <span style="font-size:11px;color:var(--color-accent-700)">open case file</span>
+                </div>
+              </div>
+              <div style="font-size:11px;color:var(--color-neutral-700);border-top:1px dashed var(--color-divider);padding-top:6px">No STR/CTR previously filed on this customer. No regulator correspondence on record.</div>
+            </div>
+          </sc-if>
+        </div>
+
+        <!-- screening -->
+        <div style="border:1px solid var(--color-divider)">
+          <div style="display:flex;align-items:center;gap:9px;padding:8px 12px;border-bottom:1px solid var(--color-divider);background:var(--color-neutral-100)">
+            <h6 style="margin:0">Sanctions · PEP · adverse media</h6>
+            <span style="margin-left:auto;font-size:11px;color:var(--color-neutral-700)">screened 24 Aug 2026 09:12 · list vintage 23 Aug 2026</span>
+          </div>
+          <table class="table" style="font-size:12.5px">
+            <thead>
+              <tr><th style="padding:5px 12px">List</th><th style="padding:5px 12px">Result</th><th style="padding:5px 12px;text-align:right">Match confidence</th><th style="padding:5px 12px">Note</th></tr>
+            </thead>
+            <tbody>
+              <tr><td style="padding:5px 12px">UNSC consolidated · OFAC SDN · EU</td><td style="padding:5px 12px">No match</td><td style="padding:5px 12px;text-align:right;font-variant-numeric:tabular-nums">—</td><td style="padding:5px 12px;color:var(--color-neutral-700)">name + CNIC + DOB screened</td></tr>
+              <tr><td style="padding:5px 12px">MoI Schedule IV (ATA 1997)</td><td style="padding:5px 12px">No match</td><td style="padding:5px 12px;text-align:right;font-variant-numeric:tabular-nums">—</td><td style="padding:5px 12px;color:var(--color-neutral-700)">incl. linked entities</td></tr>
+              <tr><td style="padding:5px 12px">Domestic &amp; foreign PEP</td><td style="padding:5px 12px">No match</td><td style="padding:5px 12px;text-align:right;font-variant-numeric:tabular-nums">—</td><td style="padding:5px 12px;color:var(--color-neutral-700)">no close-associate hit</td></tr>
+              <tr style="background:color-mix(in srgb,var(--color-accent) 7%,transparent)"><td style="padding:5px 12px">Adverse media</td><td style="padding:5px 12px">1 partial match — needs review</td><td style="padding:5px 12px;text-align:right;font-variant-numeric:tabular-nums">62%</td><td style="padding:5px 12px;color:var(--color-neutral-700)">Namesake in 2024 customs report; different CNIC, Lahore-based</td></tr>
+              <tr><td style="padding:5px 12px">Internal watchlist / prior STR subjects</td><td style="padding:5px 12px">No match</td><td style="padding:5px 12px;text-align:right;font-variant-numeric:tabular-nums">—</td><td style="padding:5px 12px;color:var(--color-neutral-700)">Al-Barq Exch. flagged separately</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ══ RIGHT: REASONING + DECISION ══ -->
+    <div style="flex:1;display:flex;flex-direction:column;min-height:0;background:var(--color-neutral-100)">
+      <div style="flex:none;display:flex;align-items:center;gap:10px;padding:8px 18px;border-bottom:1px solid var(--color-divider);background:var(--color-bg)">
+        <h5 style="margin:0;letter-spacing:.1em;text-transform:uppercase;font-size:13px">Reasoning + decision</h5>
+        <span style="margin-left:auto;display:flex;align-items:center;gap:12px;font-size:10.5px;letter-spacing:.06em;color:var(--color-neutral-700)">
+          <span style="display:flex;align-items:center;gap:5px"><span class="ai-hatch" style="width:16px;height:11px;border:1px solid var(--color-accent-600)"></span>AI-DRAFTED</span>
+          <span style="display:flex;align-items:center;gap:5px"><span style="width:16px;height:11px;border:1px solid var(--color-text);background:var(--color-bg)"></span>OFFICER</span>
+        </span>
+      </div>
+      <div class="scrollcol" style="flex:1;padding:16px 18px 24px;display:flex;flex-direction:column;gap:16px">
+
+        <!-- typology -->
+        <div class="blueprint ai-hatch" style="padding:0;background-color:var(--color-accent-100)">
+          <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+          <div style="display:flex;align-items:center;gap:8px;padding:7px 12px;background:var(--color-accent-800)">
+            <span style="font-family:var(--font-heading);font-size:11px;letter-spacing:.12em;color:var(--color-bg)">AI-DRAFTED · NOT AN OFFICER FINDING</span>
+            <span style="margin-left:auto;font-size:10.5px;color:var(--color-bg);opacity:.8">Agent v2.4 · rule pack FMU-2026.2</span>
+          </div>
+          <div style="padding:12px 14px;display:flex;flex-direction:column;gap:10px">
+            <div>
+              <div style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-accent-800)">Matched typology</div>
+              <div style="font-family:var(--font-heading);font-size:22px;line-height:1.15;margin-top:2px">Structuring — sub-threshold cash deposits</div>
+              <div style="display:flex;gap:14px;margin-top:5px;font-size:11.5px;color:var(--color-neutral-800)">
+                <span>Model confidence <strong>0.86</strong></span>
+                <span>Pattern ref <strong>FMU-ST-04</strong></span>
+                <span>Precedent: 41 similar alerts, 29 filed as STR</span>
+              </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:4px;border-top:1px solid color-mix(in srgb,var(--color-accent) 35%,transparent);padding-top:9px">
+              <div style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-accent-800)">Red flags matched (4 of 6)</div>
+              <div style="display:flex;gap:8px;font-size:12.5px"><span style="color:var(--color-accent-800)">01</span><span>Three cash deposits each 3–6% below the PKR 2.0 M CTR threshold within 6 h 33 m</span></div>
+              <div style="display:flex;gap:8px;font-size:12.5px"><span style="color:var(--color-accent-800)">02</span><span>Deposits split across three separate locations, two outside the customer's home branch</span></div>
+              <div style="display:flex;gap:8px;font-size:12.5px"><span style="color:var(--color-accent-800)">03</span><span>Aggregate 6.4× the highest single-day cash aggregate of the prior 24 months</span></div>
+              <div style="display:flex;gap:8px;font-size:12.5px"><span style="color:var(--color-accent-800)">04</span><span>Onward transfer of 97.7% of the aggregate to a currency exchange within 19 hours</span></div>
+              <div style="display:flex;gap:8px;font-size:12.5px;opacity:.5"><span>05</span><span>Sanctions / Schedule IV nexus — not matched</span></div>
+              <div style="display:flex;gap:8px;font-size:12.5px;opacity:.5"><span>06</span><span>Third-party depositor at the counter — not observed (all deposits customer-presented)</span></div>
+            </div>
+            <div style="border-top:1px solid color-mix(in srgb,var(--color-accent) 35%,transparent);padding-top:9px">
+              <div style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-accent-800);margin-bottom:3px">Plain-language rationale</div>
+              <p style="margin:0;font-size:13px;line-height:1.5">The customer appears to have broken a single large cash amount into three smaller deposits, each kept just under the reporting threshold, and moved the money out almost immediately. This is the classic shape of threshold avoidance rather than ordinary trade receipts: a wholesale textile business collecting PKR 5.7 M in one day would normally deposit it at its own branch in one or two transactions, and the amounts would sit against invoices. Nothing in the file explains the split, the three locations, or the same-week transfer to a currency exchange with two open alerts of its own. The 2025 alert on this customer was cleared on documentary evidence, so the absence of that evidence here is itself significant.</p>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;border-top:1px solid color-mix(in srgb,var(--color-accent) 35%,transparent);padding-top:9px">
+              <span style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-accent-800)">Agent recommendation</span>
+              <span class="tag" style="background:var(--color-accent-800);color:var(--color-bg);font-size:11px;letter-spacing:.06em">FILE STR</span>
+              <span style="margin-left:auto;font-size:11px;color:var(--color-neutral-700)">Advisory only — the officer's disposition governs.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- narrative -->
+        <div class="ai-hatch" style="border:1px solid var(--color-accent-600);background-color:var(--color-accent-100)">
+          <div style="display:flex;align-items:center;gap:8px;padding:7px 12px;border-bottom:1px solid color-mix(in srgb,var(--color-accent) 45%,transparent)">
+            <span style="font-family:var(--font-heading);font-size:11px;letter-spacing:.12em;color:var(--color-accent-800)">AI-DRAFTED NARRATIVE · EDITABLE</span>
+            <span style="margin-left:auto;font-size:10.5px;color:var(--color-neutral-700)">{{ narrStatus }}</span>
+            <span onClick="{{ revertNarr }}" style="font-size:11px;color:var(--color-accent-700);cursor:pointer;text-decoration:underline;text-underline-offset:2px">revert to agent draft</span>
+          </div>
+          <textarea class="input" onInput="{{ onNarr }}" ref="{{ narrRef }}" defaultValue="On 21 August 2026, customer Bilal Ahmed (A/C 0231-7788-4, wholesale textile trader, Jodia Bazar branch, Karachi) made three cash deposits totalling PKR 5,730,000 at three separate locations within 6 hours 33 minutes. Each deposit — PKR 1,940,000 at 09:14, PKR 1,880,000 at 12:02 and PKR 1,910,000 at 15:47 — fell 3% to 6% below the PKR 2,000,000 currency transaction reporting threshold.
+
+On 22 August 2026 at 10:20, PKR 5,600,000 (97.7% of the aggregate) was transferred by IBFT to Al-Barq Currency Exchange (A/C 0119-2245-8), a counterparty with no declared commercial relationship to the customer's stated business and the subject of two open alerts.
+
+The pattern is inconsistent with the customer's declared monthly turnover of PKR 4,500,000 and with 24 months of prior account conduct, during which no single-day cash aggregate exceeded PKR 900,000. No invoices, supplier ledger or other commercial documentation supporting the deposits is on file. Sanctions, Schedule IV and PEP screening returned no match; one adverse-media partial match (62%) relates to a namesake with a different CNIC and is assessed as a false positive.
+
+The structuring, geographic spread and rapid onward movement of funds are consistent with deliberate avoidance of reporting thresholds." style="width:100%;min-height:236px;border:0;background:transparent;font-family:var(--font-body);font-size:13px;line-height:1.55;padding:11px 13px;resize:vertical"></textarea>
+          <div style="display:flex;align-items:center;gap:8px;padding:6px 12px;border-top:1px solid color-mix(in srgb,var(--color-accent) 45%,transparent);font-size:10.5px;color:var(--color-neutral-700)">
+            <span>Every officer edit is diffed against the agent draft and retained in the audit log.</span>
+            <span style="margin-left:auto">{{ narrChars }} characters</span>
+          </div>
+        </div>
+
+        <!-- officer note -->
+        <div style="border:1px solid var(--color-text);background:var(--color-bg)">
+          <div style="display:flex;align-items:center;gap:8px;padding:7px 12px;border-bottom:1px solid var(--color-divider)">
+            <span style="font-family:var(--font-heading);font-size:11px;letter-spacing:.12em">OFFICER NOTE · R. QURESHI</span>
+            <span class="tag tag-neutral" style="font-size:10px">NEVER MODIFIED BY THE AGENT</span>
+            <span style="margin-left:auto;font-size:10.5px;color:var(--color-neutral-700)">{{ noteStatus }}</span>
+          </div>
+          <textarea class="input" onInput="{{ onNote }}" placeholder="Your own assessment, enquiries made, documents requested from the branch, calls with the customer, and anything you disagree with in the agent's reading. This field is stored separately from the AI narrative and is what the senior officer reads first." style="width:100%;min-height:112px;border:0;background:transparent;font-family:var(--font-body);font-size:13px;line-height:1.55;padding:11px 13px;resize:vertical"></textarea>
+          <div style="display:flex;gap:8px;padding:6px 12px;border-top:1px solid var(--color-divider);font-size:10.5px;color:var(--color-neutral-700)">
+            <span>Attach: branch memo · customer call log · invoices</span>
+            <span style="margin-left:auto">{{ noteChars }} characters</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- disposition -->
+      <div style="flex:none;border-top:2px solid var(--color-neutral-400);background:var(--color-bg);padding:12px 18px 14px">
+        <div style="display:flex;align-items:center;gap:9px;margin-bottom:9px">
+          <h6 style="margin:0">Disposition</h6>
+          <span style="font-size:11px;color:var(--color-neutral-700)">One deliberate selection. Nothing is submitted until you confirm.</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px">
+          <div onClick="{{ pickClear }}" style="position:relative;border:1px solid var(--color-divider);padding:9px 10px;cursor:pointer;min-height:74px;background:var(--color-bg)" style-hover="border-color:var(--color-accent);background:var(--color-accent-100)">
+            <div style="font-family:var(--font-heading);font-size:14px;line-height:1.15">Clear</div>
+            <div style="font-size:10.5px;color:var(--color-neutral-700);margin-top:3px">No suspicion. Alert closed, no filing.</div>
+            <sc-if value="{{ selClear }}"><span style="position:absolute;inset:0;box-shadow:inset 0 0 0 2px var(--color-accent-800);background:color-mix(in srgb,var(--color-accent) 10%,transparent);pointer-events:none"></span></sc-if>
+          </div>
+          <div onClick="{{ pickMonitor }}" style="position:relative;border:1px solid var(--color-divider);padding:9px 10px;cursor:pointer;min-height:74px;background:var(--color-bg)" style-hover="border-color:var(--color-accent);background:var(--color-accent-100)">
+            <div style="font-family:var(--font-heading);font-size:14px;line-height:1.15">Enhanced monitoring</div>
+            <div style="font-size:10.5px;color:var(--color-neutral-700);margin-top:3px">90-day watch, lowered thresholds.</div>
+            <sc-if value="{{ selMonitor }}"><span style="position:absolute;inset:0;box-shadow:inset 0 0 0 2px var(--color-accent-800);background:color-mix(in srgb,var(--color-accent) 10%,transparent);pointer-events:none"></span></sc-if>
+          </div>
+          <div onClick="{{ pickEscalate }}" style="position:relative;border:1px solid var(--color-divider);padding:9px 10px;cursor:pointer;min-height:74px;background:var(--color-bg)" style-hover="border-color:var(--color-accent);background:var(--color-accent-100)">
+            <div style="font-family:var(--font-heading);font-size:14px;line-height:1.15">Escalate to senior officer</div>
+            <div style="font-size:10.5px;color:var(--color-neutral-700);margin-top:3px">Review by S. Iqbal before filing.</div>
+            <sc-if value="{{ selEscalate }}"><span style="position:absolute;inset:0;box-shadow:inset 0 0 0 2px var(--color-accent-800);background:color-mix(in srgb,var(--color-accent) 10%,transparent);pointer-events:none"></span></sc-if>
+          </div>
+          <div onClick="{{ pickStr }}" style="position:relative;border:1px solid var(--color-accent-800);padding:9px 10px;cursor:pointer;min-height:74px;background:var(--color-bg)" style-hover="background:var(--color-accent-100)">
+            <div style="display:flex;align-items:center;gap:6px">
+              <div style="font-family:var(--font-heading);font-size:14px;line-height:1.15">File STR</div>
+              <span class="tag" style="background:var(--color-accent-800);color:var(--color-bg);font-size:9px;letter-spacing:.06em;padding:2px 6px">AGENT REC.</span>
+            </div>
+            <div style="font-size:10.5px;color:var(--color-neutral-700);margin-top:3px">Suspicious Transaction Report to FMU.</div>
+            <sc-if value="{{ selStr }}"><span style="position:absolute;inset:0;box-shadow:inset 0 0 0 2px var(--color-accent-800);background:color-mix(in srgb,var(--color-accent) 10%,transparent);pointer-events:none"></span></sc-if>
+          </div>
+          <div onClick="{{ pickCtr }}" style="position:relative;border:1px solid var(--color-divider);padding:9px 10px;cursor:pointer;min-height:74px;background:var(--color-bg)" style-hover="border-color:var(--color-accent);background:var(--color-accent-100)">
+            <div style="font-family:var(--font-heading);font-size:14px;line-height:1.15">File CTR</div>
+            <div style="font-size:10.5px;color:var(--color-neutral-700);margin-top:3px">Currency report only, no suspicion stated.</div>
+            <sc-if value="{{ selCtr }}"><span style="position:absolute;inset:0;box-shadow:inset 0 0 0 2px var(--color-accent-800);background:color-mix(in srgb,var(--color-accent) 10%,transparent);pointer-events:none"></span></sc-if>
+          </div>
+        </div>
+
+        <sc-if value="{{ showOverride }}">
+          <div style="margin-top:10px;border:1px solid var(--color-text);background:var(--color-bg);padding:10px 12px">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+              <span style="font-family:var(--font-heading);font-size:11px;letter-spacing:.12em">REASON FOR OVERRIDE · REQUIRED</span>
+              <span style="font-size:11px;color:var(--color-neutral-700)">{{ overrideLine }}</span>
+              <span style="margin-left:auto;font-size:10.5px;color:var(--color-neutral-700)">{{ overrideCount }}</span>
+            </div>
+            <textarea class="input" onInput="{{ onOverride }}" placeholder="State why the agent's reading is not adopted — e.g. documentation obtained from the branch that the agent did not have, a misread counterparty relationship, or a policy ground. Minimum 40 characters; retained in the audit log and visible to the regulator on request." style="width:100%;min-height:64px;font-size:13px;line-height:1.5;background:var(--color-neutral-100)"></textarea>
+          </div>
+        </sc-if>
+
+        <div style="display:flex;align-items:center;gap:12px;margin-top:11px">
+          <span style="font-size:11px;color:var(--color-neutral-700);max-width:430px;line-height:1.4">{{ auditLine }}</span>
+          <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+            <button class="btn btn-secondary" style="font-size:13px">Save draft</button>
+            <button class="btn btn-secondary" style="font-size:13px">Request more information</button>
+            <button class="btn btn-primary" disabled="{{ confirmDisabled }}" onClick="{{ confirm }}" style="font-size:13px;padding:7px 16px">{{ confirmLabel }}</button>
+          </div>
+        </div>
+        <sc-if value="{{ confirmed }}">
+          <div style="margin-top:10px;border:1px solid var(--color-accent-800);background:var(--color-accent-100);padding:8px 12px;font-size:12px">{{ confirmedMsg }}</div>
+        </sc-if>
+      </div>
+    </div>
+  </div>
+</div></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;agentRecommendation&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;clear&quot;,&quot;monitor&quot;,&quot;escalate&quot;,&quot;str&quot;,&quot;ctr&quot;],&quot;default&quot;:&quot;str&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Agent&quot;},&quot;requireOverrideReason&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Policy&quot;}}">
+const LABELS = {
+  clear: "Clear — no suspicion",
+  monitor: "Enhanced monitoring",
+  escalate: "Escalate to senior officer",
+  str: "File STR",
+  ctr: "File CTR"
+};
+const MIN_OVERRIDE = 40;
+
+class Component extends DCLogic {
+  state = { disp: null, override: "", priorOpen: true, narrChars: 1687, narrEdited: false, noteChars: 0, confirmed: false };
+
+  pick(id) {
+    this.setState({ disp: id, confirmed: false, override: id === this.rec() ? "" : this.state.override });
+  }
+  rec() { return this.props.agentRecommendation ?? "str"; }
+
+  renderVals() {
+    const s = this.state, rec = this.rec();
+    const mismatch = !!s.disp && s.disp !== rec;
+    const needOverride = mismatch && (this.props.requireOverrideReason ?? true);
+    const short = s.override.trim().length < MIN_OVERRIDE;
+    const disabled = !s.disp || (needOverride && short);
+    return {
+      priorOpen: s.priorOpen,
+      priorGlyph: s.priorOpen ? "–" : "+",
+      togglePrior: () => this.setState({ priorOpen: !s.priorOpen }),
+
+      narrChars: s.narrChars,
+      narrStatus: s.narrEdited ? "edited by officer · agent draft retained" : "unedited agent draft",
+      onNarr: e => this.setState({ narrChars: e.target.value.length, narrEdited: true }),
+      narrRef: el => { this.narrEl = el; },
+      revertNarr: () => { if (this.narrEl) { this.narrEl.value = this.narrEl.defaultValue; this.setState({ narrChars: this.narrEl.defaultValue.length, narrEdited: false }); } },
+
+      noteChars: s.noteChars,
+      noteStatus: s.noteChars ? "draft saved 09:41" : "empty",
+      onNote: e => this.setState({ noteChars: e.target.value.length }),
+
+      selClear: s.disp === "clear", selMonitor: s.disp === "monitor", selEscalate: s.disp === "escalate",
+      selStr: s.disp === "str", selCtr: s.disp === "ctr",
+      pickClear: () => this.pick("clear"), pickMonitor: () => this.pick("monitor"),
+      pickEscalate: () => this.pick("escalate"), pickStr: () => this.pick("str"), pickCtr: () => this.pick("ctr"),
+
+      showOverride: needOverride,
+      overrideLine: needOverride ? "Your choice (" + LABELS[s.disp] + ") differs from the agent recommendation (" + LABELS[rec] + ")." : "",
+      overrideCount: short ? (MIN_OVERRIDE - s.override.trim().length) + " more characters required" : "requirement met",
+      onOverride: e => this.setState({ override: e.target.value, confirmed: false }),
+
+      confirmDisabled: disabled,
+      confirmLabel: s.disp ? "Confirm — " + LABELS[s.disp] : "Confirm disposition",
+      confirm: () => { if (!disabled) this.setState({ confirmed: true }); },
+      confirmed: s.confirmed,
+      confirmedMsg: s.disp
+        ? "Disposition recorded: " + LABELS[s.disp] + " · R. Qureshi, Analyst L2 · 24 Aug 2026 09:47 PKT · alert ALT-2026-04417"
+          + (mismatch ? " · agent recommendation (" + LABELS[rec] + ") overridden, reason logged." : " · concurs with agent recommendation.")
+        : "",
+      auditLine: s.disp
+        ? (mismatch
+          ? "Override of an agent recommendation is logged with your reason and surfaced in the monthly model-performance review."
+          : "Confirming files the disposition, freezes the evidence pack and writes an immutable audit entry.")
+        : "Select a disposition. Nothing on this screen auto-advances; the agent cannot dispose of an alert."
+    };
+  }
+}
+</script>
+</body>
+</html>

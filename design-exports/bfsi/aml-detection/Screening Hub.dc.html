@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/industry-92a524b8-8757-4847-a147-3c04a6398262/styles.css">
+<script src="_ds/industry-92a524b8-8757-4847-a147-3c04a6398262/_ds_bundle.js"></script>
+<link rel="stylesheet" href="brand.css">
+<style>
+body{margin:0;background:var(--color-bg)}
+.scrollcol{overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--color-neutral-400) transparent}
+.hrow{display:grid;grid-template-columns:112px 254px 176px 214px 104px 1fr;align-items:stretch;border-bottom:1px solid color-mix(in srgb,var(--color-text) 10%,transparent);cursor:pointer;position:relative}
+.hrow:hover{background:color-mix(in srgb,var(--color-accent) 6%,transparent)}
+.hcell{padding:10px 11px;min-width:0;display:flex;flex-direction:column;justify-content:center}
+.hhd{padding:7px 11px;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--color-neutral-700)}
+.tlab{font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-neutral-700)}
+.act{display:grid;place-items:center;height:100%;padding:0 10px;font-family:var(--font-heading);font-size:12px;letter-spacing:.06em;text-align:center;cursor:pointer;line-height:1.2}
+</style>
+</helmet>
+<div style="height:100vh;min-height:900px;overflow-x:auto;overflow-y:hidden"><div style="height:100%;min-width:1360px;display:flex;flex-direction:column;font-family:var(--font-body);color:var(--color-text);background:var(--color-bg);overflow:hidden">
+
+  <div style="display:flex;align-items:center;gap:24px;padding:0 18px;height:44px;flex:none;background:var(--color-accent-900);color:var(--color-bg)">
+    <span style="display:flex;align-items:center;gap:9px;font-family:var(--font-heading);font-weight:600;font-size:17px;letter-spacing:0.06em"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.2" style="flex:none"><path d="M12 1.6 20.6 6.6v10.8L12 22.4 3.4 17.4V6.6z"></path><path d="M12 7.2 16.6 9.9v5.4L12 18l-4.6-2.7V9.9z"></path><path d="M12 1.6v5.6M20.6 6.6l-4 3.3M20.6 17.4l-4-2.1M12 22.4V18M3.4 17.4l4-2.1M3.4 6.6l4 3.3"></path></svg>POLYCHORON<span style="opacity:.6">AI</span></span>
+    <span style="width:1px;height:18px;background:rgba(255,255,255,.22)"></span>
+    <div style="display:flex;gap:18px;font-size:13px;letter-spacing:.01em">
+      <a href="Command Dashboard.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Dashboard</a>
+      <a href="Alert Queue.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Queue</a>
+      <a href="Case Workspace.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Cases</a>
+      <a href="Customer 360.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Customers</a>
+      <span style="padding-bottom:2px;border-bottom:2px solid var(--color-accent-400)">Screening</span>
+      <a href="Typology Rules Console.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Typologies</a>
+      <a href="Filing Console.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Filings</a>
+      <a href="goAML Tracker.dc.html" style="opacity:.6;color:inherit;text-decoration:none">goAML tracker</a>
+      <a href="Model Governance.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Governance</a>
+      <a href="Reporting MI.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Reporting</a>
+    </div>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:14px;font-size:12px">
+      <span style="opacity:.7">Habib Metropolitan · Screening desk</span>
+      <span style="width:1px;height:18px;background:rgba(255,255,255,.22)"></span>
+      <span>N. Baig · Screening Analyst</span>
+      <span style="width:26px;height:26px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.3);font-family:var(--font-heading);font-size:12px">NB</span>
+    </div>
+  </div>
+
+  <!-- summary strip -->
+  <div style="display:flex;align-items:stretch;flex:none;border-bottom:1px solid var(--color-divider);background:var(--color-neutral-100)">
+    <div style="padding:9px 18px;border-right:2px solid var(--color-alert);background:color-mix(in srgb,var(--color-alert) 8%,transparent);min-width:240px">
+      <div class="tlab" style="color:var(--color-alert)">Transactions held pending decision</div>
+      <div style="display:flex;align-items:baseline;gap:9px">
+        <span style="font-family:var(--font-heading);font-size:30px;line-height:1.05;color:var(--color-alert)">4</span>
+        <span style="font-size:11.5px;color:var(--color-alert);line-height:1.35">PKR 68.4 M value on hold<br>oldest held 00:18:42</span>
+      </div>
+    </div>
+    <div style="padding:9px 18px;border-right:1px solid var(--color-divider);display:flex;gap:24px">
+      <div>
+        <div class="tlab">Open hits</div>
+        <div style="font-family:var(--font-heading);font-size:20px;line-height:1.1">5</div>
+        <div style="font-size:10.5px;color:var(--color-neutral-700)">2 sanctions · 3 PEP/fuzzy</div>
+      </div>
+      <div>
+        <div class="tlab">Avg. resolution today</div>
+        <div style="font-family:var(--font-heading);font-size:20px;line-height:1.1">6 m 12 s</div>
+        <div style="font-size:10.5px;color:var(--color-neutral-700)">target under 15 m · 34 cleared</div>
+      </div>
+      <div>
+        <div class="tlab">True matches — August</div>
+        <div style="font-family:var(--font-heading);font-size:20px;line-height:1.1">3</div>
+        <div style="font-size:10.5px;color:var(--color-neutral-700)">of 1,946 hits screened</div>
+      </div>
+      <div>
+        <div class="tlab">Escalated, awaiting officer</div>
+        <div style="font-family:var(--font-heading);font-size:20px;line-height:1.1">1</div>
+        <div style="font-size:10.5px;color:var(--color-neutral-700)">S. Iqbal, MLRO</div>
+      </div>
+    </div>
+    <div style="padding:9px 18px;display:flex;flex-direction:column;justify-content:center;gap:1px">
+      <div class="tlab">List vintage</div>
+      <div style="font-size:12px">UNSC consolidated 23 Aug 2026 · MoI Schedule IV 21 Aug 2026 · PEP database 24 Aug 2026 · all current</div>
+    </div>
+    <div style="margin-left:auto;padding:9px 18px;display:flex;align-items:center;gap:8px">
+      <button class="btn btn-secondary" style="font-size:12.5px;padding:5px 10px">Rescreen customer</button>
+      <button class="btn btn-secondary" style="font-size:12.5px;padding:5px 10px">Decision log</button>
+    </div>
+  </div>
+
+  <!-- filter strip -->
+  <div style="flex:none;padding:7px 18px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--color-divider);background:var(--color-bg)">
+    <span class="tlab" style="margin-right:2px">Show</span>
+    <div class="seg">
+      <label class="seg-opt" style="font-size:12px;padding:4px 10px"><input type="radio" name="qf" checked><span>Open queue</span></label>
+      <label class="seg-opt" style="font-size:12px;padding:4px 10px"><input type="radio" name="qf"><span>Held only</span></label>
+      <label class="seg-opt" style="font-size:12px;padding:4px 10px"><input type="radio" name="qf"><span>Resolved today</span></label>
+    </div>
+    <div style="display:flex;align-items:center;gap:6px;border:1px solid var(--color-divider);padding:4px 9px;font-size:12.5px;cursor:pointer;background:var(--color-neutral-100)" style-hover="border-color:var(--color-accent)">Watchlist <span style="color:var(--color-neutral-600)">all</span> <span style="color:var(--color-neutral-600);font-size:10px">▾</span></div>
+    <div style="display:flex;align-items:center;gap:6px;border:1px solid var(--color-divider);padding:4px 9px;font-size:12.5px;cursor:pointer;background:var(--color-neutral-100)" style-hover="border-color:var(--color-accent)">Channel <span style="color:var(--color-neutral-600)">all</span> <span style="color:var(--color-neutral-600);font-size:10px">▾</span></div>
+    <span style="font-size:11.5px;color:var(--color-neutral-700);margin-left:6px">Sorted by hold age, oldest first · new hits append to the end and never reorder the row you are working on</span>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+      <span style="font-size:11.5px;color:var(--color-neutral-700)">{{ liveLine }}</span>
+      <input class="input" placeholder="Name, account or reference" style="width:250px;font-size:12.5px;min-height:31px;background:var(--color-neutral-100)">
+    </div>
+  </div>
+
+  <!-- queue -->
+  <div style="flex:none;display:flex;flex-direction:column;max-height:52%;min-height:0">
+    <div class="hrow" style="cursor:default;background:var(--color-bg);border-bottom:1px solid var(--color-text)">
+      <div class="hhd">Severity</div>
+      <div class="hhd">Matched name · list</div>
+      <div class="hhd">Confidence · why</div>
+      <div class="hhd">Transaction</div>
+      <div class="hhd">Held for</div>
+      <div class="hhd" style="text-align:center">Decision — each action is a single deliberate click</div>
+    </div>
+    <div class="scrollcol" style="flex:1">
+      <sc-for list="{{ rows }}" as="r" hint-placeholder-count="6">
+        <div class="hrow" onClick="{{ r.select }}" style="background:{{ r.rowBg }};opacity:{{ r.rowOpacity }}">
+          <div class="hcell" style="border-left:4px solid {{ r.sevColor }}">
+            <span style="display:inline-grid;place-items:center;height:22px;padding:0 8px;font-family:var(--font-heading);font-size:11px;letter-spacing:.08em;border:1px solid {{ r.sevColor }};background:{{ r.sevBg }};color:{{ r.sevColor }}">{{ r.sevLabel }}</span>
+            <span style="font-size:10.5px;color:var(--color-neutral-700);margin-top:3px">{{ r.ref }}</span>
+          </div>
+          <div class="hcell">
+            <div style="font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.name }}</div>
+            <div style="font-size:11.5px;color:var(--color-neutral-700)">{{ r.list }}</div>
+            <div style="font-size:10.5px;color:var(--color-neutral-600)">{{ r.customerRef }}</div>
+          </div>
+          <div class="hcell">
+            <div style="display:flex;align-items:center;gap:7px">
+              <span style="font-family:var(--font-heading);font-size:19px;color:{{ r.sevColor }}">{{ r.conf }}</span>
+              <span style="width:40px;height:8px;background:var(--color-neutral-300);flex:none"><span style="display:block;height:8px;width:{{ r.confBar }};background:{{ r.sevColor }}"></span></span>
+            </div>
+            <div style="font-size:11px;color:var(--color-neutral-700);line-height:1.35">{{ r.why }}</div>
+          </div>
+          <div class="hcell">
+            <div style="font-size:13px;font-variant-numeric:tabular-nums">{{ r.amount }}</div>
+            <div style="font-size:11px;color:var(--color-neutral-700)">{{ r.channel }} · {{ r.time }}</div>
+            <div style="display:flex;align-items:center;gap:5px;margin-top:3px">
+              <span style="width:7px;height:7px;background:{{ r.holdColor }}"></span>
+              <span style="font-size:10.5px;color:{{ r.holdColor }};letter-spacing:.06em">{{ r.holdLabel }}</span>
+            </div>
+          </div>
+          <div class="hcell">
+            <div style="font-size:15px;font-variant-numeric:tabular-nums;color:{{ r.ageColor }}">{{ r.age }}</div>
+            <div style="font-size:10.5px;color:var(--color-neutral-600)">{{ r.ageNote }}</div>
+          </div>
+          <div class="hcell" style="padding:6px 11px">
+            <sc-if value="{{ r.open }}">
+              <div style="display:grid;grid-template-columns:1.15fr 1.15fr 1fr;gap:8px;height:52px">
+                <div onClick="{{ r.freeze }}" class="act" style="border:2px solid var(--color-alert);background:color-mix(in srgb,var(--color-alert) 10%,transparent);color:var(--color-alert)" style-hover="background:var(--color-alert);color:#fff">TRUE MATCH<br><span style="font-size:10px;letter-spacing:.04em;font-family:var(--font-body)">freeze &amp; hold funds</span></div>
+                <div onClick="{{ r.release }}" class="act" style="border:1px solid var(--color-neutral-500);background:var(--color-bg);color:var(--color-neutral-800);border-left:6px double var(--color-neutral-500)" style-hover="border-color:var(--color-text);background:var(--color-neutral-100)">FALSE MATCH<br><span style="font-size:10px;letter-spacing:.04em;font-family:var(--font-body)">release transaction</span></div>
+                <div onClick="{{ r.escalate }}" class="act" style="border:1px dashed var(--color-accent-700);background:var(--color-accent-100);color:var(--color-accent-800)" style-hover="background:var(--color-accent-100)">ESCALATE<br><span style="font-size:10px;letter-spacing:.04em;font-family:var(--font-body)">senior officer</span></div>
+              </div>
+            </sc-if>
+            <sc-if value="{{ r.decided }}">
+              <div style="display:flex;align-items:center;gap:10px;height:52px">
+                <span style="display:inline-grid;place-items:center;height:24px;padding:0 10px;font-family:var(--font-heading);font-size:11.5px;letter-spacing:.08em;border:1px solid {{ r.decidedColor }};background:{{ r.decidedBg }};color:{{ r.decidedColor }}">{{ r.decidedLabel }}</span>
+                <span style="font-size:11.5px;color:var(--color-neutral-700);line-height:1.4">{{ r.decidedNote }}</span>
+              </div>
+            </sc-if>
+          </div>
+          <sc-if value="{{ r.selected }}">
+            <span style="position:absolute;inset:0;box-shadow:inset 0 0 0 2px var(--color-accent-800);pointer-events:none"></span>
+          </sc-if>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <!-- detail -->
+  <div class="scrollcol" style="flex:1;border-top:2px solid var(--color-neutral-400);background:var(--color-neutral-100);min-height:0">
+    <div style="padding:13px 18px 22px;display:flex;flex-direction:column;gap:13px">
+      <div style="display:flex;align-items:baseline;gap:10px">
+        <h5 style="margin:0;letter-spacing:.1em;text-transform:uppercase;font-size:13px">Match review</h5>
+        <span style="font-size:12px;color:var(--color-neutral-700)">{{ dHead }}</span>
+        <span style="margin-left:auto;display:flex;gap:8px">
+          <a class="btn btn-secondary" href="Case Workspace.dc.html" style="font-size:12.5px;padding:4px 10px">Customer case history ↗</a>
+          <button class="btn btn-secondary" style="font-size:12.5px;padding:4px 10px">List entry source</button>
+        </span>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:13px;align-items:start">
+
+        <!-- side by side -->
+        <div class="blueprint" style="padding:0;background:var(--color-bg)">
+          <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+          <div style="display:flex;align-items:center;gap:9px;padding:8px 13px;border-bottom:1px solid var(--color-divider)">
+            <h6 style="margin:0">Customer vs. watchlist entry</h6>
+            <span style="font-size:11px;color:var(--color-neutral-700)">{{ dMatchSummary }}</span>
+            <span style="margin-left:auto;display:flex;align-items:center;gap:6px;font-size:10.5px;color:var(--color-neutral-700)">
+              <span style="width:14px;height:11px;background:color-mix(in srgb,var(--color-alert) 12%,transparent);border:1px solid var(--color-alert)"></span>field matched
+            </span>
+          </div>
+          <div style="display:grid;grid-template-columns:150px 1fr 1fr;gap:1px;background:var(--color-divider)">
+            <div style="background:var(--color-neutral-100);padding:7px 11px" class="tlab">Field</div>
+            <div style="background:var(--color-neutral-100);padding:7px 11px" class="tlab">Customer record</div>
+            <div style="background:var(--color-neutral-100);padding:7px 11px" class="tlab">{{ dListName }}</div>
+            <sc-for list="{{ dFields }}" as="f" hint-placeholder-count="7">
+              <div style="background:var(--color-bg);padding:7px 11px;font-size:12px;color:var(--color-neutral-700)">{{ f.label }}</div>
+              <div style="background:{{ f.bg }};padding:7px 11px;font-size:13px">{{ f.cust }}</div>
+              <div style="background:{{ f.bg }};padding:7px 11px;font-size:13px">
+                {{ f.list }}
+                <span style="font-size:10.5px;color:{{ f.noteColor }};display:block">{{ f.note }}</span>
+              </div>
+            </sc-for>
+          </div>
+          <div style="padding:9px 13px;border-top:1px solid var(--color-divider);font-size:12px;line-height:1.5;color:var(--color-neutral-800)">{{ dAssessment }}</div>
+        </div>
+
+        <!-- history + escalation -->
+        <div style="display:flex;flex-direction:column;gap:13px">
+          <div class="blueprint" style="padding:0;background:var(--color-bg)">
+            <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+            <div style="display:flex;align-items:center;gap:9px;padding:8px 13px;border-bottom:1px solid var(--color-divider)">
+              <h6 style="margin:0">Prior screening history</h6>
+              <span class="tag tag-neutral" style="font-size:10px">{{ dHistCount }}</span>
+            </div>
+            <sc-for list="{{ dHistory }}" as="h" hint-placeholder-count="2">
+              <div style="display:flex;gap:11px;padding:9px 13px;border-bottom:1px solid color-mix(in srgb,var(--color-text) 8%,transparent)">
+                <div style="flex:none;width:70px">
+                  <div style="font-size:11.5px;font-variant-numeric:tabular-nums">{{ h.date }}</div>
+                  <div style="font-size:10.5px;color:var(--color-neutral-600)">{{ h.list }}</div>
+                </div>
+                <div style="min-width:0;flex:1">
+                  <div style="font-size:12.5px;line-height:1.4">{{ h.outcome }}</div>
+                  <div style="font-size:10.5px;color:var(--color-neutral-600);margin-top:1px">{{ h.who }}</div>
+                </div>
+              </div>
+            </sc-for>
+            <div style="padding:8px 13px;font-size:11px;color:var(--color-neutral-700);line-height:1.45">{{ dHistNote }}</div>
+          </div>
+
+          <div class="blueprint" style="padding:0;background:{{ escBg }};border:1px solid {{ escBorder }}">
+            <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+            <div style="display:flex;align-items:center;gap:9px;padding:8px 13px;border-bottom:1px solid {{ escBorder }}">
+              <h6 style="margin:0;color:{{ escInk }}">Escalation note</h6>
+              <span style="margin-left:auto;font-size:11px;color:{{ escInk }}">{{ escStatus }}</span>
+            </div>
+            <textarea class="input" onInput="{{ onNote }}" placeholder="What you could not resolve at the desk — which field you could not corroborate, what document you would need, and whether the transaction should stay held meanwhile." style="width:100%;min-height:92px;border:0;background:transparent;font-family:var(--font-body);font-size:13px;line-height:1.55;padding:10px 13px;resize:vertical"></textarea>
+            <div style="display:flex;align-items:center;gap:9px;padding:8px 13px;border-top:1px solid {{ escBorder }}">
+              <select class="input" style="font-size:12.5px;min-height:30px;max-width:230px"><option>S. Iqbal — MLRO</option><option>A. Raza — Senior Compliance Officer</option><option>Sanctions committee (24 h)</option></select>
+              <button class="btn btn-primary" disabled="{{ assignDisabled }}" onClick="{{ assign }}" style="font-size:12.5px;padding:6px 12px;margin-left:auto">Assign &amp; keep held</button>
+            </div>
+            <div style="padding:0 13px 9px;font-size:11px;color:{{ escInk }};line-height:1.45">{{ escHint }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <sc-if value="{{ confirmOpen }}">
+    <div class="dialog-backdrop" style="z-index:20">
+      <div class="dialog blueprint" style="width:min(540px,100%);background:var(--color-bg);border:2px solid {{ cBorder }}">
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+        <div class="dialog-title">{{ cTitle }}</div>
+        <div class="dialog-body" style="font-size:13px">
+          <p style="margin:0 0 8px">{{ cBody }}</p>
+          <div style="border:1px solid var(--color-divider);background:var(--color-neutral-100);padding:9px 11px;font-size:12.5px;line-height:1.6;white-space:pre-line">{{ cDetail }}</div>
+          <p style="margin:8px 0 0;font-size:12px;color:var(--color-neutral-700)">{{ cFoot }}</p>
+          <sc-if value="{{ cNeedsReason }}">
+            <div style="margin-top:10px;border:1px solid var(--color-text);padding:8px 10px">
+              <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:5px">
+                <span style="font-family:var(--font-heading);font-size:11px;letter-spacing:.12em">REASON FOR RELEASE · REQUIRED</span>
+                <span style="margin-left:auto;font-size:10.5px;color:var(--color-neutral-700)">{{ cReasonCount }}</span>
+              </div>
+              <textarea class="input" onInput="{{ onReason }}" placeholder="Which identifier distinguishes your customer from the listed person — e.g. CNIC district, date of birth, nationality. Minimum 25 characters." style="width:100%;min-height:56px;font-size:12.5px;line-height:1.5;background:var(--color-neutral-100)"></textarea>
+            </div>
+          </sc-if>
+        </div>
+        <div class="dialog-actions">
+          <button class="btn btn-secondary" onClick="{{ closeConfirm }}" style="font-size:13px">Cancel</button>
+          <button class="btn btn-primary" disabled="{{ cDisabled }}" onClick="{{ doConfirm }}" style="font-size:13px">{{ cAction }}</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ toast }}">
+    <div style="position:fixed;right:18px;bottom:16px;z-index:15;display:flex;align-items:flex-start;gap:12px;max-width:520px;border:1px solid var(--color-accent-800);background:var(--color-accent-100);padding:9px 12px;font-size:12.5px;box-shadow:var(--shadow-md)">
+      <span>{{ toastMsg }}</span>
+      <span onClick="{{ dismissToast }}" style="flex:none;cursor:pointer;color:var(--color-accent-800);font-size:12px">✕</span>
+    </div>
+  </sc-if>
+</div></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;requireReleaseReason&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Policy&quot;}}">
+const RED = "var(--color-alert)", AMBER = "var(--color-accent-700)", AMBER_DK = "var(--color-accent-800)", GREEN = "var(--color-accent-700)";
+
+const HITS = [
+  {
+    id: "H1", sev: "sanctions", ref: "SCR-88401", name: "Abdul Rehman Baloch",
+    list: "UNSC consolidated list · QDi.402", customerRef: "Bilal Traders · A/C 0664-2210-3 · originator",
+    conf: 96, why: "Exact name, DOB and city; CNIC not on the list entry",
+    amount: "PKR 41,200,000", channel: "RTGS outward", time: "09:41:12", age: "00:18:42", held: true,
+    listName: "UNSC QDi.402",
+    fields: [
+      { label: "Full name", cust: "Abdul Rehman Baloch", list: "Abdul Rehman Baloch", match: true, note: "exact" },
+      { label: "Date of birth", cust: "07 Mar 1974", list: "07 Mar 1974", match: true, note: "exact" },
+      { label: "Place of birth", cust: "Quetta, Balochistan", list: "Quetta, Pakistan", match: true, note: "consistent" },
+      { label: "Nationality", cust: "Pakistan", list: "Pakistan", match: true, note: "exact" },
+      { label: "CNIC / passport", cust: "54400-2219847-3", list: "not recorded on entry", match: false, note: "cannot corroborate or exclude" },
+      { label: "Known aliases", cust: "none recorded", list: "Abdur Rahman Baloch; A. R. Baloch", match: false, note: "customer file has no alias data" },
+      { label: "Listing basis", cust: "—", list: "Assets freeze, travel ban — listed 2019", match: false, note: "" }
+    ],
+    assessment: "Four identity fields match exactly, including date and place of birth, and nothing in the customer file excludes the match. Under the bank's policy a match at this confidence with no exculpatory identifier is treated as a true match unless the analyst can positively distinguish the two people — a missing CNIC on the list entry is not a distinguishing fact.",
+    history: [
+      { date: "12 Mar 26", list: "UNSC", outcome: "Fuzzy hit at 71% on the same list entry — resolved as a false match on a different DOB.", who: "N. Baig, Screening Analyst" },
+      { date: "04 Nov 25", list: "PEP", outcome: "No match. Routine onboarding rescreen.", who: "automated" }
+    ],
+    histNote: "The March 2026 hit was against a different customer with a similar name. This customer has not previously matched this entry."
+  },
+  {
+    id: "H2", sev: "sanctions", ref: "SCR-88396", name: "Muhammad Yousaf Siddiqui",
+    list: "MoI Schedule IV — proscribed persons (ATA 1997)", customerRef: "M. Y. Siddiqui · A/C 0451-9987-1 · beneficiary",
+    conf: 89, why: "Exact name and father's name; district differs",
+    amount: "USD 118,000", channel: "SWIFT inward", time: "09:33:50", age: "00:26:04", held: true,
+    listName: "Schedule IV entry",
+    fields: [
+      { label: "Full name", cust: "Muhammad Yousaf Siddiqui", list: "Muhammad Yousaf Siddiqui", match: true, note: "exact" },
+      { label: "Father's name", cust: "Abdul Ghafoor Siddiqui", list: "Abdul Ghafoor", match: true, note: "consistent" },
+      { label: "Date of birth", cust: "22 Sep 1986", list: "1985 (year only)", match: false, note: "one year apart" },
+      { label: "District", cust: "Karachi South", list: "Hyderabad", match: false, note: "differs" },
+      { label: "CNIC", cust: "42301-7745218-9", list: "41303-•••••-1 (partial)", match: false, note: "first block differs" },
+      { label: "Listing basis", cust: "—", list: "Schedule IV, listed 2021 — reporting obligation", match: false, note: "" }
+    ],
+    assessment: "Name and father's name align but three identifiers diverge, including the CNIC prefix, which encodes district of issue. This is the pattern of a genuine namesake rather than the listed person — but Schedule IV carries a reporting obligation regardless, so a release here should be recorded with the reasoning rather than passed silently.",
+    history: [
+      { date: "18 Jun 26", list: "Schedule IV", outcome: "Same entry, 87% — resolved as a false match on CNIC district; documented.", who: "A. Raza, Senior Compliance Officer" }
+    ],
+    histNote: "This customer has matched this entry once before and was distinguished on the same CNIC ground. Consistency with that decision matters."
+  },
+  {
+    id: "H3", sev: "pep", ref: "SCR-88409", name: "Farhat Jabeen Khokhar",
+    list: "Domestic PEP database — provincial legislature", customerRef: "F. J. Khokhar · A/C 0778-3312-6 · originator",
+    conf: 74, why: "Transliteration variant: Khokhar / Khokar / Khokhur",
+    amount: "PKR 2,850,000", channel: "IBFT outward", time: "09:47:31", age: "00:12:19", held: true,
+    listName: "PEP register entry",
+    fields: [
+      { label: "Full name", cust: "Farhat Jabeen Khokhar", list: "Farhat Jabeen Khokar", match: true, note: "transliteration variant" },
+      { label: "Date of birth", cust: "11 Jan 1979", list: "11 Jan 1979", match: true, note: "exact" },
+      { label: "Role", cust: "declared: school administrator", list: "Member, Provincial Assembly (2018–2023)", match: false, note: "customer declared no PEP status" },
+      { label: "Constituency / city", cust: "Multan", list: "Multan", match: true, note: "exact" },
+      { label: "CNIC", cust: "36302-4419083-2", list: "not recorded", match: false, note: "PEP register carries no CNIC" },
+      { label: "Relationship", cust: "—", list: "self, former office holder", match: false, note: "" }
+    ],
+    assessment: "Name variant plus an exact date of birth and city is a strong PEP identification. The customer declared no PEP status at onboarding, which is the finding here: this is not a sanctions matter but it does require enhanced due diligence, a source-of-funds question and a KYC amendment. Releasing the transaction and closing the hit would leave the declaration uncorrected.",
+    history: [
+      { date: "09 Feb 26", list: "PEP", outcome: "Hit at 68% on the same entry — closed as a false match, no reason recorded.", who: "former analyst account" }
+    ],
+    histNote: "The February decision carries no documented reasoning. Treat it as unreliable rather than as precedent."
+  },
+  {
+    id: "H4", sev: "pep", ref: "SCR-88412", name: "Imran Shah",
+    list: "Foreign PEP — close associate screening", customerRef: "I. Shah · A/C 0338-9902-5 · card transaction",
+    conf: 61, why: "Common name; only surname and country align",
+    amount: "PKR 184,500", channel: "Card — POS Dubai", time: "09:51:08", age: "00:08:44", held: false,
+    listName: "Foreign PEP entry",
+    fields: [
+      { label: "Full name", cust: "Imran Shah", list: "Imran Ali Shah", match: true, note: "partial — middle name absent" },
+      { label: "Date of birth", cust: "30 Aug 1990", list: "1972", match: false, note: "18 years apart" },
+      { label: "Nationality", cust: "Pakistan", list: "Pakistan", match: true, note: "exact" },
+      { label: "Role", cust: "declared: IT contractor", list: "Brother of a serving foreign minister", match: false, note: "no family link on file" },
+      { label: "CNIC", cust: "17301-9928311-4", list: "not recorded", match: false, note: "" }
+    ],
+    assessment: "A common-name collision with an 18-year age difference and no family connection on file. Low-value card transaction, not held. This is the kind of hit that should be closed quickly — but the closure still needs a recorded reason so the pattern can be tuned out of future screening.",
+    history: [
+      { date: "21 Aug 26", list: "PEP", outcome: "Same entry, 61% — false match on date of birth.", who: "N. Baig, Screening Analyst" },
+      { date: "02 Jul 26", list: "PEP", outcome: "Same entry, 61% — false match on date of birth.", who: "N. Baig, Screening Analyst" }
+    ],
+    histNote: "Third identical hit in eight weeks. Worth a permanent whitelist entry rather than a fourth manual decision."
+  },
+  {
+    id: "H5", sev: "pep", ref: "SCR-88414", name: "Al-Barq Currency Exchange",
+    list: "Internal watchlist — entities under investigation", customerRef: "A/C 0119-2245-8 · beneficiary",
+    conf: 100, why: "Exact account number on the internal watchlist",
+    amount: "PKR 24,150,000", channel: "RTGS outward", time: "09:54:22", age: "00:05:31", held: true,
+    listName: "Internal watchlist",
+    fields: [
+      { label: "Entity name", cust: "Al-Barq Currency Exchange", list: "Al-Barq Currency Exchange", match: true, note: "exact" },
+      { label: "Account", cust: "0119-2245-8", list: "0119-2245-8", match: true, note: "exact" },
+      { label: "Watchlist basis", cust: "—", list: "2 open alerts; STR filed 23 Aug 2026", match: true, note: "internal, not a sanctions listing" },
+      { label: "Instruction", cust: "—", list: "Hold and refer — do not release at the desk", match: true, note: "standing instruction" }
+    ],
+    assessment: "Not a sanctions or PEP match: an internal watchlist entry placed after the 23 August STR. The standing instruction is to refer rather than decide at the desk, so escalate — freezing or releasing here would both be outside the analyst's authority.",
+    history: [
+      { date: "23 Aug 26", list: "Internal", outcome: "Entity added to the internal watchlist following STR submission.", who: "S. Iqbal, MLRO" }
+    ],
+    histNote: "Related to the Bilal Ahmed case (ALT-2026-04417) — this entity received the onward transfer in that filing."
+  },
+  {
+    id: "H6", sev: "resolved", ref: "SCR-88388", name: "Nadia Malik",
+    list: "EU consolidated list · fuzzy", customerRef: "N. Malik · A/C 0655-4417-3 · originator",
+    conf: 58, why: "Surname only; forename and DOB both differ",
+    amount: "PKR 620,000", channel: "SWIFT outward", time: "09:12:04", age: "resolved 09:19", held: false,
+    decision: "released", decidedBy: "N. Baig", decidedNote: "False match — forename and DOB differ; transaction released 09:19, 7 m 12 s to decision.",
+    listName: "EU list entry",
+    fields: [
+      { label: "Full name", cust: "Nadia Malik", list: "Nadeem Malik", match: false, note: "forename differs" },
+      { label: "Date of birth", cust: "05 May 1988", list: "19 Dec 1965", match: false, note: "differs" },
+      { label: "Nationality", cust: "Pakistan", list: "United Kingdom", match: false, note: "differs" },
+      { label: "Listing basis", cust: "—", list: "EU asset freeze — listed 2022", match: false, note: "" }
+    ],
+    assessment: "Resolved as a false match at 09:19. Surname-only similarity with three diverging identifiers; the reasoning is recorded against the analyst and the transaction completed normally.",
+    history: [{ date: "11 Jul 26", list: "EU", outcome: "No match on rescreen.", who: "automated" }],
+    histNote: "No prior hits on this customer against sanctions lists."
+  }
+];
+
+class Component extends DCLogic {
+  state = { sel: "H1", decisions: {}, note: "", confirm: null, toast: null, reason: "" };
+
+  toast(msg) {
+    clearTimeout(this._t);
+    this.setState({ toast: msg });
+    this._t = setTimeout(() => this.setState({ toast: null }), 6000);
+  }
+  componentWillUnmount() { clearTimeout(this._t); }
+
+  renderVals() {
+    const s = this.state;
+    const d = HITS.find(r => r.id === s.sel) || HITS[0];
+    const dec = id => s.decisions[id] || HITS.find(r => r.id === id).decision || null;
+
+    const sevOf = h => {
+      if (dec(h.id)) return { label: "RESOLVED", color: "var(--color-neutral-600)", bg: "var(--color-neutral-100)" };
+      if (h.sev === "sanctions") return { label: "SANCTIONS", color: RED, bg: "color-mix(in srgb," + RED + " 12%,transparent)" };
+      return { label: h.sev === "pep" ? "PEP / FUZZY" : "REVIEW", color: AMBER, bg: "color-mix(in srgb," + AMBER + " 12%,transparent)" };
+    };
+
+    const rows = HITS.map(h => {
+      const decision = dec(h.id);
+      const sev = sevOf(h);
+      const decLabel = decision === "frozen" ? "FROZEN — TRUE MATCH" : decision === "released" ? "RELEASED — FALSE MATCH" : decision === "escalated" ? "ESCALATED" : "";
+      const decColor = decision === "frozen" ? RED : decision === "escalated" ? AMBER : GREEN;
+      return {
+        ...h,
+        sevLabel: sev.label, sevColor: sev.color, sevBg: sev.bg,
+        conf: h.conf + "%", confBar: h.conf + "%",
+        holdColor: h.held && !decision ? RED : "var(--color-neutral-600)",
+        holdLabel: decision ? (decision === "frozen" ? "FUNDS HELD" : "COMPLETED") : h.held ? "HELD PENDING DECISION" : "NOT HELD",
+        age: decision && !s.decisions[h.id] ? h.age : decision ? "just now" : h.age,
+        ageColor: decision ? "var(--color-neutral-600)" : h.held ? RED : "var(--color-neutral-800)",
+        ageNote: decision ? "closed" : h.held ? "customer waiting" : "no hold applied",
+        rowBg: decision ? "var(--color-neutral-100)" : "var(--color-bg)",
+        rowOpacity: decision ? "0.66" : "1",
+        open: !decision, decided: !!decision,
+        decidedLabel: decLabel, decidedColor: decColor,
+        decidedBg: decision === "frozen" ? "color-mix(in srgb," + RED + " 10%,transparent)" : decision === "escalated" ? "var(--color-accent-100)" : "var(--color-neutral-100)",
+        decidedNote: s.decisions[h.id]
+          ? (decision === "frozen" ? "Funds held, sanctions committee notified, STR obligation raised. Recorded against N. Baig."
+            : decision === "escalated" ? "Transaction stays held. Assigned for senior review; decision remains with the officer."
+            : "Transaction released to complete. Reason recorded against N. Baig.")
+          : h.decidedNote || "",
+        selected: h.id === s.sel,
+        select: () => this.setState({ sel: h.id }),
+        freeze: e => { e.stopPropagation(); this.setState({ sel: h.id, confirm: { id: h.id, kind: "frozen" } }); },
+        release: e => { e.stopPropagation(); this.setState({ sel: h.id, confirm: { id: h.id, kind: "released" } }); },
+        escalate: e => { e.stopPropagation(); this.setState({ sel: h.id, confirm: { id: h.id, kind: "escalated" } }); }
+      };
+    });
+
+    const fields = d.fields.map(f => ({
+      ...f,
+      bg: f.match ? "color-mix(in srgb," + RED + " 9%,transparent)" : "var(--color-bg)",
+      noteColor: f.match ? RED : "var(--color-neutral-600)"
+    }));
+
+    const c = s.confirm;
+    const cHit = c ? HITS.find(r => r.id === c.id) : null;
+    const copy = {
+      frozen: {
+        title: "Confirm true match — freeze funds?",
+        body: "This stops the transaction permanently, places a hold on the account and notifies the sanctions committee. It also raises an STR obligation. A freeze cannot be reversed at the desk.",
+        foot: "Recorded against N. Baig, Screening Analyst, with the matched fields as they appear now.",
+        action: "Freeze and hold", border: RED
+      },
+      released: {
+        title: "Confirm false match — release transaction?",
+        body: "This lets the transaction complete and closes the hit. If the match is in fact genuine, the funds will have left the bank.",
+        foot: "Your stated reason is recorded against your name and is reviewable at the next examination. Releasing a Schedule IV or sanctions hit is sampled monthly.",
+        action: "Release transaction", border: "var(--color-text)"
+      },
+      escalated: {
+        title: "Escalate for senior review?",
+        body: "The transaction stays held and the decision passes to the named officer. Nothing is released or frozen by this action.",
+        foot: "Hold time continues to accrue while the officer reviews.",
+        action: "Escalate and keep held", border: AMBER
+      }
+    };
+    const cc = c ? copy[c.kind] : null;
+    const needsReason = !!c && c.kind === "released" && (this.props.requireReleaseReason ?? true);
+    const reasonShort = s.reason.trim().length < 25;
+
+    return {
+      cNeedsReason: needsReason,
+      cReasonCount: reasonShort ? (25 - s.reason.trim().length) + " more characters required" : "requirement met",
+      cDisabled: needsReason && reasonShort,
+      onReason: e => this.setState({ reason: e.target.value }),
+      rows,
+      liveLine: "Screening live · 3 hits in the last 5 minutes",
+
+      dHead: d.name + " · " + d.list + " · " + d.conf + "% confidence",
+      dMatchSummary: d.fields.filter(f => f.match).length + " of " + d.fields.length + " fields matched",
+      dListName: d.listName, dFields: fields, dAssessment: d.assessment,
+      dHistory: d.history, dHistCount: d.history.length + " prior", dHistNote: d.histNote,
+
+      escBg: s.note ? "var(--color-accent-100)" : "var(--color-bg)",
+      escBorder: s.note ? AMBER : "var(--color-divider)",
+      escInk: s.note ? AMBER_DK : "var(--color-neutral-700)",
+      escStatus: s.note ? s.note.trim().length + " characters · not yet assigned" : "empty",
+      escHint: "The note travels with the hit and is visible to the officer before they decide. It does not release or freeze anything.",
+      onNote: e => this.setState({ note: e.target.value }),
+      assignDisabled: s.note.trim().length < 20,
+      assign: () => { this.toast("Hit " + d.ref + " assigned to S. Iqbal, MLRO. Transaction remains held."); this.setState({ decisions: { ...s.decisions, [d.id]: "escalated" } }); },
+
+      confirmOpen: !!c,
+      cTitle: cc ? cc.title : "", cBody: cc ? cc.body : "", cFoot: cc ? cc.foot : "",
+      cAction: cc ? cc.action : "", cBorder: cc ? cc.border : "var(--color-text)",
+      cDetail: cHit ? cHit.name + " · " + cHit.list + "\n" + cHit.conf + "% confidence — " + cHit.why + "\n" + cHit.amount + " · " + cHit.channel + " · held " + cHit.age : "",
+      closeConfirm: () => this.setState({ confirm: null, reason: "" }),
+      doConfirm: () => {
+        if (!c || (needsReason && reasonShort)) return;
+        const label = c.kind === "frozen" ? "frozen — funds held and sanctions committee notified" : c.kind === "released" ? "released — transaction completing" : "escalated — transaction stays held";
+        this.toast(cHit.ref + " " + label + ".");
+        this.setState({ decisions: { ...s.decisions, [c.id]: c.kind }, confirm: null, reason: "" });
+      },
+
+      toast: !!s.toast, toastMsg: s.toast || "",
+      dismissToast: () => { clearTimeout(this._t); this.setState({ toast: null }); }
+    };
+  }
+}
+</script>
+</body>
+</html>

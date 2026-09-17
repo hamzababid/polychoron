@@ -1,0 +1,64 @@
+import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import {
+  Feature,
+  FeatureCaseEnvelope,
+  PlatformAgentActivityLog,
+  PlatformRole,
+  PlatformSession,
+  PlatformUser,
+  Suite,
+  Tenant,
+} from '../../platform/entities/index.js';
+import { AmlCase } from '../../features/aml-detection/entities/aml-case.entity.js';
+import { AmlDisposition } from '../../features/aml-detection/entities/aml-disposition.entity.js';
+import { AmlStrFiling } from '../../features/aml-detection/entities/aml-str-filing.entity.js';
+import { AmlEvidenceBundle } from '../../features/aml-detection/entities/aml-evidence-bundle.entity.js';
+import { AmlTypologyMatch } from '../../features/aml-detection/entities/aml-typology-match.entity.js';
+import { AmlCaseAssessment } from '../../features/aml-detection/entities/aml-case-assessment.entity.js';
+import { AmlFilingEdit } from '../../features/aml-detection/entities/aml-filing-edit.entity.js';
+import { AmlFmuFollowup } from '../../features/aml-detection/entities/aml-fmu-followup.entity.js';
+
+/**
+ * Schema is owned by infra/db/migrations/*.sql, never by TypeORM
+ * (synchronize is always false) — see
+ * specs/platform/09-backend-service-boundary-spec.md. TypeORM here is
+ * strictly a typed mapping onto a schema that already exists.
+ */
+@Module({
+  imports: [
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => ({
+        type: 'postgres' as const,
+        host: config.get<string>('DATABASE_HOST', 'localhost'),
+        port: config.get<number>('DATABASE_PORT', 5432),
+        username: config.get<string>('DATABASE_USER', 'polychoron'),
+        password: config.get<string>('DATABASE_PASSWORD', 'polychoron_dev_only'),
+        database: config.get<string>('DATABASE_NAME', 'polychoron'),
+        synchronize: false,
+        entities: [
+          Suite,
+          Feature,
+          Tenant,
+          FeatureCaseEnvelope,
+          PlatformRole,
+          PlatformUser,
+          PlatformSession,
+          PlatformAgentActivityLog,
+          AmlCase,
+          AmlDisposition,
+          AmlStrFiling,
+          AmlEvidenceBundle,
+          AmlTypologyMatch,
+          AmlCaseAssessment,
+          AmlFilingEdit,
+          AmlFmuFollowup,
+        ],
+      }),
+    }),
+  ],
+})
+export class DatabaseModule {}

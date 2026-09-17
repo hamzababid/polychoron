@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/industry-92a524b8-8757-4847-a147-3c04a6398262/styles.css">
+<script src="_ds/industry-92a524b8-8757-4847-a147-3c04a6398262/_ds_bundle.js"></script>
+<link rel="stylesheet" href="brand.css">
+<style>
+body{margin:0;background:var(--color-bg)}
+.scrollcol{overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--color-neutral-400) transparent}
+.tlab{font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-neutral-700)}
+.asof{font-size:10.5px;color:var(--color-neutral-600);font-variant-numeric:tabular-nums}
+.panel{position:relative;border:1px solid var(--color-divider);background:var(--color-bg)}
+.phead{display:flex;align-items:baseline;gap:10px;padding:9px 14px;border-bottom:1px solid var(--color-text)}
+.num{font-family:var(--font-heading);font-size:12px;letter-spacing:.14em;color:var(--color-neutral-700)}
+.ahd{padding:6px 11px;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--color-neutral-700)}
+.chip{display:flex;align-items:center;gap:6px;border:1px solid var(--color-divider);padding:4px 9px;font-size:12.5px;cursor:pointer;background:var(--color-neutral-100)}
+.chip:hover{border-color:var(--color-accent)}
+</style>
+</helmet>
+<div style="height:100vh;min-height:900px;overflow-x:auto;overflow-y:hidden"><div style="height:100%;min-width:1360px;display:flex;flex-direction:column;font-family:var(--font-body);color:var(--color-text);background:var(--color-bg);overflow:hidden">
+
+  <div style="display:flex;align-items:center;gap:24px;padding:0 18px;height:44px;flex:none;background:var(--color-accent-900);color:var(--color-bg)">
+    <span style="display:flex;align-items:center;gap:9px;font-family:var(--font-heading);font-weight:600;font-size:17px;letter-spacing:0.06em"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.2" style="flex:none"><path d="M12 1.6 20.6 6.6v10.8L12 22.4 3.4 17.4V6.6z"></path><path d="M12 7.2 16.6 9.9v5.4L12 18l-4.6-2.7V9.9z"></path><path d="M12 1.6v5.6M20.6 6.6l-4 3.3M20.6 17.4l-4-2.1M12 22.4V18M3.4 17.4l4-2.1M3.4 6.6l4 3.3"></path></svg>POLYCHORON<span style="opacity:.6">AI</span></span>
+    <span style="width:1px;height:18px;background:rgba(255,255,255,.22)"></span>
+    <div style="display:flex;gap:18px;font-size:13px;letter-spacing:.01em">
+      <a href="Command Dashboard.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Dashboard</a>
+      <a href="Alert Queue.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Queue</a>
+      <a href="Case Workspace.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Cases</a>
+      <a href="Customer 360.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Customers</a>
+      <a href="Screening Hub.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Screening</a>
+      <a href="Typology Rules Console.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Typologies</a>
+      <a href="Filing Console.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Filings</a>
+      <a href="goAML Tracker.dc.html" style="opacity:.6;color:inherit;text-decoration:none">goAML tracker</a>
+      <a href="Model Governance.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Governance</a>
+      <span style="padding-bottom:2px;border-bottom:2px solid var(--color-accent-400)">Reporting</span>
+    </div>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:14px;font-size:12px">
+      <span style="opacity:.7">Habib Metropolitan · Regulatory reporting</span>
+      <span style="width:1px;height:18px;background:rgba(255,255,255,.22)"></span>
+      <span>S. Iqbal · MLRO</span>
+      <span style="width:26px;height:26px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.3);font-family:var(--font-heading);font-size:12px">SI</span>
+    </div>
+  </div>
+
+  <!-- report identity -->
+  <div style="display:flex;align-items:stretch;flex:none;border-bottom:1px solid var(--color-divider);background:var(--color-neutral-100)">
+    <div style="padding:11px 18px;border-right:1px solid var(--color-divider);min-width:390px">
+      <div style="font-family:var(--font-heading);font-size:20px;letter-spacing:.02em">Reporting &amp; management information</div>
+      <div style="font-size:11.5px;color:var(--color-neutral-700)">Reporting entity HMB-0114 · figures drawn from filed records, not from work in progress</div>
+    </div>
+    <div style="padding:11px 18px;border-right:1px solid var(--color-divider)">
+      <div class="tlab">Reporting period</div>
+      <div style="font-size:13px">{{ periodLabel }}</div>
+      <div class="asof">{{ periodAsOf }}</div>
+    </div>
+    <div style="padding:11px 18px;border-right:1px solid var(--color-divider)">
+      <div class="tlab">Comparison</div>
+      <div style="font-size:13px">{{ compareLabel }}</div>
+      <div class="asof">{{ compareNote }}</div>
+    </div>
+    <div style="padding:11px 18px;display:flex;flex-direction:column;justify-content:center">
+      <div class="tlab">Next regulatory submission</div>
+      <div style="font-size:13px">SBP bi-annual STR count · due 15 Jan 2027</div>
+      <div class="asof">covers 01 Jul – 31 Dec 2026</div>
+    </div>
+    <div style="margin-left:auto;padding:11px 18px;display:flex;align-items:center;gap:8px">
+      <button class="btn btn-secondary" style="font-size:12.5px;padding:5px 10px">Figure definitions</button>
+      <button class="btn btn-primary" onClick="{{ openExport }}" style="font-size:12.5px;padding:5px 12px">Generate report</button>
+    </div>
+  </div>
+
+  <div class="scrollcol" style="flex:1;padding:14px 18px 28px;display:flex;flex-direction:column;gap:16px">
+
+    <!-- 01 controls -->
+    <div class="panel">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 14px">
+        <span class="num" style="margin-right:2px">01</span>
+        <span class="tlab">Period</span>
+        <div class="seg">
+          <label class="seg-opt" style="font-size:12px;padding:4px 10px"><input type="radio" name="per" onChange="{{ pickMonth }}"><span>This month</span></label>
+          <label class="seg-opt" style="font-size:12px;padding:4px 10px"><input type="radio" name="per" checked onChange="{{ pickQuarter }}"><span>This quarter</span></label>
+          <label class="seg-opt" style="font-size:12px;padding:4px 10px"><input type="radio" name="per" onChange="{{ pickBiannual }}"><span>SBP bi-annual cycle</span></label>
+          <label class="seg-opt" style="font-size:12px;padding:4px 10px"><input type="radio" name="per" onChange="{{ pickCustom }}"><span>Custom range</span></label>
+        </div>
+        <span style="width:1px;height:22px;background:var(--color-divider);margin:0 2px"></span>
+        <div onClick="{{ toggleCompare }}" style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:12.5px;padding:3px 4px" style-hover="background:color-mix(in srgb,var(--color-accent) 8%,transparent)">
+          <span style="width:34px;height:17px;border:1px solid var(--color-neutral-500);position:relative;flex:none;background:var(--color-neutral-200)">
+            <span style="position:absolute;top:1px;bottom:1px;width:14px;background:var(--color-neutral-600);left:{{ cmpKnob }}"></span>
+          </span>
+          Compare to previous period
+        </div>
+        <span style="width:1px;height:22px;background:var(--color-divider);margin:0 2px"></span>
+        <div class="chip">Branch <span style="color:var(--color-neutral-600)">all 6</span> <span style="color:var(--color-neutral-600);font-size:10px">▾</span></div>
+        <div class="chip">Product line <span style="color:var(--color-neutral-600)">all</span> <span style="color:var(--color-neutral-600);font-size:10px">▾</span></div>
+        <div class="chip">Report basis <span style="color:var(--color-neutral-800)">filing date</span> <span style="color:var(--color-neutral-600);font-size:10px">▾</span></div>
+        <span style="margin-left:auto;font-size:11.5px;color:var(--color-neutral-700)">{{ scopeLine }}</span>
+      </div>
+    </div>
+
+    <!-- 02 summary metrics -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
+      <sc-for list="{{ metrics }}" as="m" hint-placeholder-count="4">
+        <div class="panel blueprint" style="padding:0">
+          <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+          <div style="display:flex;align-items:baseline;gap:8px;padding:9px 13px;border-bottom:1px solid var(--color-divider)">
+            <span class="num">{{ m.num }}</span>
+            <span class="tlab">{{ m.label }}</span>
+          </div>
+          <div style="padding:11px 13px 13px">
+            <div style="display:flex;align-items:baseline;gap:9px">
+              <span style="font-family:var(--font-heading);font-size:33px;line-height:1">{{ m.value }}</span>
+              <span style="font-size:12px;color:{{ m.deltaColor }};line-height:1.3">{{ m.delta }}</span>
+            </div>
+            <div style="font-size:11.5px;color:var(--color-neutral-700);margin-top:7px;line-height:1.45">{{ m.sub }}</div>
+            <div class="asof" style="margin-top:7px;border-top:1px solid var(--color-divider);padding-top:6px">{{ m.source }}</div>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+
+    <!-- 03 volume trend -->
+    <div class="panel blueprint">
+      <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+      <div class="phead">
+        <span class="num">03</span>
+        <h4 style="margin:0">Filing volume</h4>
+        <span style="font-size:11.5px;color:var(--color-neutral-700)">STR-F and CTR filings by month, {{ periodShort }}</span>
+        <span style="margin-left:auto;display:flex;align-items:center;gap:8px">
+          <span class="tlab">Break down by</span>
+          <div class="seg">
+            <label class="seg-opt" style="font-size:11.5px;padding:3px 9px"><input type="radio" name="bd" checked onChange="{{ bdNone }}"><span>Report type</span></label>
+            <label class="seg-opt" style="font-size:11.5px;padding:3px 9px"><input type="radio" name="bd" onChange="{{ bdTypology }}"><span>Typology</span></label>
+            <label class="seg-opt" style="font-size:11.5px;padding:3px 9px"><input type="radio" name="bd" onChange="{{ bdBranch }}"><span>Branch</span></label>
+          </div>
+        </span>
+      </div>
+      <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:1px;background:var(--color-divider)">
+        <div style="background:var(--color-bg);padding:12px 14px">
+          <svg viewBox="0 0 620 210" style="width:100%;height:auto;font-family:var(--font-body)">
+            <g stroke="var(--color-divider)"><line x1="46" y1="172" x2="608" y2="172"></line><line x1="46" y1="130" x2="608" y2="130" stroke-dasharray="3 4"></line><line x1="46" y1="88" x2="608" y2="88" stroke-dasharray="3 4"></line><line x1="46" y1="46" x2="608" y2="46" stroke-dasharray="3 4"></line></g>
+            <g font-size="9.5" fill="var(--color-neutral-600)" text-anchor="end"><text x="40" y="175">0</text><text x="40" y="133">150</text><text x="40" y="91">300</text><text x="40" y="49">450</text></g>
+            <g>
+              <rect x="82" y="61" width="46" height="111" fill="var(--color-accent-300)"></rect>
+              <rect x="128" y="158" width="20" height="14" fill="var(--color-accent-800)"></rect>
+              <rect x="262" y="53" width="46" height="119" fill="var(--color-accent-300)"></rect>
+              <rect x="308" y="155" width="20" height="17" fill="var(--color-accent-800)"></rect>
+              <rect x="442" y="45" width="46" height="127" fill="var(--color-accent-300)"></rect>
+              <rect x="488" y="153" width="20" height="19" fill="var(--color-accent-800)"></rect>
+            </g>
+            <g font-size="11" fill="var(--color-text)" text-anchor="middle" font-family="var(--font-heading)">
+              <text x="105" y="54">396</text><text x="285" y="46">424</text><text x="465" y="38">452</text>
+            </g>
+            <g font-size="10.5" fill="var(--color-accent-800)" text-anchor="middle" font-family="var(--font-heading)">
+              <text x="138" y="151">11</text><text x="318" y="148">14</text><text x="498" y="146">16</text>
+            </g>
+            <g font-size="11" fill="var(--color-neutral-700)" text-anchor="middle">
+              <text x="118" y="190">June 2026</text><text x="298" y="190">July 2026</text><text x="478" y="190">August 2026</text>
+            </g>
+            <g font-size="10" fill="var(--color-neutral-600)" text-anchor="middle">
+              <text x="118" y="203">CTR 396 · STR 11</text><text x="298" y="203">CTR 424 · STR 14</text><text x="478" y="203">CTR 452 · STR 16</text>
+            </g>
+          </svg>
+          <div style="display:flex;gap:16px;font-size:10.5px;color:var(--color-neutral-700);border-top:1px solid var(--color-divider);padding-top:7px;margin-top:3px">
+            <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;background:var(--color-accent-300)"></span>CTR</span>
+            <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;background:var(--color-accent-800)"></span>STR-F</span>
+            <span style="margin-left:auto">{{ trendNote }}</span>
+          </div>
+        </div>
+        <div style="background:var(--color-bg);padding:12px 14px">
+          <div style="display:flex;align-items:baseline;gap:9px;margin-bottom:9px">
+            <span class="tlab">{{ bdTitle }}</span>
+            <span style="margin-left:auto" class="asof">{{ bdSub }}</span>
+          </div>
+          <sc-for list="{{ breakdown }}" as="b" hint-placeholder-count="6">
+            <div style="display:grid;grid-template-columns:1fr 46px 128px 50px;align-items:center;gap:9px;padding:5px 0;border-bottom:1px solid color-mix(in srgb,var(--color-text) 7%,transparent)">
+              <div style="font-size:12.5px;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ b.name }}</div>
+              <div style="font-size:13px;text-align:right;font-variant-numeric:tabular-nums">{{ b.n }}</div>
+              <div><span style="display:block;height:9px;background:var(--color-neutral-200)"><span style="display:block;height:9px;width:{{ b.bar }};background:{{ b.color }}"></span></span></div>
+              <div style="font-size:11.5px;text-align:right;color:var(--color-neutral-700);font-variant-numeric:tabular-nums">{{ b.pct }}</div>
+            </div>
+          </sc-for>
+          <div style="font-size:11px;color:var(--color-neutral-700);line-height:1.45;margin-top:8px">{{ bdNote }}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 04 SLA -->
+    <div class="panel blueprint">
+      <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+      <div class="phead">
+        <span class="num">04</span>
+        <h4 style="margin:0">SLA adherence by risk tier</h4>
+        <span style="font-size:11.5px;color:var(--color-neutral-700)">Alerts dispositioned within their target from the moment the alert was raised</span>
+        <span style="margin-left:auto" class="asof">869 alerts dispositioned in the quarter · sourced from case disposition timestamps</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:1px;background:var(--color-divider)">
+        <div style="background:var(--color-bg)">
+          <div style="display:grid;grid-template-columns:150px 92px 96px 1fr 110px 116px;background:var(--color-neutral-100);border-bottom:1px solid var(--color-text)">
+            <div class="ahd">Risk tier</div>
+            <div class="ahd">Target</div>
+            <div class="ahd" style="text-align:right">Alerts</div>
+            <div class="ahd">Within target / breached</div>
+            <div class="ahd" style="text-align:right">Adherence</div>
+            <div class="ahd" style="text-align:right">vs. prior qtr</div>
+          </div>
+          <sc-for list="{{ slaRows }}" as="s" hint-placeholder-count="4">
+            <div style="display:grid;grid-template-columns:150px 92px 96px 1fr 110px 116px;align-items:center;border-bottom:1px solid color-mix(in srgb,var(--color-text) 8%,transparent)">
+              <div style="padding:8px 11px;font-size:13px;border-left:4px solid {{ s.color }}">{{ s.tier }}</div>
+              <div style="padding:8px 11px;font-size:12.5px">{{ s.target }}</div>
+              <div style="padding:8px 11px;text-align:right;font-size:13px;font-variant-numeric:tabular-nums">{{ s.total }}</div>
+              <div style="padding:8px 11px">
+                <span style="display:flex;height:12px;gap:1px">
+                  <span style="width:{{ s.okPct }};background:var(--color-accent-600)"></span>
+                  <span style="width:{{ s.badPct }};background:{{ s.color }}"></span>
+                </span>
+                <span style="font-size:10.5px;color:var(--color-neutral-700);font-variant-numeric:tabular-nums">{{ s.split }}</span>
+              </div>
+              <div style="padding:8px 11px;text-align:right;font-family:var(--font-heading);font-size:17px;color:{{ s.adhColor }}">{{ s.adherence }}</div>
+              <div style="padding:8px 11px;text-align:right;font-size:12px;font-variant-numeric:tabular-nums;color:{{ s.deltaColor }}">{{ s.delta }}</div>
+            </div>
+          </sc-for>
+          <div style="display:grid;grid-template-columns:150px 92px 96px 1fr 110px 116px;align-items:center;background:var(--color-neutral-100);border-top:1px solid var(--color-text)">
+            <div style="padding:9px 11px;font-family:var(--font-heading);font-size:14px">All tiers</div>
+            <div style="padding:9px 11px;font-size:12px;color:var(--color-neutral-700)">weighted</div>
+            <div style="padding:9px 11px;text-align:right;font-size:13.5px;font-variant-numeric:tabular-nums">869</div>
+            <div style="padding:9px 11px;font-size:11.5px;color:var(--color-neutral-700)">782 within target · 87 breached</div>
+            <div style="padding:9px 11px;text-align:right;font-family:var(--font-heading);font-size:19px">90.0%</div>
+            <div style="padding:9px 11px;text-align:right;font-size:12px;color:var(--color-accent-800);font-variant-numeric:tabular-nums">+1.8 pts</div>
+          </div>
+        </div>
+        <div style="background:var(--color-bg);padding:12px 14px">
+          <div class="tlab" style="margin-bottom:8px">Breach commentary</div>
+          <div style="display:flex;flex-direction:column;gap:9px">
+            <div style="border-left:3px solid var(--color-alert);padding-left:10px">
+              <div style="font-size:12.5px;font-weight:500">Critical tier — 2 breaches</div>
+              <div style="font-size:11.5px;color:var(--color-neutral-800);line-height:1.45;margin-top:2px">Both in August, both awaiting a branch document response. Board-reportable; remediation is a 24-hour branch escalation path, live from 01 Sep 2026.</div>
+            </div>
+            <div style="border-left:3px solid var(--color-accent-700);padding-left:10px">
+              <div style="font-size:12.5px;font-weight:500">Concentration</div>
+              <div style="font-size:11.5px;color:var(--color-neutral-800);line-height:1.45;margin-top:2px">61 of 87 breaches sit in the medium tier and 44 of those were unassigned for more than 48 hours. Assignment latency, not analyst capacity, is the driver.</div>
+            </div>
+            <div style="border-left:3px solid var(--color-neutral-400);padding-left:10px">
+              <div style="font-size:12.5px;font-weight:500">Statutory position</div>
+              <div style="font-size:11.5px;color:var(--color-neutral-800);line-height:1.45;margin-top:2px">No SLA breach resulted in a late regulatory filing. All 41 STR-F filings in the quarter were submitted inside the statutory window.</div>
+            </div>
+          </div>
+          <div class="asof" style="margin-top:10px;border-top:1px solid var(--color-divider);padding-top:8px">Targets set by the Compliance Committee, 12 Jan 2026. Unchanged in the period.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 05 agent workload -->
+    <div class="panel blueprint">
+      <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+      <div class="phead">
+        <span class="num">05</span>
+        <h4 style="margin:0">Agent workload split</h4>
+        <span style="font-size:11.5px;color:var(--color-neutral-700)">Share of alert volume dispositioned on an agent recommendation with officer sign-off, against full manual investigation</span>
+        <span style="margin-left:auto" class="asof">869 alerts · reportable figure, definition unchanged since Q1 2026</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1.4fr;gap:1px;background:var(--color-divider)">
+        <div style="background:var(--color-bg);padding:12px 14px">
+          <div style="display:flex;height:18px;gap:1px">
+            <span style="width:64%;background:var(--color-accent-500)"></span>
+            <span style="width:27%;background:var(--color-accent-800)"></span>
+            <span style="width:9%;background:var(--color-neutral-500)"></span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 62px 74px;gap:8px;margin-top:11px;align-items:baseline">
+            <div style="font-size:12.5px;display:flex;align-items:center;gap:7px"><span style="width:9px;height:9px;background:var(--color-accent-500)"></span>Agent-recommended, officer signed off</div>
+            <div style="font-family:var(--font-heading);font-size:17px;text-align:right">64.0%</div>
+            <div style="font-size:12px;text-align:right;color:var(--color-neutral-700);font-variant-numeric:tabular-nums">556</div>
+
+            <div style="font-size:12.5px;display:flex;align-items:center;gap:7px"><span style="width:9px;height:9px;background:var(--color-accent-800)"></span>Full manual investigation</div>
+            <div style="font-family:var(--font-heading);font-size:17px;text-align:right">27.0%</div>
+            <div style="font-size:12px;text-align:right;color:var(--color-neutral-700);font-variant-numeric:tabular-nums">235</div>
+
+            <div style="font-size:12.5px;display:flex;align-items:center;gap:7px"><span style="width:9px;height:9px;background:var(--color-neutral-500)"></span>Officer overrode the agent</div>
+            <div style="font-family:var(--font-heading);font-size:17px;text-align:right">9.0%</div>
+            <div style="font-size:12px;text-align:right;color:var(--color-neutral-700);font-variant-numeric:tabular-nums">78</div>
+          </div>
+          <div style="font-size:11.5px;color:var(--color-neutral-700);line-height:1.5;margin-top:11px;border-top:1px solid var(--color-divider);padding-top:9px">Definition: an alert counts as agent-handled only where the officer adopted the agent's recommendation without amendment. No alert is closed by the agent alone; the override share is reported alongside deliberately. <a href="Model Governance.dc.html" style="color:var(--color-accent-700)">Sampling assurance on these clearances ↗</a></div>
+        </div>
+        <div style="background:var(--color-bg);padding:12px 14px">
+          <div style="display:flex;align-items:baseline;gap:9px;margin-bottom:9px">
+            <span class="tlab">Trailing six months</span>
+            <span style="margin-left:auto" class="asof">Mar – Aug 2026 · agent-handled share and officer time saved</span>
+          </div>
+          <svg viewBox="0 0 600 178" style="width:100%;height:auto;font-family:var(--font-body)">
+            <g stroke="var(--color-divider)"><line x1="46" y1="146" x2="590" y2="146"></line><line x1="46" y1="110" x2="590" y2="110" stroke-dasharray="3 4"></line><line x1="46" y1="74" x2="590" y2="74" stroke-dasharray="3 4"></line><line x1="46" y1="38" x2="590" y2="38" stroke-dasharray="3 4"></line></g>
+            <g font-size="9.5" fill="var(--color-neutral-600)" text-anchor="end"><text x="40" y="149">40%</text><text x="40" y="113">50%</text><text x="40" y="77">60%</text><text x="40" y="41">70%</text></g>
+            <polyline points="80,104 182,96 284,89 386,82 488,76 578,70" fill="none" stroke="var(--color-accent-700)" stroke-width="2.5"></polyline>
+            <g fill="var(--color-bg)" stroke="var(--color-accent-700)" stroke-width="2">
+              <rect x="76" y="100" width="8" height="8"></rect><rect x="178" y="92" width="8" height="8"></rect><rect x="280" y="85" width="8" height="8"></rect><rect x="382" y="78" width="8" height="8"></rect><rect x="484" y="72" width="8" height="8"></rect><rect x="574" y="66" width="8" height="8"></rect>
+            </g>
+            <g font-size="10.5" fill="var(--color-text)" text-anchor="middle" font-family="var(--font-heading)">
+              <text x="80" y="94">51.6</text><text x="182" y="86">57.8</text><text x="284" y="79">59.9</text><text x="386" y="72">61.8</text><text x="488" y="66">63.1</text><text x="572" y="60">64.0</text>
+            </g>
+            <g font-size="10.5" fill="var(--color-neutral-700)" text-anchor="middle"><text x="80" y="164">Mar</text><text x="182" y="164">Apr</text><text x="284" y="164">May</text><text x="386" y="164">Jun</text><text x="488" y="164">Jul</text><text x="578" y="164">Aug</text></g>
+          </svg>
+          <div style="font-size:11.5px;color:var(--color-neutral-700);line-height:1.45;border-top:1px solid var(--color-divider);padding-top:7px;margin-top:3px">Up 12.4 points over six months. Estimated officer time released: 1,840 hours in the quarter, against 235 alerts still worked in full. The override share has held between 8.4% and 9.6% throughout, which is the check that the rise is not officers deferring to the agent.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 06 export -->
+    <div class="panel blueprint" style="background:var(--color-neutral-100)">
+      <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+      <div class="phead" style="background:var(--color-bg)">
+        <span class="num">06</span>
+        <h4 style="margin:0">Generate &amp; export</h4>
+        <span style="font-size:11.5px;color:var(--color-neutral-700)">Reports are fixed at generation and quoted as issued — figures are never restated after the fact</span>
+      </div>
+      <div style="display:flex;gap:18px;align-items:flex-start;padding:13px 14px">
+        <div style="flex:1;min-width:0;display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--color-divider)">
+          <div style="background:var(--color-bg);padding:9px 11px">
+            <div class="tlab">Report</div>
+            <select class="input" style="font-size:12.5px;min-height:30px;margin-top:3px"><option>Board MI pack — quarterly</option><option>SBP bi-annual STR count submission</option><option>Compliance Committee monthly</option><option>Full MI extract (all panels)</option></select>
+          </div>
+          <div style="background:var(--color-bg);padding:9px 11px">
+            <div class="tlab">Format</div>
+            <div style="display:flex;flex-direction:column;gap:5px;margin-top:5px">
+              <div onClick="{{ pickPdf }}" style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:12.5px">
+                <span style="width:14px;height:14px;border:1px solid var(--color-text);display:grid;place-items:center;font-size:10px;background:var(--color-bg)">{{ pdfBox }}</span>PDF — fixed, hashed, board-ready
+              </div>
+              <div onClick="{{ pickXlsx }}" style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:12.5px">
+                <span style="width:14px;height:14px;border:1px solid var(--color-text);display:grid;place-items:center;font-size:10px;background:var(--color-bg)">{{ xlsxBox }}</span>Workbook — figures with source references
+              </div>
+              <div onClick="{{ pickSbp }}" style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:12.5px">
+                <span style="width:14px;height:14px;border:1px solid var(--color-text);display:grid;place-items:center;font-size:10px;background:var(--color-bg)">{{ sbpBox }}</span>SBP bi-annual STR count — return format
+              </div>
+            </div>
+          </div>
+          <div style="background:var(--color-bg);padding:9px 11px">
+            <div class="tlab">Scope of this report</div>
+            <div style="font-size:12px;color:var(--color-neutral-800);line-height:1.5;margin-top:3px">{{ exportScope }}</div>
+          </div>
+        </div>
+        <div style="flex:none;max-width:300px">
+          <div style="font-size:11.5px;color:var(--color-neutral-700);line-height:1.5">Every figure carries its query time and source system, so a reader can reproduce it. Generation is logged against your name.</div>
+          <div style="display:flex;gap:8px;margin-top:9px;justify-content:flex-end">
+            <button class="btn btn-secondary" style="font-size:12.5px">Preview</button>
+            <button class="btn btn-primary" onClick="{{ openExport }}" style="font-size:12.5px">Generate report</button>
+          </div>
+        </div>
+      </div>
+      <div style="padding:0 14px 13px">
+        <div style="border:1px solid var(--color-divider);background:var(--color-bg)">
+          <div style="display:grid;grid-template-columns:168px 1fr 200px 160px 118px;background:var(--color-neutral-100);border-bottom:1px solid var(--color-divider)">
+            <div class="ahd">Reference</div>
+            <div class="ahd">Report · period covered</div>
+            <div class="ahd">Issued</div>
+            <div class="ahd">Format · hash</div>
+            <div class="ahd" style="text-align:right">Action</div>
+          </div>
+          <sc-for list="{{ history }}" as="h" hint-placeholder-count="3">
+            <div style="display:grid;grid-template-columns:168px 1fr 200px 160px 118px;align-items:center;border-bottom:1px solid color-mix(in srgb,var(--color-text) 8%,transparent)">
+              <div style="padding:8px 11px;font-size:12.5px">{{ h.ref }}</div>
+              <div style="padding:8px 11px">
+                <div style="font-size:12.5px">{{ h.name }}</div>
+                <div class="asof">{{ h.period }}</div>
+              </div>
+              <div style="padding:8px 11px;font-size:12.5px;font-variant-numeric:tabular-nums">{{ h.issued }}<div class="asof">{{ h.by }}</div></div>
+              <div style="padding:8px 11px;font-size:12px;color:var(--color-neutral-700);font-variant-numeric:tabular-nums">{{ h.format }}<div class="asof">{{ h.hash }}</div></div>
+              <div style="padding:8px 11px;text-align:right"><span class="btn btn-secondary" style="font-size:11.5px;padding:2px 9px">Download</span></div>
+            </div>
+          </sc-for>
+          <div style="padding:7px 11px;font-size:11.5px;color:var(--color-neutral-700)">Issued reports are retained for ten years alongside the filings they describe. A corrected report is issued as a superseding reference; neither copy is deleted.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <sc-if value="{{ exportOpen }}">
+    <div class="dialog-backdrop" style="z-index:20">
+      <div class="dialog blueprint" style="width:min(540px,100%);background:var(--color-bg)">
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+        <div class="dialog-title">Generate report</div>
+        <div class="dialog-body" style="font-size:13px">
+          <p style="margin:0 0 8px">Figures will be fixed at the query time below and cannot be restated. A correction is issued as a superseding report, with both retained.</p>
+          <div style="border:1px solid var(--color-divider);background:var(--color-neutral-100);padding:9px 11px;font-size:12.5px;line-height:1.6;white-space:pre-line">{{ exportSummary }}</div>
+          <p style="margin:8px 0 0;font-size:12px;color:var(--color-neutral-700)">Two critical-tier SLA breaches fall in this period and will appear in the report as board-reportable items.</p>
+        </div>
+        <div class="dialog-actions">
+          <button class="btn btn-secondary" onClick="{{ closeExport }}" style="font-size:13px">Cancel</button>
+          <button class="btn btn-primary" onClick="{{ doExport }}" style="font-size:13px">Generate MI-2026-Q3-027</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ toast }}">
+    <div style="position:fixed;right:18px;bottom:16px;z-index:15;display:flex;align-items:flex-start;gap:12px;max-width:520px;border:1px solid var(--color-accent-800);background:var(--color-accent-100);padding:9px 12px;font-size:12.5px;box-shadow:var(--shadow-md)">
+      <span>{{ toastMsg }}</span>
+      <span onClick="{{ dismissToast }}" style="flex:none;cursor:pointer;color:var(--color-accent-800);font-size:12px">✕</span>
+    </div>
+  </sc-if>
+</div></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;showComparatives&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Report&quot;}}">
+const RED = "var(--color-alert)", AMBER = "var(--color-accent-700)", ACC = "var(--color-accent-800)";
+
+const PERIODS = {
+  month: { label: "August 2026 (month to date)", short: "August 2026", asOf: "01 – 24 Aug 2026 · 24 days", prev: "July 2026" },
+  quarter: { label: "Q3 2026 · 01 Jun – 24 Aug 2026", short: "Q3 2026 to date", asOf: "figures as at 24 Aug 2026 23:59 PKT", prev: "Q2 2026 (01 Mar – 31 May)" },
+  biannual: { label: "SBP cycle H2 2026 · 01 Jul – 31 Dec 2026", short: "H2 2026 to date", asOf: "incomplete cycle · 55 of 184 days elapsed", prev: "H1 2026 (01 Jan – 30 Jun)" },
+  custom: { label: "Custom range — not yet set", short: "custom range", asOf: "select a start and end date", prev: "preceding equal period" }
+};
+
+const TYPOLOGY = [
+  { name: "Structuring — sub-threshold deposits", n: 14, color: ACC },
+  { name: "High-velocity / pass-through", n: 9, color: "var(--color-accent-600)" },
+  { name: "TBML — invoice manipulation", n: 6, color: "var(--color-accent-600)" },
+  { name: "Dormant reactivation", n: 5, color: "var(--color-accent-500)" },
+  { name: "Cross-border corridor", n: 4, color: "var(--color-accent-500)" },
+  { name: "Cash-intensive business", n: 3, color: "var(--color-accent-400)" }
+];
+
+const BRANCH = [
+  { name: "Jodia Bazar, Karachi", n: 13, color: ACC },
+  { name: "Saddar, Karachi", n: 9, color: "var(--color-accent-600)" },
+  { name: "Faisalabad Main", n: 7, color: "var(--color-accent-600)" },
+  { name: "Gulberg III, Lahore", n: 6, color: "var(--color-accent-500)" },
+  { name: "Peshawar Cantt", n: 4, color: "var(--color-accent-500)" },
+  { name: "Blue Area, Islamabad", n: 2, color: "var(--color-accent-400)" }
+];
+
+const TYPE = [
+  { name: "CTR", n: 1272, color: "var(--color-accent-300)" },
+  { name: "STR-F", n: 41, color: ACC }
+];
+
+const SLA = [
+  { tier: "Critical (80+)", target: "24 hours", total: 38, breached: 2, delta: -0.9, color: RED },
+  { tier: "High (50–79)", target: "3 days", total: 176, breached: 13, delta: 2.4, color: AMBER },
+  { tier: "Medium (25–49)", target: "7 days", total: 391, breached: 61, delta: 1.1, color: AMBER },
+  { tier: "Low (<25)", target: "14 days", total: 264, breached: 11, delta: 3.2, color: "var(--color-neutral-500)" }
+];
+
+const HISTORY = [
+  { ref: "MI-2026-Q2-021", name: "Board MI pack — quarterly", period: "01 Mar – 31 May 2026", issued: "04 Jun 2026 09:40 PKT", by: "S. Iqbal, MLRO", format: "PDF", hash: "e17c···4b93" },
+  { ref: "MI-2026-H1-016", name: "SBP bi-annual STR count submission", period: "01 Jan – 30 Jun 2026", issued: "12 Jul 2026 14:05 PKT", by: "S. Iqbal, MLRO", format: "SBP return + PDF", hash: "9a02···cd41" },
+  { ref: "MI-2026-M07-024", name: "Compliance Committee monthly", period: "01 – 31 Jul 2026", issued: "05 Aug 2026 11:22 PKT", by: "A. Raza, Snr Compliance Officer", format: "Workbook", hash: "44f8···2e07" }
+];
+
+class Component extends DCLogic {
+  state = { period: "quarter", compare: null, bd: "type", format: "pdf", exportOpen: false, toast: null };
+
+  toast(msg) {
+    clearTimeout(this._t);
+    this.setState({ toast: msg });
+    this._t = setTimeout(() => this.setState({ toast: null }), 7000);
+  }
+  componentWillUnmount() { clearTimeout(this._t); }
+
+  renderVals() {
+    const s = this.state, p = PERIODS[s.period];
+    const cmp = s.compare === null ? (this.props.showComparatives ?? true) : s.compare;
+    const box = v => (v ? "✕" : "");
+
+    const metrics = [
+      { num: "A", label: "STR-F filed", value: "41", delta: cmp ? "▲ 6 vs 35" : "—", up: true,
+        sub: "16 in August, the highest month on record. All filed inside the statutory window.", source: "source: goAML submission records" },
+      { num: "B", label: "CTR filed", value: "1,272", delta: cmp ? "▲ 84 vs 1,188" : "—", up: true,
+        sub: "PKR 5.41 bn reported. 96.4% raised automatically from threshold detection.", source: "source: goAML submission records" },
+      { num: "C", label: "Average time to file", value: "1 d 06 h", delta: cmp ? "▼ 4 h vs 1 d 10 h" : "—", up: true,
+        sub: "Officer disposition to goAML submission. Statutory limit is 7 days from suspicion.", source: "source: case disposition + filing timestamps" },
+      { num: "D", label: "SLA adherence", value: "90.0%", delta: cmp ? "▲ 1.8 pts vs 88.2%" : "—", up: true,
+        sub: "782 of 869 alerts dispositioned within their tier target. 2 critical-tier breaches.", source: "source: alert raise + disposition timestamps" }
+    ].map(m => ({ ...m, deltaColor: cmp ? (m.up ? ACC : RED) : "var(--color-neutral-600)" }));
+
+    const bdSet = s.bd === "typology" ? TYPOLOGY : s.bd === "branch" ? BRANCH : TYPE;
+    const bdTotal = bdSet.reduce((a, b) => a + b.n, 0);
+    const bdMax = Math.max(...bdSet.map(b => b.n));
+    const breakdown = bdSet.map(b => ({
+      name: b.name, n: String(b.n), color: b.color,
+      bar: ((b.n / bdMax) * 100).toFixed(0) + "%",
+      pct: ((b.n / bdTotal) * 100).toFixed(1) + "%"
+    }));
+
+    const slaRows = SLA.map(r => {
+      const ok = r.total - r.breached, adh = (ok / r.total) * 100;
+      return {
+        tier: r.tier, target: r.target, total: String(r.total), color: r.color,
+        okPct: adh.toFixed(1) + "%", badPct: (100 - adh).toFixed(1) + "%",
+        split: ok + " within · " + r.breached + " breached",
+        adherence: adh.toFixed(1) + "%",
+        adhColor: adh < 85 ? AMBER : "var(--color-text)",
+        delta: cmp ? (r.delta >= 0 ? "+" : "−") + Math.abs(r.delta).toFixed(1) + " pts" : "—",
+        deltaColor: !cmp ? "var(--color-neutral-600)" : r.delta >= 0 ? ACC : RED
+      };
+    });
+
+    const fmtLabel = s.format === "pdf" ? "PDF, fixed and hashed" : s.format === "xlsx" ? "Workbook with source references" : "SBP bi-annual STR count return";
+
+    return {
+      periodLabel: p.label, periodAsOf: p.asOf, periodShort: p.short,
+      compareLabel: cmp ? "Against " + p.prev : "No comparison",
+      compareNote: cmp ? "same basis, same branch scope" : "period-over-period indicators suppressed",
+      cmpKnob: cmp ? "17px" : "1px",
+      toggleCompare: () => this.setState({ compare: !cmp }),
+      pickMonth: () => this.setState({ period: "month" }),
+      pickQuarter: () => this.setState({ period: "quarter" }),
+      pickBiannual: () => this.setState({ period: "biannual" }),
+      pickCustom: () => this.setState({ period: "custom" }),
+      scopeLine: "All 6 branches · all product lines · reported on filing date, not detection date",
+
+      metrics,
+
+      bdNone: () => this.setState({ bd: "type" }),
+      bdTypology: () => this.setState({ bd: "typology" }),
+      bdBranch: () => this.setState({ bd: "branch" }),
+      bdTitle: s.bd === "typology" ? "STR-F by matched typology" : s.bd === "branch" ? "STR-F by originating branch" : "Filings by report type",
+      bdSub: s.bd === "type" ? "1,313 filings in the quarter" : "41 STR-F in the quarter",
+      breakdown,
+      bdNote: s.bd === "typology"
+        ? "Structuring is the largest single category at 34.1% of filings, consistent with the branch cash profile and with the strongest-performing detection rule."
+        : s.bd === "branch"
+        ? "Jodia Bazar accounts for 31.7% of filings against 24% of the alert book, consistent with its IRAR residual risk rating."
+        : "CTR volume is threshold-driven and rises with cash turnover; STR-F volume reflects officer dispositions and is the figure the SBP return reports.",
+      trendNote: "Quarter-over-quarter: STR-F +17.1%, CTR +7.1%",
+
+      slaRows,
+
+      pdfBox: box(s.format === "pdf"), xlsxBox: box(s.format === "xlsx"), sbpBox: box(s.format === "sbp"),
+      pickPdf: () => this.setState({ format: "pdf" }),
+      pickXlsx: () => this.setState({ format: "xlsx" }),
+      pickSbp: () => this.setState({ format: "sbp" }),
+      exportScope: "Panels 02–05 for " + p.short + (cmp ? ", with " + p.prev + " comparatives" : ", no comparatives") + ". Format: " + fmtLabel + ".",
+      exportSummary: "Board MI pack — quarterly\n" + p.label + (cmp ? "\nComparatives: " + p.prev : "\nNo comparatives") + "\nFormat: " + fmtLabel + "\nFigures fixed as at 24 Aug 2026 23:59 PKT\nRequested by S. Iqbal, MLRO",
+
+      history: HISTORY,
+
+      exportOpen: s.exportOpen,
+      openExport: () => this.setState({ exportOpen: true }),
+      closeExport: () => this.setState({ exportOpen: false }),
+      doExport: () => {
+        this.toast("MI-2026-Q3-027 generated and logged · " + fmtLabel + " · hash b72a···08f1 · figures fixed as at 24 Aug 2026 23:59 PKT.");
+        this.setState({ exportOpen: false });
+      },
+      toast: !!s.toast, toastMsg: s.toast || "",
+      dismissToast: () => { clearTimeout(this._t); this.setState({ toast: null }); }
+    };
+  }
+}
+</script>
+</body>
+</html>

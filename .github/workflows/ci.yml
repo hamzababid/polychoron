@@ -1,0 +1,131 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  agent-service:
+    name: agent-service (lint + test)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Start Postgres + Temporal
+        run: docker compose -f infra/docker-compose.yml up -d
+        # Same compose file used for local dev — CI runs against the
+        # identical stack, not a hand-duplicated CI-only config.
+
+      - name: Wait for Postgres
+        run: |
+          for i in $(seq 1 30); do
+            docker exec polychoron-postgres pg_isready -U polychoron -d polychoron && break
+            sleep 2
+          done
+
+      - name: Wait for Temporal
+        run: |
+          for i in $(seq 1 30); do
+            docker logs polychoron-temporal 2>&1 | grep -q "Started Worker" && break
+            sleep 2
+          done
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run schema migrations
+        run: python infra/db/migrate.py
+
+      - name: Install agent-service
+        working-directory: agent-service
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Lint (ruff)
+        working-directory: agent-service
+        run: ruff check app tests
+
+      - name: Test (pytest)
+        working-directory: agent-service
+        run: pytest -v
+
+  app-api:
+    name: app-api (lint + test)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Start Postgres + Temporal
+        run: docker compose -f infra/docker-compose.yml up -d
+
+      - name: Wait for Postgres
+        run: |
+          for i in $(seq 1 30); do
+            docker exec polychoron-postgres pg_isready -U polychoron -d polychoron && break
+            sleep 2
+          done
+
+      - name: Wait for Temporal
+        run: |
+          for i in $(seq 1 30); do
+            docker logs polychoron-temporal 2>&1 | grep -q "Started Worker" && break
+            sleep 2
+          done
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run schema migrations
+        run: python infra/db/migrate.py
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+          cache-dependency-path: app-api/package-lock.json
+
+      - name: Install app-api
+        working-directory: app-api
+        run: npm ci
+
+      - name: Lint (oxlint)
+        working-directory: app-api
+        run: npm run lint
+
+      - name: Unit tests
+        working-directory: app-api
+        run: npx vitest run
+
+      - name: E2e tests
+        working-directory: app-api
+        # test/aml-disposition.e2e-spec.ts is gated behind
+        # RUN_LIVE_LLM_TESTS (unset here) — it drives a real
+        # OpenAI-backed workflow run and is deliberately not part of
+        # the default CI run (cost + latency + needs a live API key
+        # and a running agent-service worker). Run it manually before
+        # a release if the agent chain changed.
+        run: npx vitest run --config ./vitest.config.e2e.ts
+
+  frontend:
+    name: frontend (typecheck + build)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend
+        working-directory: frontend
+        run: npm ci
+
+      - name: Typecheck + build
+        working-directory: frontend
+        run: npm run build

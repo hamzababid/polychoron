@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/industry-92a524b8-8757-4847-a147-3c04a6398262/styles.css">
+<script src="_ds/industry-92a524b8-8757-4847-a147-3c04a6398262/_ds_bundle.js"></script>
+<link rel="stylesheet" href="brand.css">
+<style>
+body{margin:0;background:var(--color-bg)}
+.scrollcol{overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--color-neutral-400) transparent}
+.tlab{font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-neutral-700)}
+.asof{font-size:10.5px;color:var(--color-neutral-600);font-variant-numeric:tabular-nums}
+.panel{position:relative;border:1px solid var(--color-divider);background:var(--color-bg)}
+.phead{display:flex;align-items:baseline;gap:10px;padding:9px 14px;border-bottom:1px solid var(--color-text)}
+.num{font-family:var(--font-heading);font-size:12px;letter-spacing:.14em;color:var(--color-neutral-700)}
+.ahd{padding:6px 11px;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--color-neutral-700)}
+</style>
+</helmet>
+<div style="height:100vh;min-height:900px;overflow-x:auto;overflow-y:hidden"><div style="height:100%;min-width:1360px;display:flex;flex-direction:column;font-family:var(--font-body);color:var(--color-text);background:var(--color-bg);overflow:hidden">
+
+  <div style="display:flex;align-items:center;gap:24px;padding:0 18px;height:44px;flex:none;background:var(--color-accent-900);color:var(--color-bg)">
+    <span style="display:flex;align-items:center;gap:9px;font-family:var(--font-heading);font-weight:600;font-size:17px;letter-spacing:0.06em"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.2" style="flex:none"><path d="M12 1.6 20.6 6.6v10.8L12 22.4 3.4 17.4V6.6z"></path><path d="M12 7.2 16.6 9.9v5.4L12 18l-4.6-2.7V9.9z"></path><path d="M12 1.6v5.6M20.6 6.6l-4 3.3M20.6 17.4l-4-2.1M12 22.4V18M3.4 17.4l4-2.1M3.4 6.6l4 3.3"></path></svg>POLYCHORON<span style="opacity:.6">AI</span></span>
+    <span style="width:1px;height:18px;background:rgba(255,255,255,.22)"></span>
+    <div style="display:flex;gap:18px;font-size:13px;letter-spacing:.01em">
+      <a href="Command Dashboard.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Dashboard</a>
+      <a href="Alert Queue.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Queue</a>
+      <a href="Case Workspace.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Cases</a>
+      <a href="Customer 360.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Customers</a>
+      <a href="Screening Hub.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Screening</a>
+      <a href="Typology Rules Console.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Typologies</a>
+      <a href="Filing Console.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Filings</a>
+      <a href="goAML Tracker.dc.html" style="opacity:.6;color:inherit;text-decoration:none">goAML tracker</a>
+      <span style="padding-bottom:2px;border-bottom:2px solid var(--color-accent-400)">Governance</span>
+      <a href="Reporting MI.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Reporting</a>
+    </div>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:14px;font-size:12px">
+      <span style="opacity:.7">Habib Metropolitan · Internal audit view</span>
+      <span style="width:1px;height:18px;background:rgba(255,255,255,.22)"></span>
+      <span>T. Mahmood · Internal Audit</span>
+      <span style="width:26px;height:26px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.3);font-family:var(--font-heading);font-size:12px">TM</span>
+    </div>
+  </div>
+
+  <!-- report header -->
+  <div style="display:flex;align-items:stretch;flex:none;border-bottom:1px solid var(--color-divider);background:var(--color-neutral-100)">
+    <div style="padding:11px 18px;border-right:1px solid var(--color-divider);min-width:400px">
+      <div style="font-family:var(--font-heading);font-size:20px;letter-spacing:.02em">Model governance &amp; audit record</div>
+      <div style="font-size:11.5px;color:var(--color-neutral-700)">Agent-assisted alert disposition · reporting entity HMB-0114 · prepared for internal audit and SBP examination</div>
+    </div>
+    <div style="padding:11px 18px;border-right:1px solid var(--color-divider)">
+      <div class="tlab">Observation period</div>
+      <div style="font-size:13px">01 Mar 2026 — 24 Aug 2026 (178 days)</div>
+      <div class="asof">all figures as at 24 Aug 2026 23:59 PKT unless stated</div>
+    </div>
+    <div style="padding:11px 18px;border-right:1px solid var(--color-divider)">
+      <div class="tlab">Governance status</div>
+      <div style="font-size:13px">Within tolerance on all four controls</div>
+      <div class="asof">1 observation outstanding — see panel 04</div>
+    </div>
+    <div style="padding:11px 18px;display:flex;flex-direction:column;justify-content:center">
+      <div class="tlab">Last independent review</div>
+      <div style="font-size:13px">Model Risk Committee · 31 Jul 2026</div>
+      <div class="asof">next scheduled 31 Oct 2026</div>
+    </div>
+    <div style="margin-left:auto;padding:11px 18px;display:flex;align-items:center;gap:8px">
+      <button class="btn btn-secondary" style="font-size:12.5px;padding:5px 10px">Evidence index</button>
+      <button class="btn btn-primary" onClick="{{ openExport }}" style="font-size:12.5px;padding:5px 12px">Generate governance report</button>
+    </div>
+  </div>
+
+  <div class="scrollcol" style="flex:1;padding:16px 18px 28px;display:flex;flex-direction:column;gap:16px">
+
+    <!-- 01 model version -->
+    <div class="panel blueprint">
+      <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+      <div class="phead">
+        <span class="num">01</span>
+        <h4 style="margin:0">Model version in production</h4>
+        <span style="margin-left:auto" class="asof">Deployment records sourced from the model registry · as at 24 Aug 2026 23:59 PKT</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1.35fr;gap:1px;background:var(--color-divider)">
+        <div style="background:var(--color-bg);padding:13px 14px">
+          <div style="display:flex;align-items:baseline;gap:10px">
+            <span style="font-family:var(--font-heading);font-size:26px">Agent v2.4.1</span>
+            <span style="display:inline-grid;place-items:center;height:20px;padding:0 8px;border:1px solid var(--color-accent-800);background:var(--color-accent-100);color:var(--color-accent-800);font-family:var(--font-heading);font-size:10.5px;letter-spacing:.08em">IN PRODUCTION</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--color-divider);margin-top:11px">
+            <div style="background:var(--color-bg);padding:7px 0"><div class="tlab">Deployed</div><div style="font-size:13px">10 Jul 2026 02:15 PKT</div></div>
+            <div style="background:var(--color-bg);padding:7px 0 7px 11px"><div class="tlab">Time in production</div><div style="font-size:13px">45 days</div></div>
+            <div style="background:var(--color-bg);padding:7px 0"><div class="tlab">Rule pack</div><div style="font-size:13px">FMU-2026.2 (7 live rules)</div></div>
+            <div style="background:var(--color-bg);padding:7px 0 7px 11px"><div class="tlab">Approved by</div><div style="font-size:13px">Model Risk Committee, 08 Jul 2026</div></div>
+            <div style="background:var(--color-bg);padding:7px 0"><div class="tlab">Alerts dispositioned under this version</div><div style="font-size:13px">1,204</div></div>
+            <div style="background:var(--color-bg);padding:7px 0 7px 11px"><div class="tlab">Rollback target</div><div style="font-size:13px">v2.3.6 · retained, 90-day window</div></div>
+          </div>
+          <div style="font-size:11.5px;color:var(--color-neutral-700);line-height:1.5;margin-top:11px;border-top:1px solid var(--color-divider);padding-top:9px">The agent proposes; it does not dispose. Every clearance carries a named officer sign-off and every filing a named attesting officer — see the disposition and attestation records held against each case. <a href="Typology Rules Console.dc.html" style="color:var(--color-accent-700)">Rule-level change control ↗</a></div>
+        </div>
+        <div style="background:var(--color-bg)">
+          <div style="display:flex;align-items:baseline;gap:9px;padding:9px 14px;border-bottom:1px solid var(--color-divider)">
+            <h6 style="margin:0">Version &amp; change history</h6>
+            <span class="tag tag-neutral" style="font-size:10px">6 entries in period</span>
+            <span style="margin-left:auto" class="asof">full log retained 10 years</span>
+          </div>
+          <sc-for list="{{ versions }}" as="v" hint-placeholder-count="6">
+            <div style="display:grid;grid-template-columns:96px 82px 1fr 150px;gap:11px;padding:8px 14px;border-bottom:1px solid color-mix(in srgb,var(--color-text) 8%,transparent);background:{{ v.bg }}">
+              <div>
+                <div style="font-family:var(--font-heading);font-size:13px">{{ v.ver }}</div>
+                <div class="asof">{{ v.date }}</div>
+              </div>
+              <div style="font-size:11px;color:{{ v.tagColor }};letter-spacing:.06em;padding-top:2px">{{ v.tag }}</div>
+              <div style="min-width:0">
+                <div style="font-size:12.5px;line-height:1.4">{{ v.change }}</div>
+                <div style="font-size:11px;color:var(--color-neutral-700);margin-top:1px">Reason: {{ v.reason }}</div>
+              </div>
+              <div style="font-size:11px;color:var(--color-neutral-700);line-height:1.4">{{ v.who }}<br><span style="color:var(--color-neutral-600)">{{ v.approval }}</span></div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+
+    <!-- 02 sampling & drift -->
+    <div class="panel blueprint" style="border:2px solid var(--color-text)">
+      <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+      <div class="phead">
+        <span class="num">02</span>
+        <h4 style="margin:0">Sampling &amp; drift check — primary control</h4>
+        <span style="font-size:11.5px;color:var(--color-neutral-700)">Policy: at least 5% of agent-cleared alerts independently re-reviewed each month by an officer who did not sign the original clearance</span>
+        <span style="margin-left:auto" class="asof">Sample drawn 01 Aug 2026 · reviews completed 22 Aug 2026</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--color-divider)">
+        <div style="background:var(--color-bg);padding:12px 14px">
+          <div class="tlab">Sample size — August</div>
+          <div style="display:flex;align-items:baseline;gap:9px;margin-top:3px">
+            <span style="font-family:var(--font-heading);font-size:32px;line-height:1">45</span>
+            <span style="font-size:12px;color:var(--color-neutral-700);line-height:1.35">of 556<br>agent-cleared</span>
+          </div>
+          <div style="font-size:12px;margin-top:7px">{{ floorLine }}</div>
+          <div class="asof">random selection, stratified by typology</div>
+        </div>
+        <div style="background:var(--color-bg);padding:12px 14px">
+          <div class="tlab">Reviewer agreed</div>
+          <div style="display:flex;align-items:baseline;gap:9px;margin-top:3px">
+            <span style="font-family:var(--font-heading);font-size:32px;line-height:1">43</span>
+            <span style="font-size:12px;color:var(--color-neutral-700);line-height:1.35">clearance<br>upheld</span>
+          </div>
+          <div style="font-size:12px;margin-top:7px"><strong>95.6%</strong> agreement rate</div>
+          <div class="asof">threshold for investigation: below 90%</div>
+        </div>
+        <div style="background:color-mix(in srgb,var(--color-alert) 8%,transparent);padding:12px 14px;box-shadow:inset 0 0 0 2px var(--color-alert)">
+          <div class="tlab" style="color:var(--color-alert)">Reviewer disagreed</div>
+          <div style="display:flex;align-items:baseline;gap:9px;margin-top:3px">
+            <span style="font-family:var(--font-heading);font-size:32px;line-height:1;color:var(--color-alert)">2</span>
+            <span style="font-size:12px;color:var(--color-alert);line-height:1.35">clearances<br>overturned</span>
+          </div>
+          <div style="font-size:12px;margin-top:7px;color:var(--color-alert)"><strong>4.4%</strong> disagreement · both remediated</div>
+          <div class="asof" style="color:var(--color-alert)">1 STR filed on re-review · 1 to enhanced monitoring</div>
+        </div>
+        <div style="background:var(--color-bg);padding:12px 14px">
+          <div class="tlab">Drift assessment</div>
+          <div style="font-size:13.5px;margin-top:4px;line-height:1.4">No adverse drift detected</div>
+          <div style="font-size:11.5px;color:var(--color-neutral-700);margin-top:5px;line-height:1.45">Agreement has moved 92.1% → 95.6% over six months; the direction is favourable and the movement is inside normal variation for a sample of this size.</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1.25fr 1fr;gap:1px;background:var(--color-divider);border-top:1px solid var(--color-divider)">
+        <div style="background:var(--color-bg);padding:12px 14px">
+          <div style="display:flex;align-items:baseline;gap:9px;margin-bottom:9px">
+            <span class="tlab">Agreement rate — trailing six months</span>
+            <span style="margin-left:auto" class="asof">Mar – Aug 2026 · n = 41, 44, 39, 47, 46, 45</span>
+          </div>
+          <svg viewBox="0 0 600 168" style="width:100%;height:auto;font-family:var(--font-body)">
+            <g stroke="var(--color-divider)"><line x1="46" y1="140" x2="590" y2="140"></line><line x1="46" y1="104" x2="590" y2="104" stroke-dasharray="3 4"></line><line x1="46" y1="68" x2="590" y2="68" stroke-dasharray="3 4"></line><line x1="46" y1="32" x2="590" y2="32" stroke-dasharray="3 4"></line></g>
+            <g font-size="9.5" fill="var(--color-neutral-600)" text-anchor="end"><text x="40" y="143">85%</text><text x="40" y="107">90%</text><text x="40" y="71">95%</text><text x="40" y="35">100%</text></g>
+            <line x1="46" y1="104" x2="590" y2="104" stroke="var(--color-alert)" stroke-width="1.5" stroke-dasharray="7 4"></line>
+            <text x="586" y="118" font-size="10" fill="var(--color-alert)" text-anchor="end">INVESTIGATION THRESHOLD 90%</text>
+            <polyline points="80,89 182,82 284,86 386,74 488,70 578,64" fill="none" stroke="var(--color-accent-800)" stroke-width="2.5"></polyline>
+            <g fill="var(--color-bg)" stroke="var(--color-accent-800)" stroke-width="2">
+              <rect x="76" y="85" width="8" height="8"></rect><rect x="178" y="78" width="8" height="8"></rect><rect x="280" y="82" width="8" height="8"></rect><rect x="382" y="70" width="8" height="8"></rect><rect x="484" y="66" width="8" height="8"></rect><rect x="574" y="60" width="8" height="8"></rect>
+            </g>
+            <g font-size="10.5" fill="var(--color-text)" text-anchor="middle" font-family="var(--font-heading)">
+              <text x="80" y="79">92.1</text><text x="182" y="72">93.2</text><text x="284" y="76">92.7</text><text x="386" y="64">94.5</text><text x="488" y="60">95.0</text><text x="572" y="54">95.6</text>
+            </g>
+            <g font-size="10.5" fill="var(--color-neutral-700)" text-anchor="middle"><text x="80" y="158">Mar</text><text x="182" y="158">Apr</text><text x="284" y="158">May</text><text x="386" y="158">Jun</text><text x="488" y="158">Jul</text><text x="578" y="158">Aug</text></g>
+          </svg>
+        </div>
+        <div style="background:var(--color-bg);padding:12px 14px">
+          <div class="tlab" style="margin-bottom:8px">The two disagreements — full particulars</div>
+          <div style="border-left:3px solid var(--color-alert);padding-left:10px;margin-bottom:10px">
+            <div style="font-size:12.5px;font-weight:500">ALT-2026-03871 · cash-intensive business ratio</div>
+            <div style="font-size:11.5px;color:var(--color-neutral-800);line-height:1.45;margin-top:2px">Agent cleared; original sign-off M. Shafiq 14 Jul. On re-review A. Raza judged the cash ratio shift unexplained by the stated seasonality and filed STR-F/2026/00301 on 19 Aug — 36 days after the original clearance.</div>
+            <div class="asof">Cause: agent did not weight a same-week counterparty change. Fixed in v2.4.1.</div>
+          </div>
+          <div style="border-left:3px solid var(--color-alert);padding-left:10px">
+            <div style="font-size:12.5px;font-weight:500">ALT-2026-04012 · dormant reactivation</div>
+            <div style="font-size:11.5px;color:var(--color-neutral-800);line-height:1.45;margin-top:2px">Agent cleared on an inheritance explanation; reviewer found the supporting document was for a different account holder. Placed under enhanced monitoring 20 Aug; no filing.</div>
+            <div class="asof">Cause: document-to-party matching not performed. Open remediation item, due 30 Sep 2026.</div>
+          </div>
+          <div style="font-size:11px;color:var(--color-neutral-700);line-height:1.45;margin-top:10px;border-top:1px solid var(--color-divider);padding-top:8px">Neither case was closed to the customer's advantage without a named officer; both original clearances carried valid sign-offs, which is the point the sample tests.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 03 consistency -->
+    <div class="panel blueprint">
+      <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+      <div class="phead">
+        <span class="num">03</span>
+        <h4 style="margin:0">Consistency check — like cases, like outcomes</h4>
+        <span style="font-size:11.5px;color:var(--color-neutral-700)">Structuring typology (FMU-ST-04) disposition outcomes by branch</span>
+        <span style="margin-left:auto" class="asof">01 Mar – 24 Aug 2026 · 132 alerts · sourced from case dispositions</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:1px;background:var(--color-divider)">
+        <div style="background:var(--color-bg)">
+          <div style="display:grid;grid-template-columns:210px 96px 1fr 118px 130px;background:var(--color-neutral-100);border-bottom:1px solid var(--color-text)">
+            <div class="ahd">Branch</div>
+            <div class="ahd" style="text-align:right">Alerts</div>
+            <div class="ahd">STR conversion</div>
+            <div class="ahd" style="text-align:right">vs. mean</div>
+            <div class="ahd">Assessment</div>
+          </div>
+          <sc-for list="{{ branches }}" as="b" hint-placeholder-count="5">
+            <div style="display:grid;grid-template-columns:210px 96px 1fr 118px 130px;align-items:center;border-bottom:1px solid color-mix(in srgb,var(--color-text) 8%,transparent)">
+              <div style="padding:8px 11px;font-size:13px">{{ b.name }}</div>
+              <div style="padding:8px 11px;text-align:right;font-size:13px;font-variant-numeric:tabular-nums">{{ b.alerts }}</div>
+              <div style="padding:8px 11px;display:flex;align-items:center;gap:9px">
+                <span style="font-family:var(--font-heading);font-size:17px;width:52px">{{ b.conv }}</span>
+                <span style="flex:1;height:9px;background:var(--color-neutral-200);position:relative;max-width:180px">
+                  <span style="position:absolute;left:0;top:0;bottom:0;width:{{ b.bar }};background:var(--color-accent-600)"></span>
+                  <span style="position:absolute;left:{{ b.meanMark }};top:-3px;bottom:-3px;width:1px;background:var(--color-text)"></span>
+                </span>
+              </div>
+              <div style="padding:8px 11px;text-align:right;font-size:12.5px;font-variant-numeric:tabular-nums;color:{{ b.devColor }}">{{ b.dev }}</div>
+              <div style="padding:8px 11px;font-size:11.5px;color:var(--color-neutral-700)">{{ b.note }}</div>
+            </div>
+          </sc-for>
+          <div style="padding:8px 11px;font-size:11.5px;color:var(--color-neutral-700);line-height:1.45">{{ tolLine }}</div>
+        </div>
+        <div style="background:var(--color-bg);padding:12px 14px">
+          <div class="tlab" style="margin-bottom:8px">Secondary consistency tests</div>
+          <div style="display:flex;flex-direction:column;gap:9px">
+            <div style="border-bottom:1px dashed var(--color-divider);padding-bottom:8px">
+              <div style="font-size:12.5px">Clearance rate by analyst grade</div>
+              <div style="font-size:11.5px;color:var(--color-neutral-700);line-height:1.45">L1 63.8% · L2 64.9% · senior 61.2%. Spread 3.7 points, within tolerance.</div>
+            </div>
+            <div style="border-bottom:1px dashed var(--color-divider);padding-bottom:8px">
+              <div style="font-size:12.5px">Agent recommendation by customer risk band</div>
+              <div style="font-size:11.5px;color:var(--color-neutral-700);line-height:1.45">STR recommendation rate rises monotonically with KYC risk band — no inversion, no plateau.</div>
+            </div>
+            <div style="border-bottom:1px dashed var(--color-divider);padding-bottom:8px">
+              <div style="font-size:12.5px">Recommendation stability on replay</div>
+              <div style="font-size:11.5px;color:var(--color-neutral-700);line-height:1.45">200 closed alerts re-run against v2.4.1: identical recommendation in 197 cases (98.5%). Three differences all moved towards escalation.</div>
+            </div>
+            <div>
+              <div style="font-size:12.5px">Protected-characteristic proxy test</div>
+              <div style="font-size:11.5px;color:var(--color-neutral-700);line-height:1.45">No material variance by customer gender, age band or branch region after controlling for transaction profile. Tested 31 Jul 2026 by Model Risk.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 04 lineage -->
+    <div class="panel blueprint">
+      <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+      <div class="phead">
+        <span class="num">04</span>
+        <h4 style="margin:0">Data lineage &amp; feed status</h4>
+        <span style="font-size:11.5px;color:var(--color-neutral-700)">Every input the agent reads, and when it last refreshed</span>
+        <span style="margin-left:auto" class="asof">Feed status polled 25 Aug 2026 10:04 PKT</span>
+      </div>
+      <div style="display:grid;grid-template-columns:240px 1fr 190px 158px 1fr;background:var(--color-neutral-100);border-bottom:1px solid var(--color-text)">
+        <div class="ahd">Source system</div>
+        <div class="ahd">What the agent takes from it</div>
+        <div class="ahd">Last refresh</div>
+        <div class="ahd">Expected cadence</div>
+        <div class="ahd">Status</div>
+      </div>
+      <sc-for list="{{ feeds }}" as="f" hint-placeholder-count="6">
+        <div style="display:grid;grid-template-columns:240px 1fr 190px 158px 1fr;align-items:center;border-bottom:1px solid color-mix(in srgb,var(--color-text) 8%,transparent);background:{{ f.bg }}">
+          <div style="padding:9px 11px;border-left:4px solid {{ f.color }}">
+            <div style="font-size:13px">{{ f.name }}</div>
+            <div class="asof">{{ f.owner }}</div>
+          </div>
+          <div style="padding:9px 11px;font-size:12px;color:var(--color-neutral-800);line-height:1.4">{{ f.uses }}</div>
+          <div style="padding:9px 11px;font-size:12.5px;font-variant-numeric:tabular-nums">{{ f.refreshed }}<div class="asof">{{ f.ago }}</div></div>
+          <div style="padding:9px 11px;font-size:12px;color:var(--color-neutral-700)">{{ f.cadence }}</div>
+          <div style="padding:9px 11px">
+            <span style="display:inline-grid;place-items:center;height:20px;padding:0 8px;font-family:var(--font-heading);font-size:10.5px;letter-spacing:.08em;border:1px solid {{ f.color }};background:{{ f.badgeBg }};color:{{ f.color }}">{{ f.status }}</span>
+            <div style="font-size:11px;color:{{ f.noteColor }};margin-top:3px;line-height:1.4">{{ f.note }}</div>
+          </div>
+        </div>
+      </sc-for>
+      <div style="padding:9px 14px;font-size:11.5px;color:var(--color-accent-800);background:var(--color-accent-100);border-top:1px solid var(--color-divider);line-height:1.5">
+        <strong>Observation 04-01 (open):</strong> the adverse-media feed is 31 hours past its expected daily refresh. Coverage gap declared to the Model Risk Committee on 24 Aug 2026; alerts raised in the interim carry a data-completeness flag on the case record and no clearance relying on adverse-media screening has been sampled in this period. Vendor remediation expected 26 Aug 2026. No other feed has breached cadence in the observation period.
+      </div>
+    </div>
+
+    <!-- 05 export -->
+    <div class="panel blueprint" style="background:var(--color-neutral-100)">
+      <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+      <div class="phead" style="background:var(--color-bg)">
+        <span class="num">05</span>
+        <h4 style="margin:0">Governance report</h4>
+        <span style="font-size:11.5px;color:var(--color-neutral-700)">A fixed, timestamped extract of this record — the artefact handed to an examiner</span>
+      </div>
+      <div style="display:flex;gap:20px;align-items:flex-start;padding:13px 14px">
+        <div style="flex:1;min-width:0;display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--color-divider)">
+          <div style="background:var(--color-bg);padding:9px 11px">
+            <div class="tlab">Period</div>
+            <select class="input" style="font-size:12.5px;min-height:30px;margin-top:3px"><option>01 Mar – 24 Aug 2026 (current view)</option><option>Q2 2026 (01 Apr – 30 Jun)</option><option>H1 2026 (01 Jan – 30 Jun)</option><option>Custom range…</option></select>
+          </div>
+          <div style="background:var(--color-bg);padding:9px 11px">
+            <div class="tlab">Prepared for</div>
+            <select class="input" style="font-size:12.5px;min-height:30px;margin-top:3px"><option>SBP examination</option><option>Internal audit cycle</option><option>Model Risk Committee</option><option>External auditor</option></select>
+          </div>
+          <div style="background:var(--color-bg);padding:9px 11px">
+            <div class="tlab">Includes</div>
+            <div style="font-size:12px;color:var(--color-neutral-800);line-height:1.45;margin-top:3px">Panels 01–04, the sampled case list with reviewer identities, the full change log and the feed-status history.</div>
+          </div>
+        </div>
+        <div style="flex:none;max-width:330px">
+          <div style="font-size:11.5px;color:var(--color-neutral-700);line-height:1.5">The report is generated as a fixed PDF with a content hash, is itself logged, and states the exact query time for every figure so a reader can reproduce it from source. Figures are never recalculated after issue.</div>
+          <div style="display:flex;gap:8px;margin-top:9px;justify-content:flex-end">
+            <button class="btn btn-secondary" style="font-size:12.5px">Preview</button>
+            <button class="btn btn-primary" onClick="{{ openExport }}" style="font-size:12.5px">Generate report</button>
+          </div>
+        </div>
+      </div>
+      <div style="padding:0 14px 12px">
+        <div style="border:1px solid var(--color-divider);background:var(--color-bg)">
+          <div style="display:grid;grid-template-columns:170px 1fr 190px 150px;background:var(--color-neutral-100);border-bottom:1px solid var(--color-divider)">
+            <div class="ahd">Reference</div>
+            <div class="ahd">Prepared for</div>
+            <div class="ahd">Issued</div>
+            <div class="ahd">Content hash</div>
+          </div>
+          <div style="display:grid;grid-template-columns:170px 1fr 190px 150px;border-bottom:1px solid color-mix(in srgb,var(--color-text) 8%,transparent)">
+            <div style="padding:7px 11px;font-size:12.5px">GOV-2026-Q2-014</div>
+            <div style="padding:7px 11px;font-size:12.5px">Internal audit cycle · T. Mahmood</div>
+            <div style="padding:7px 11px;font-size:12.5px;font-variant-numeric:tabular-nums">14 Jul 2026 16:20 PKT</div>
+            <div style="padding:7px 11px;font-size:11.5px;font-variant-numeric:tabular-nums;color:var(--color-neutral-700)">a41f···9c02</div>
+          </div>
+          <div style="display:grid;grid-template-columns:170px 1fr 190px 150px">
+            <div style="padding:7px 11px;font-size:12.5px">GOV-2026-H1-009</div>
+            <div style="padding:7px 11px;font-size:12.5px">SBP examination · thematic review on AI use</div>
+            <div style="padding:7px 11px;font-size:12.5px;font-variant-numeric:tabular-nums">03 Jun 2026 11:05 PKT</div>
+            <div style="padding:7px 11px;font-size:11.5px;font-variant-numeric:tabular-nums;color:var(--color-neutral-700)">7b8e···41da</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <sc-if value="{{ exportOpen }}">
+    <div class="dialog-backdrop" style="z-index:20">
+      <div class="dialog blueprint" style="width:min(540px,100%);background:var(--color-bg)">
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+        <div class="dialog-title">Generate governance report</div>
+        <div class="dialog-body" style="font-size:13px">
+          <p style="margin:0 0 8px">The report will be fixed at generation time and cannot be edited afterwards. A correction is issued as a superseding report, with both retained.</p>
+          <div style="border:1px solid var(--color-divider);background:var(--color-neutral-100);padding:9px 11px;font-size:12.5px;line-height:1.6">
+            Period 01 Mar – 24 Aug 2026 · prepared for SBP examination<br>
+            Panels 01–04, 45 sampled cases with reviewer identities<br>
+            Figures fixed as at 24 Aug 2026 23:59 PKT<br>
+            Requested by T. Mahmood, Internal Audit
+          </div>
+          <p style="margin:8px 0 0;font-size:12px;color:var(--color-neutral-700)">Observation 04-01 is open and will appear in the report as an unresolved item. Generation does not close it.</p>
+        </div>
+        <div class="dialog-actions">
+          <button class="btn btn-secondary" onClick="{{ closeExport }}" style="font-size:13px">Cancel</button>
+          <button class="btn btn-primary" onClick="{{ doExport }}" style="font-size:13px">Generate GOV-2026-Q3-018</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ toast }}">
+    <div style="position:fixed;right:18px;bottom:16px;z-index:15;display:flex;align-items:flex-start;gap:12px;max-width:520px;border:1px solid var(--color-accent-800);background:var(--color-accent-100);padding:9px 12px;font-size:12.5px;box-shadow:var(--shadow-md)">
+      <span>{{ toastMsg }}</span>
+      <span onClick="{{ dismissToast }}" style="flex:none;cursor:pointer;color:var(--color-accent-800);font-size:12px">✕</span>
+    </div>
+  </sc-if>
+</div></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;samplingFloor&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:5,&quot;min&quot;:1,&quot;max&quot;:25,&quot;unit&quot;:&quot;%&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Policy&quot;},&quot;consistencyTolerance&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:5,&quot;min&quot;:2,&quot;max&quot;:15,&quot;unit&quot;:&quot;pts&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Policy&quot;}}">
+const RED = "var(--color-alert)", AMBER = "var(--color-accent-700)", AMBER_DK = "var(--color-accent-800)", GREEN = "var(--color-accent-700)";
+
+const VERSIONS = [
+  { ver: "v2.4.1", date: "10 Jul 2026", tag: "LIVE", change: "Counterparty-change signal added to the cash-intensive business assessment.", reason: "Remediation of sampling disagreement on ALT-2026-03871.", who: "F. Nasir, Model Risk", approval: "MRC approved 08 Jul 2026", live: true },
+  { ver: "v2.4.0", date: "14 Jun 2026", tag: "superseded", change: "Structuring rule band narrowed to 85–99%; narrative drafting prompt revised.", reason: "Q1 tuning review — false-positive reduction programme.", who: "S. Iqbal, MLRO", approval: "MRC approved 11 Jun 2026" },
+  { ver: "v2.3.6", date: "02 May 2026", tag: "rollback target", change: "Pass-through ratio raised from 70% to 80% for high-velocity accounts.", reason: "Noise from trade accounts identified in April monitoring.", who: "F. Nasir, Model Risk", approval: "MRC approved 29 Apr 2026" },
+  { ver: "v2.3.4", date: "28 Mar 2026", tag: "superseded", change: "Trade-price deviation tolerance loosened from 30% to 40%.", reason: "Cotton reference-price volatility producing false positives.", who: "H. Siddiqui, Trade Finance", approval: "MRC approved 25 Mar 2026" },
+  { ver: "v2.3.1", date: "17 Feb 2026", tag: "superseded", change: "Dormancy period for reactivation alerts shortened from 24 to 12 months.", reason: "FMU typology guidance issued January 2026.", who: "F. Nasir, Model Risk", approval: "MRC approved 12 Feb 2026" },
+  { ver: "v2.3.0", date: "08 Jan 2026", tag: "superseded", change: "Cash-ratio comparison switched from sector benchmark to account's own history.", reason: "Sector benchmark unavailable for 31% of business accounts.", who: "M. Shafiq, Compliance", approval: "MRC approved 06 Jan 2026" }
+];
+
+const BRANCHES = [
+  { name: "Jodia Bazar, Karachi", alerts: 41, conv: 30.1, note: "within tolerance" },
+  { name: "Saddar, Karachi", alerts: 28, conv: 28.6, note: "within tolerance" },
+  { name: "Faisalabad Main", alerts: 24, conv: 25.6, note: "within tolerance" },
+  { name: "Gulberg III, Lahore", alerts: 22, conv: 31.8, note: "within tolerance" },
+  { name: "Blue Area, Islamabad", alerts: 17, conv: 27.9, note: "within tolerance" }
+];
+const MEAN = 28.8;
+
+const FEEDS = [
+  { name: "Core banking (Temenos)", owner: "owner: IT Operations", uses: "Transaction postings, balances, account status, branch and channel codes", refreshed: "25 Aug 2026 06:00", ago: "4 h 04 m ago", cadence: "every 6 hours", stale: false, note: "Reconciled to the general ledger at each load." },
+  { name: "KYC / customer master", owner: "owner: Branch Operations", uses: "Identity, occupation, declared turnover, KYC risk rating, address and mandate register", refreshed: "25 Aug 2026 02:15", ago: "7 h 49 m ago", cadence: "nightly", stale: false, note: "Includes NADRA verisys status." },
+  { name: "Sanctions & proscribed lists", owner: "owner: Compliance — screening desk", uses: "UNSC consolidated, OFAC SDN, EU, MoI Schedule IV", refreshed: "25 Aug 2026 05:30", ago: "4 h 34 m ago", cadence: "on publication + daily poll", stale: false, note: "List vintage matches the publisher's current version." },
+  { name: "PEP database", owner: "owner: Compliance — screening desk", uses: "Domestic and foreign PEP register, close associates", refreshed: "24 Aug 2026 23:10", ago: "10 h 54 m ago", cadence: "daily", stale: false, note: "Vendor feed, no gaps in the period." },
+  { name: "Prior-case & disposition store", owner: "owner: Compliance — platform", uses: "Closed alerts, dispositions, officer sign-offs, filed STR/CTR references", refreshed: "25 Aug 2026 09:45", ago: "19 m ago", cadence: "continuous", stale: false, note: "Append-only; no retrospective edits possible." },
+  { name: "Adverse-media feed", owner: "owner: Compliance — screening desk", uses: "News and enforcement-report matches used in screening assessments", refreshed: "24 Aug 2026 03:00", ago: "31 h 04 m ago", cadence: "daily", stale: true, note: "Past cadence — see observation 04-01 below." }
+];
+
+class Component extends DCLogic {
+  state = { exportOpen: false, toast: null };
+
+  toast(msg) {
+    clearTimeout(this._t);
+    this.setState({ toast: msg });
+    this._t = setTimeout(() => this.setState({ toast: null }), 7000);
+  }
+  componentWillUnmount() { clearTimeout(this._t); }
+
+  renderVals() {
+    const s = this.state;
+    const floor = this.props.samplingFloor ?? 5;
+    const tol = this.props.consistencyTolerance ?? 5;
+    return {
+      floorLine: "8.1% sampled · policy floor " + floor + "%",
+      tolLine: "Vertical rule marks the portfolio mean of 28.8%. All five branches fall within ±3.2 points of the mean, inside the ±" + tol + "-point tolerance set by the Model Risk Committee. Volume differences reflect branch cash profile, not differing agent behaviour.",
+      versions: VERSIONS.map(v => ({
+        ...v,
+        bg: v.live ? "var(--color-accent-100)" : "var(--color-bg)",
+        tagColor: v.live ? "var(--color-accent-800)" : v.tag === "rollback target" ? AMBER_DK : "var(--color-neutral-600)"
+      })),
+
+      branches: BRANCHES.map(b => {
+        const dev = b.conv - MEAN;
+        return {
+          name: b.name, alerts: String(b.alerts), note: b.note,
+          conv: b.conv.toFixed(1) + "%",
+          bar: Math.min(100, (b.conv / 40) * 100) + "%",
+          meanMark: ((MEAN / 40) * 100) + "%",
+          dev: (dev >= 0 ? "+" : "−") + Math.abs(dev).toFixed(1) + " pts",
+          devColor: Math.abs(dev) > tol ? AMBER : "var(--color-neutral-700)"
+        };
+      }),
+
+      feeds: FEEDS.map(f => ({
+        ...f,
+        status: f.stale ? "STALE" : "CURRENT",
+        color: f.stale ? AMBER : GREEN,
+        badgeBg: f.stale ? "var(--color-accent-100)" : "color-mix(in srgb," + GREEN + " 10%, transparent)",
+        bg: f.stale ? "var(--color-accent-100)" : "var(--color-bg)",
+        noteColor: f.stale ? AMBER_DK : "var(--color-neutral-700)"
+      })),
+
+      exportOpen: s.exportOpen,
+      openExport: () => this.setState({ exportOpen: true }),
+      closeExport: () => this.setState({ exportOpen: false }),
+      doExport: () => {
+        this.toast("GOV-2026-Q3-018 generated and logged · hash c93d···17be · figures fixed as at 24 Aug 2026 23:59 PKT.");
+        this.setState({ exportOpen: false });
+      },
+      toast: !!s.toast, toastMsg: s.toast || "",
+      dismissToast: () => { clearTimeout(this._t); this.setState({ toast: null }); }
+    };
+  }
+}
+</script>
+</body>
+</html>

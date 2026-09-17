@@ -1,0 +1,54 @@
+name: polychoron
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: polychoron-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: polychoron
+      POSTGRES_PASSWORD: polychoron_dev_only
+      POSTGRES_DB: polychoron
+    ports:
+      - "5432:5432"
+    volumes:
+      - polychoron_pgdata:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U polychoron -d polychoron"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  temporal:
+    image: temporalio/auto-setup:1.24.2
+    container_name: polychoron-temporal
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB: postgres12
+      DB_PORT: 5432
+      POSTGRES_USER: polychoron
+      POSTGRES_PWD: polychoron_dev_only
+      POSTGRES_SEEDS: postgres
+      DBNAME: temporal
+      VISIBILITY_DBNAME: temporal_visibility
+    ports:
+      - "7233:7233"
+
+  temporal-ui:
+    image: temporalio/ui:2.31.2
+    container_name: polychoron-temporal-ui
+    restart: unless-stopped
+    depends_on:
+      - temporal
+    environment:
+      TEMPORAL_ADDRESS: temporal:7233
+      TEMPORAL_CORS_ORIGINS: http://localhost:3000
+    ports:
+      - "8080:8080"
+
+volumes:
+  polychoron_pgdata:

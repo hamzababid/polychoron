@@ -1,0 +1,34 @@
+/* Polychoron AI — single-hue navy ink palette.
+   One accent ramp, one alert red. State is carried by weight, fill and
+   border, not by hue. No secondary colours. */
+:root {
+  --color-accent: #2c4278;
+  --color-accent-100: #eef1f7;
+  --color-accent-200: #d6dcea;
+  --color-accent-300: #aab6d2;
+  --color-accent-400: #7486b2;
+  --color-accent-500: #465a90;
+  --color-accent-600: #2c4278;
+  --color-accent-700: #1e3265;
+  --color-accent-800: #142451;
+  --color-accent-900: #0c1837;
+
+  --color-accent-2: #2c4278;
+  --color-accent-2-100: #eef1f7;
+  --color-accent-2-200: #d6dcea;
+  --color-accent-2-300: #aab6d2;
+  --color-accent-2-400: #7486b2;
+  --color-accent-2-500: #465a90;
+  --color-accent-2-600: #2c4278;
+  --color-accent-2-700: #1e3265;
+  --color-accent-2-800: #142451;
+  --color-accent-2-900: #0c1837;
+
+  /* Metadata captions run at 10–11px; the system's step 600 lands at
+     3.8:1 on the paper ground, so it is darkened to clear 4.5:1. */
+  --color-neutral-600: #676769;
+
+  /* The one non-neutral: reserved for breach, sanctions and overturned
+     decisions. Never decorative. */
+  --color-alert: #8d3325;
+}

@@ -1,0 +1,68 @@
+.login {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-accent-900, #0c1837);
+  font-family: system-ui, sans-serif;
+}
+
+.login__card {
+  width: 340px;
+  background: #fff;
+  border-radius: 4px;
+  padding: 2rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+.login__brand {
+  margin: 0 0 0.25rem;
+  font-size: 1.25rem;
+  letter-spacing: 0.04em;
+  color: var(--color-accent-900, #0c1837);
+}
+
+.login__subtitle {
+  margin: 0 0 1.25rem;
+  font-size: 0.85rem;
+  color: #676769;
+}
+
+.login__user {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  padding: 0.65rem 0.8rem;
+  margin-bottom: 0.5rem;
+  border: 1px solid #d6dcea;
+  background: #eef1f7;
+  cursor: pointer;
+  text-align: left;
+}
+
+.login__user:hover:not(:disabled) {
+  border-color: #2c4278;
+}
+
+.login__user:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.login__userName {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #0c1837;
+}
+
+.login__userRole {
+  font-size: 0.75rem;
+  color: #676769;
+}
+
+.login__error {
+  color: #8d3325;
+  font-size: 0.8rem;
+  margin-top: 0.5rem;
+}

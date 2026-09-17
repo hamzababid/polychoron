@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/industry-92a524b8-8757-4847-a147-3c04a6398262/styles.css">
+<script src="_ds/industry-92a524b8-8757-4847-a147-3c04a6398262/_ds_bundle.js"></script>
+<link rel="stylesheet" href="brand.css">
+<style>
+body{margin:0;background:var(--color-bg)}
+.scrollcol{overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--color-neutral-400) transparent}
+.draft-hatch{background-image:repeating-linear-gradient(135deg,rgba(20,36,81,.10) 0 3px,transparent 3px 9px)}
+.rrow{display:grid;grid-template-columns:1fr 96px 104px 132px 122px 178px 74px;align-items:center;border-bottom:1px solid color-mix(in srgb,var(--color-text) 9%,transparent);cursor:pointer;position:relative}
+.rrow:hover{background:color-mix(in srgb,var(--color-accent) 6%,transparent)}
+.rcell{padding:9px 10px;min-width:0}
+.rhd{padding:7px 10px;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--color-neutral-700)}
+.tlab{font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-neutral-700)}
+</style>
+</helmet>
+<div style="height:100vh;min-height:900px;overflow-x:auto;overflow-y:hidden"><div style="height:100%;min-width:1360px;display:flex;flex-direction:column;font-family:var(--font-body);color:var(--color-text);background:var(--color-bg);overflow:hidden">
+
+  <div style="display:flex;align-items:center;gap:24px;padding:0 18px;height:44px;flex:none;background:var(--color-accent-900);color:var(--color-bg)">
+    <span style="display:flex;align-items:center;gap:9px;font-family:var(--font-heading);font-weight:600;font-size:17px;letter-spacing:0.06em"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.2" style="flex:none"><path d="M12 1.6 20.6 6.6v10.8L12 22.4 3.4 17.4V6.6z"></path><path d="M12 7.2 16.6 9.9v5.4L12 18l-4.6-2.7V9.9z"></path><path d="M12 1.6v5.6M20.6 6.6l-4 3.3M20.6 17.4l-4-2.1M12 22.4V18M3.4 17.4l4-2.1M3.4 6.6l4 3.3"></path></svg>POLYCHORON<span style="opacity:.6">AI</span></span>
+    <span style="width:1px;height:18px;background:rgba(255,255,255,.22)"></span>
+    <div style="display:flex;gap:18px;font-size:13px;letter-spacing:.01em">
+      <a href="Command Dashboard.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Dashboard</a>
+      <a href="Alert Queue.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Queue</a>
+      <a href="Case Workspace.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Cases</a>
+      <a href="Customer 360.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Customers</a>
+      <a href="Screening Hub.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Screening</a>
+      <span style="padding-bottom:2px;border-bottom:2px solid var(--color-accent-400)">Typologies</span>
+      <a href="Filing Console.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Filings</a>
+      <a href="goAML Tracker.dc.html" style="opacity:.6;color:inherit;text-decoration:none">goAML tracker</a>
+      <a href="Model Governance.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Governance</a>
+      <a href="Reporting MI.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Reporting</a>
+    </div>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:14px;font-size:12px">
+      <span style="opacity:.7">Habib Metropolitan · Model risk</span>
+      <span style="width:1px;height:18px;background:rgba(255,255,255,.22)"></span>
+      <span>S. Iqbal · MLRO</span>
+      <span style="width:26px;height:26px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.3);font-family:var(--font-heading);font-size:12px">SI</span>
+    </div>
+  </div>
+
+  <!-- programme strip -->
+  <div style="display:flex;align-items:stretch;flex:none;border-bottom:1px solid var(--color-divider);background:var(--color-neutral-100)">
+    <div style="padding:9px 18px;border-right:1px solid var(--color-divider);min-width:250px">
+      <div style="font-family:var(--font-heading);font-size:19px;letter-spacing:.02em">Typology &amp; rules console</div>
+      <div style="font-size:11.5px;color:var(--color-neutral-700)">Rule pack FMU-2026.2 · agent v2.4</div>
+    </div>
+    <div style="padding:9px 18px;border-right:1px solid var(--color-divider);display:flex;gap:24px">
+      <div>
+        <div class="tlab">Live rules</div>
+        <div style="font-family:var(--font-heading);font-size:20px;line-height:1.1">7</div>
+      </div>
+      <div>
+        <div class="tlab">Retired</div>
+        <div style="font-family:var(--font-heading);font-size:20px;line-height:1.1">1</div>
+      </div>
+      <div>
+        <div class="tlab" style="color:var(--color-accent-700)">Drafts in backtest</div>
+        <div style="font-family:var(--font-heading);font-size:20px;line-height:1.1;color:var(--color-accent-700)">1</div>
+      </div>
+      <div>
+        <div class="tlab">Alerts last 30 d</div>
+        <div style="font-family:var(--font-heading);font-size:20px;line-height:1.1">162</div>
+      </div>
+    </div>
+    <div style="padding:9px 18px;display:flex;flex-direction:column;justify-content:center;gap:1px">
+      <div class="tlab">Change control</div>
+      <div style="font-size:12px">Promotion requires MLRO approval and a completed backtest · last promotion 14 Jun 2026 by S. Iqbal</div>
+    </div>
+    <div style="margin-left:auto;padding:9px 18px;display:flex;align-items:center;gap:8px">
+      <button class="btn btn-secondary" style="font-size:12.5px;padding:5px 10px">Change log</button>
+      <button class="btn btn-secondary" style="font-size:12.5px;padding:5px 10px">New typology</button>
+    </div>
+  </div>
+
+  <!-- filter bar -->
+  <div style="flex:none;padding:8px 18px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--color-divider);background:var(--color-bg)">
+    <span class="tlab" style="margin-right:2px">Filter</span>
+    <div style="display:flex;align-items:center;gap:6px;border:1px solid var(--color-divider);padding:4px 9px;font-size:12.5px;cursor:pointer;background:var(--color-neutral-100)" style-hover="border-color:var(--color-accent)">Status <span style="color:var(--color-neutral-600)">all</span> <span style="color:var(--color-neutral-600);font-size:10px">▾</span></div>
+    <div style="display:flex;align-items:center;gap:6px;border:1px solid var(--color-divider);padding:4px 9px;font-size:12.5px;cursor:pointer;background:var(--color-neutral-100)" style-hover="border-color:var(--color-accent)">FMU category <span style="color:var(--color-neutral-600)">all</span> <span style="color:var(--color-neutral-600);font-size:10px">▾</span></div>
+    <div style="display:flex;align-items:center;gap:6px;border:1px solid var(--color-divider);padding:4px 9px;font-size:12.5px;cursor:pointer;background:var(--color-neutral-100)" style-hover="border-color:var(--color-accent)">Owner <span style="color:var(--color-neutral-600)">all</span> <span style="color:var(--color-neutral-600);font-size:10px">▾</span></div>
+    <div onClick="{{ toggleTuneOnly }}" style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:12.5px;padding:3px 4px" style-hover="background:color-mix(in srgb,var(--color-accent) 8%,transparent)">
+      <span style="width:34px;height:17px;border:1px solid var(--color-neutral-500);position:relative;flex:none;background:var(--color-neutral-200)">
+        <span style="position:absolute;top:1px;bottom:1px;width:14px;background:var(--color-neutral-600);left:{{ tuneKnob }}"></span>
+      </span>
+      Tuning candidates only
+      <span style="font-size:11px;color:var(--color-neutral-600)">{{ tuneCaption }}</span>
+    </div>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+      <input class="input" placeholder="Typology name or FMU code" style="width:280px;font-size:12.5px;min-height:31px;background:var(--color-neutral-100)">
+    </div>
+  </div>
+
+  <div class="scrollcol" style="flex:1">
+
+    <!-- table -->
+    <div class="rrow" style="cursor:default;background:var(--color-bg);border-bottom:1px solid var(--color-text)">
+      <div class="rhd">Typology · FMU code</div>
+      <div class="rhd">Status</div>
+      <div class="rhd" style="text-align:right">Alerts 30 d</div>
+      <div class="rhd" style="text-align:right">STR conversion</div>
+      <div class="rhd" style="text-align:right">False positive</div>
+      <div class="rhd">Last modified</div>
+      <div class="rhd" style="text-align:right">Edit</div>
+    </div>
+
+    <sc-for list="{{ rows }}" as="r" hint-placeholder-count="8">
+      <div class="rrow" onClick="{{ r.select }}" style="opacity:{{ r.rowOpacity }}">
+        <div class="rcell">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:13.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.name }}</span>
+            <sc-if value="{{ r.hasDraft }}">
+              <span style="flex:none;display:inline-grid;place-items:center;height:18px;padding:0 6px;border:1px solid var(--color-accent-700);background:var(--color-accent-100);color:var(--color-accent-800);font-family:var(--font-heading);font-size:10px;letter-spacing:.08em">DRAFT IN BACKTEST</span>
+            </sc-if>
+          </div>
+          <div style="font-size:11px;color:var(--color-neutral-700)">{{ r.code }} · owner {{ r.owner }}</div>
+        </div>
+        <div class="rcell">
+          <span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;color:{{ r.statusColor }}">
+            <span style="width:26px;height:14px;border:1px solid {{ r.statusColor }};position:relative;flex:none;background:{{ r.statusTrack }}">
+              <span style="position:absolute;top:1px;bottom:1px;width:11px;background:{{ r.statusColor }};left:{{ r.statusKnob }}"></span>
+            </span>{{ r.status }}
+          </span>
+        </div>
+        <div class="rcell" style="text-align:right;font-size:14px;font-variant-numeric:tabular-nums">{{ r.volume }}</div>
+        <div class="rcell" style="text-align:right">
+          <div style="display:flex;align-items:center;justify-content:flex-end;gap:7px">
+            <span style="font-family:var(--font-heading);font-size:19px;color:{{ r.convColor }}">{{ r.conv }}</span>
+            <span style="width:44px;height:8px;background:var(--color-neutral-300);flex:none"><span style="display:block;height:8px;width:{{ r.convBar }};background:{{ r.convColor }}"></span></span>
+          </div>
+          <div style="font-size:10.5px;color:var(--color-neutral-600)">{{ r.convNote }}</div>
+        </div>
+        <div class="rcell" style="text-align:right">
+          <div style="font-size:13px;font-variant-numeric:tabular-nums;color:{{ r.fpColor }}">{{ r.fp }}</div>
+          <div style="font-size:10.5px;color:var(--color-neutral-600)">{{ r.fpNote }}</div>
+        </div>
+        <div class="rcell">
+          <div style="font-size:12.5px">{{ r.modified }}</div>
+          <div style="font-size:11px;color:var(--color-neutral-700)">{{ r.modifiedBy }}</div>
+        </div>
+        <div class="rcell" style="text-align:right">
+          <span class="btn btn-secondary" style="font-size:11.5px;padding:2px 9px">Edit</span>
+        </div>
+        <sc-if value="{{ r.selected }}">
+          <span style="position:absolute;inset:0;box-shadow:inset 0 0 0 2px var(--color-accent-800);background:color-mix(in srgb,var(--color-accent) 9%,transparent);pointer-events:none"></span>
+        </sc-if>
+      </div>
+    </sc-for>
+
+    <!-- detail panel -->
+    <div style="border-top:2px solid var(--color-neutral-400);background:var(--color-neutral-100);padding:14px 18px 18px">
+      <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:11px">
+        <h5 style="margin:0;letter-spacing:.1em;text-transform:uppercase;font-size:13px">Rule detail</h5>
+        <span style="font-size:12px;color:var(--color-neutral-700)">{{ dHead }}</span>
+        <span style="margin-left:auto;display:flex;gap:8px">
+          <button class="btn btn-secondary" style="font-size:12.5px;padding:4px 10px">Duplicate as draft</button>
+          <button class="btn btn-secondary" style="font-size:12.5px;padding:4px 10px">Retire rule</button>
+          <button class="btn btn-primary" onClick="{{ goTest }}" style="font-size:12.5px;padding:4px 12px">Test this change ↓</button>
+        </span>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:14px;align-items:start">
+
+        <!-- plain-language logic -->
+        <div class="blueprint" style="padding:0;background:var(--color-bg)">
+          <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+          <div style="display:flex;align-items:center;gap:9px;padding:8px 13px;border-bottom:1px solid var(--color-divider)">
+            <h6 style="margin:0">Detection logic in plain language</h6>
+            <span style="display:inline-grid;place-items:center;height:19px;padding:0 7px;border:1px solid var(--color-accent-800);background:var(--color-accent-100);color:var(--color-accent-800);font-family:var(--font-heading);font-size:10px;letter-spacing:.08em">{{ dLiveTag }}</span>
+            <span style="margin-left:auto;font-size:11px;color:var(--color-neutral-700)">{{ dVersionLine }}</span>
+          </div>
+          <div style="padding:12px 13px;display:flex;flex-direction:column;gap:11px">
+            <p style="margin:0;font-size:13.5px;line-height:1.55">{{ dPlain }}</p>
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--color-divider)">
+              <div style="background:var(--color-bg);padding:8px 10px">
+                <div class="tlab">Trigger threshold</div>
+                <div style="font-size:13.5px;margin-top:2px">{{ dThreshold }}</div>
+              </div>
+              <div style="background:var(--color-bg);padding:8px 10px">
+                <div class="tlab">Observation window</div>
+                <div style="font-size:13.5px;margin-top:2px">{{ dWindow }}</div>
+              </div>
+              <div style="background:var(--color-bg);padding:8px 10px">
+                <div class="tlab">FMU red-flag category</div>
+                <div style="font-size:13.5px;margin-top:2px">{{ dCategory }}</div>
+              </div>
+              <div style="background:var(--color-bg);padding:8px 10px">
+                <div class="tlab">Applies to</div>
+                <div style="font-size:13.5px;margin-top:2px">{{ dScope }}</div>
+              </div>
+              <div style="background:var(--color-bg);padding:8px 10px">
+                <div class="tlab">Suppression</div>
+                <div style="font-size:13.5px;margin-top:2px">{{ dSuppression }}</div>
+              </div>
+              <div style="background:var(--color-bg);padding:8px 10px">
+                <div class="tlab">Risk weighting</div>
+                <div style="font-size:13.5px;margin-top:2px">{{ dWeight }}</div>
+              </div>
+            </div>
+            <div style="font-size:11.5px;color:var(--color-neutral-700);line-height:1.45;border-top:1px solid var(--color-divider);padding-top:9px">{{ dNote }}</div>
+          </div>
+        </div>
+
+        <!-- version history -->
+        <div class="blueprint" style="padding:0;background:var(--color-bg)">
+          <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+          <div style="display:flex;align-items:center;gap:9px;padding:8px 13px;border-bottom:1px solid var(--color-divider)">
+            <h6 style="margin:0">Version history</h6>
+            <span class="tag tag-neutral" style="font-size:10px">{{ dVerCount }}</span>
+            <span style="margin-left:auto;font-size:11px;color:var(--color-neutral-700)">rollback requires MLRO approval</span>
+          </div>
+          <sc-for list="{{ dVersions }}" as="v" hint-placeholder-count="3">
+            <div style="display:flex;gap:11px;align-items:flex-start;padding:9px 13px;border-bottom:1px solid color-mix(in srgb,var(--color-text) 8%,transparent);background:{{ v.bg }}">
+              <div style="flex:none;width:56px">
+                <div style="font-family:var(--font-heading);font-size:13px">{{ v.ver }}</div>
+                <div style="font-size:10.5px;color:var(--color-neutral-600)">{{ v.date }}</div>
+              </div>
+              <div style="min-width:0;flex:1">
+                <div style="font-size:12.5px;line-height:1.4">{{ v.change }}</div>
+                <div style="font-size:10.5px;color:var(--color-neutral-600);margin-top:1px">{{ v.who }}</div>
+              </div>
+              <div style="flex:none;text-align:right">
+                <div style="font-size:11px;color:{{ v.tagColor }}">{{ v.tag }}</div>
+                <sc-if value="{{ v.canRoll }}">
+                  <span style="font-size:11px;color:var(--color-accent-700);cursor:pointer;text-decoration:underline;text-underline-offset:2px">roll back</span>
+                </sc-if>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+
+    <!-- backtest -->
+    <div ref="{{ testRef }}" style="border-top:2px solid var(--color-accent-700);background:var(--color-accent-100);padding:14px 18px 26px">
+      <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:11px">
+        <h5 style="margin:0;letter-spacing:.1em;text-transform:uppercase;font-size:13px;color:var(--color-accent-800)">Backtest sandbox</h5>
+        <span style="display:inline-grid;place-items:center;height:20px;padding:0 8px;border:1px solid var(--color-accent-700);background:var(--color-accent-700);color:var(--color-bg);font-family:var(--font-heading);font-size:10.5px;letter-spacing:.1em">DRAFT — NOT AFFECTING LIVE DETECTION</span>
+        <span style="font-size:12px;color:var(--color-accent-800)">Nothing in this section raises an alert or touches a customer record.</span>
+        <span style="margin-left:auto;font-size:11.5px;color:var(--color-accent-800)">Run 24 Aug 2026 09:12 · 24 months of history · 41,880 transactions replayed</span>
+      </div>
+
+      <div class="blueprint draft-hatch" style="border:2px solid var(--color-accent-700);background-color:var(--color-accent-100);padding:0">
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+        <div style="display:flex;align-items:center;gap:10px;padding:9px 14px;background:var(--color-accent-700)">
+          <span style="font-family:var(--font-heading);font-size:13px;letter-spacing:.12em;color:var(--color-bg)">DRAFT v4.1 — STRUCTURING, SUB-THRESHOLD CASH DEPOSITS</span>
+          <span style="margin-left:auto;font-size:11.5px;color:var(--color-bg);opacity:.85">drafted by F. Nasir, Model Risk · 22 Aug 2026</span>
+        </div>
+
+        <div style="padding:13px 14px;display:flex;flex-direction:column;gap:13px">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+            <div style="border:1px solid var(--color-divider);background:var(--color-bg);padding:10px 12px">
+              <div class="tlab">Currently live — v4.0</div>
+              <div style="font-size:13px;line-height:1.5;margin-top:4px">Three or more cash deposits, each between 85% and 99% of the PKR 2,000,000 CTR threshold, within a rolling 24-hour window on one account.</div>
+            </div>
+            <div style="border:1px solid var(--color-accent-700);background:var(--color-bg);padding:10px 12px">
+              <div class="tlab" style="color:var(--color-accent-700)">Proposed draft — v4.1</div>
+              <div style="font-size:13px;line-height:1.5;margin-top:4px;color:var(--color-accent-900)">Two or more cash deposits, each between <strong>75%</strong> and 99% of the threshold, within a rolling <strong>72-hour</strong> window, <strong>counting deposits across all accounts sharing a signatory</strong>.</div>
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--color-divider)">
+            <div style="background:var(--color-bg);padding:10px 12px">
+              <div class="tlab">Alerts per 30 days</div>
+              <div style="display:flex;align-items:baseline;gap:9px;margin-top:3px">
+                <span style="font-family:var(--font-heading);font-size:15px;color:var(--color-neutral-700)">24</span>
+                <span style="font-size:12px;color:var(--color-neutral-600)">→</span>
+                <span style="font-family:var(--font-heading);font-size:26px;color:var(--color-accent-800)">39</span>
+              </div>
+              <div style="font-size:11px;color:var(--color-neutral-700);margin-top:2px">+15 alerts, +62% analyst load</div>
+            </div>
+            <div style="background:var(--color-bg);padding:10px 12px">
+              <div class="tlab">STR conversion</div>
+              <div style="display:flex;align-items:baseline;gap:9px;margin-top:3px">
+                <span style="font-family:var(--font-heading);font-size:15px;color:var(--color-neutral-700)">29.2%</span>
+                <span style="font-size:12px;color:var(--color-neutral-600)">→</span>
+                <span style="font-family:var(--font-heading);font-size:26px;color:var(--color-accent-800)">24.1%</span>
+              </div>
+              <div style="font-size:11px;color:var(--color-neutral-700);margin-top:2px">−5.1 pts, still the best of any rule</div>
+            </div>
+            <div style="background:var(--color-bg);padding:10px 12px">
+              <div class="tlab">False-positive rate</div>
+              <div style="display:flex;align-items:baseline;gap:9px;margin-top:3px">
+                <span style="font-family:var(--font-heading);font-size:15px;color:var(--color-neutral-700)">18.4%</span>
+                <span style="font-size:12px;color:var(--color-neutral-600)">→</span>
+                <span style="font-family:var(--font-heading);font-size:26px;color:var(--color-accent-800)">26.7%</span>
+              </div>
+              <div style="font-size:11px;color:var(--color-neutral-700);margin-top:2px">+8.3 pts, within the 30% tolerance</div>
+            </div>
+            <div style="background:var(--color-bg);padding:10px 12px">
+              <div class="tlab">Historic STRs recovered</div>
+              <div style="display:flex;align-items:baseline;gap:9px;margin-top:3px">
+                <span style="font-family:var(--font-heading);font-size:26px;color:var(--color-accent-800)">+4</span>
+                <span style="font-size:11.5px;color:var(--color-neutral-700);line-height:1.3">filings found<br>7–29 days earlier</span>
+              </div>
+              <div style="font-size:11px;color:var(--color-neutral-700);margin-top:2px">2 cases missed entirely by v4.0</div>
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+            <div style="border:1px solid var(--color-divider);background:var(--color-bg);padding:11px 12px">
+              <div style="display:flex;align-items:baseline;gap:9px;margin-bottom:9px">
+                <span class="tlab">Monthly alerts replayed — live vs. draft</span>
+                <span style="margin-left:auto;font-size:10.5px;color:var(--color-neutral-700)">Mar – Aug 2026</span>
+              </div>
+              <svg viewBox="0 0 420 132" style="width:100%;height:auto;font-family:var(--font-body)">
+                <line x1="26" y1="108" x2="412" y2="108" stroke="var(--color-divider)"></line>
+                <g font-size="9" fill="var(--color-neutral-600)" text-anchor="end"><text x="21" y="111">0</text><text x="21" y="62">25</text><text x="21" y="18">50</text></g>
+                <g>
+                  <rect x="38" y="66" width="20" height="42" fill="var(--color-neutral-400)"></rect><rect x="60" y="46" width="20" height="62" fill="var(--color-accent-400)"></rect>
+                  <rect x="103" y="70" width="20" height="38" fill="var(--color-neutral-400)"></rect><rect x="125" y="48" width="20" height="60" fill="var(--color-accent-400)"></rect>
+                  <rect x="168" y="64" width="20" height="44" fill="var(--color-neutral-400)"></rect><rect x="190" y="40" width="20" height="68" fill="var(--color-accent-400)"></rect>
+                  <rect x="233" y="58" width="20" height="50" fill="var(--color-neutral-400)"></rect><rect x="255" y="34" width="20" height="74" fill="var(--color-accent-400)"></rect>
+                  <rect x="298" y="68" width="20" height="40" fill="var(--color-neutral-400)"></rect><rect x="320" y="44" width="20" height="64" fill="var(--color-accent-400)"></rect>
+                  <rect x="363" y="60" width="20" height="48" fill="var(--color-neutral-400)"></rect><rect x="385" y="30" width="20" height="78" fill="var(--color-accent-400)"></rect>
+                </g>
+                <g font-size="9.5" fill="var(--color-neutral-700)" text-anchor="middle">
+                  <text x="59" y="123">Mar</text><text x="124" y="123">Apr</text><text x="189" y="123">May</text><text x="254" y="123">Jun</text><text x="319" y="123">Jul</text><text x="384" y="123">Aug</text>
+                </g>
+              </svg>
+              <div style="display:flex;gap:16px;font-size:10.5px;color:var(--color-neutral-700);border-top:1px solid var(--color-divider);padding-top:6px;margin-top:4px">
+                <span style="display:flex;align-items:center;gap:5px"><span style="width:9px;height:9px;background:var(--color-neutral-400)"></span>live v4.0</span>
+                <span style="display:flex;align-items:center;gap:5px"><span style="width:9px;height:9px;background:var(--color-accent-400)"></span>draft v4.1</span>
+              </div>
+            </div>
+            <div style="border:1px solid var(--color-divider);background:var(--color-bg);padding:11px 12px">
+              <div class="tlab" style="margin-bottom:7px">Model-risk assessment</div>
+              <div style="font-size:12.5px;line-height:1.55">The draft widens the band and follows shared signatories, which is what recovered the two missed cases — both were split across a customer and a brother's account, exactly the pattern in ALT-2026-04417. The cost is 15 extra alerts a month at a materially lower conversion rate.</div>
+              <div style="font-size:12.5px;line-height:1.55;margin-top:8px">Recommendation: promote with the 75% floor but keep the window at 48 hours, which recovers 3 of the 4 historic filings for 9 additional alerts rather than 15. A 48-hour variant has not yet been backtested.</div>
+              <div style="font-size:11px;color:var(--color-neutral-700);margin-top:8px;border-top:1px solid var(--color-divider);padding-top:7px">Reviewed by F. Nasir, Model Risk · not yet countersigned</div>
+            </div>
+          </div>
+
+          <div style="border-top:1px solid var(--color-accent-300);padding-top:11px;display:flex;align-items:center;gap:14px">
+            <div style="max-width:560px">
+              <div onClick="{{ toggleAck }}" style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;border:1px solid var(--color-accent-300);background:var(--color-bg);padding:9px 11px" style-hover="border-color:var(--color-accent-700)">
+                <span style="flex:none;display:grid;place-items:center;width:17px;height:17px;border:1.5px solid var(--color-accent-700);font-size:11px;color:var(--color-accent-800);background:#fff;margin-top:1px">{{ ackBox }}</span>
+                <div>
+                  <div style="font-size:13px;line-height:1.4">I have read the backtest and accept the additional alert volume.</div>
+                  <div style="font-size:11px;color:var(--color-accent-700);margin-top:2px">Promotion changes live detection for every account in the bank from the next batch run.</div>
+                </div>
+              </div>
+            </div>
+            <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+              <button class="btn btn-secondary" style="font-size:13px">Re-run with 48 h window</button>
+              <button class="btn btn-secondary" style="font-size:13px">Save draft</button>
+              <button class="btn btn-primary" disabled="{{ promoteDisabled }}" onClick="{{ openConfirm }}" style="font-size:13px;padding:8px 16px">Promote to production</button>
+            </div>
+          </div>
+          <div style="font-size:11.5px;color:var(--color-accent-800)">{{ gateLine }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <sc-if value="{{ confirmOpen }}">
+    <div class="dialog-backdrop" style="z-index:20">
+      <div class="dialog blueprint" style="width:min(560px,100%);background:var(--color-bg);border:2px solid var(--color-accent-700)">
+        <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+        <div class="dialog-title">Promote draft v4.1 to live detection?</div>
+        <div class="dialog-body" style="font-size:13px">
+          <p style="margin:0 0 8px">This replaces the live structuring rule for every account in the bank from the next overnight batch. Existing open alerts are unaffected; new alerts will be raised under v4.1.</p>
+          <div style="border:1px solid var(--color-divider);background:var(--color-neutral-100);padding:9px 11px;font-size:12.5px;line-height:1.6">
+            Expected alerts per 30 days 24 → 39<br>
+            Expected STR conversion 29.2% → 24.1%<br>
+            Promoted by S. Iqbal, MLRO · countersignature required from Model Risk within 5 days
+          </div>
+          <p style="margin:8px 0 0;font-size:12px;color:var(--color-neutral-700)">The change is written to the model change log and is reportable at the next SBP examination. Rolling back is a further change request, not an undo.</p>
+        </div>
+        <div class="dialog-actions">
+          <button class="btn btn-secondary" onClick="{{ closeConfirm }}" style="font-size:13px">Back to backtest</button>
+          <button class="btn btn-primary" onClick="{{ doPromote }}" style="font-size:13px">Promote v4.1</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ promoted }}">
+    <div style="position:fixed;right:18px;bottom:16px;z-index:15;display:flex;align-items:flex-start;gap:12px;max-width:520px;border:1px solid var(--color-accent-700);background:var(--color-accent-100);padding:9px 12px;font-size:12.5px;color:var(--color-accent-900);box-shadow:var(--shadow-md)">
+      <span>Draft v4.1 promoted to live detection at 09:59 PKT by S. Iqbal, MLRO. Effective from tonight's batch; Model Risk countersignature pending.</span>
+      <span onClick="{{ dismissPromoted }}" style="flex:none;cursor:pointer;color:var(--color-accent-700);font-size:12px">✕</span>
+    </div>
+  </sc-if>
+</div></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;tuningThreshold&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:5,&quot;min&quot;:2,&quot;max&quot;:15,&quot;unit&quot;:&quot;%&quot;,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Policy&quot;}}">
+const AMBER = "var(--color-accent-700)", AMBER_DK = "var(--color-accent-800)";
+
+const RULES = [
+  {
+    id: "R1", name: "Structuring — sub-threshold cash deposits", code: "FMU-ST-04", owner: "F. Nasir",
+    active: true, volume: 24, conv: 29.2, fp: 18.4, modified: "14 Jun 2026", modifiedBy: "S. Iqbal, MLRO", draft: true,
+    plain: "Raises an alert when the same account receives three or more cash deposits inside one rolling 24-hour period and each deposit lands just below the currency reporting threshold — between 85% and 99% of PKR 2,000,000. Deposits at different branches or cash machines all count towards the same cluster, and the alert carries the aggregate rather than the individual amounts.",
+    threshold: "3+ deposits at 85–99% of PKR 2.0 M", window: "rolling 24 hours", category: "ST-04 · threshold avoidance",
+    scope: "individual & sole-proprietor current accounts", suppression: "none — every match is alerted", weight: "high · +32 risk points",
+    note: "The bank's strongest-performing rule. The Bilal Ahmed filing (ALT-2026-04417) was raised by version 4.0 of this rule.",
+    versions: [
+      { ver: "v4.1", date: "22 Aug 2026", change: "Band widened to 75–99%, window extended to 72 h, shared-signatory accounts aggregated.", who: "F. Nasir, Model Risk", tag: "DRAFT", tagColor: AMBER, canRoll: false, draft: true },
+      { ver: "v4.0", date: "14 Jun 2026", change: "Band narrowed from 80–99% to 85–99% after the Q1 tuning review.", who: "S. Iqbal, MLRO", tag: "LIVE", tagColor: "var(--color-accent-800)", canRoll: false },
+      { ver: "v3.2", date: "09 Feb 2026", change: "Cash-machine deposits included in the cluster count.", who: "F. Nasir, Model Risk", tag: "superseded", tagColor: "var(--color-neutral-600)", canRoll: true },
+      { ver: "v3.1", date: "21 Aug 2025", change: "Threshold updated to PKR 2.0 M following the SBP circular.", who: "S. Iqbal, MLRO", tag: "superseded", tagColor: "var(--color-neutral-600)", canRoll: true }
+    ]
+  },
+  {
+    id: "R2", name: "High-velocity account / pass-through", code: "FMU-ST-11", owner: "F. Nasir",
+    active: true, volume: 31, conv: 16.1, fp: 27.8, modified: "02 May 2026", modifiedBy: "F. Nasir, Model Risk", draft: false,
+    plain: "Raises an alert when an account passes at least 80% of everything it receives straight out again within 48 hours, across ten or more transactions in a rolling week. The rule looks at the ratio of outflow to inflow rather than absolute amounts, so it catches small-value pass-through as well as large.",
+    threshold: "≥80% pass-through, ≥10 transactions", window: "rolling 7 days", category: "ST-11 · rapid movement of funds",
+    scope: "all account types except payroll", suppression: "declared payment aggregators excluded", weight: "high · +28 risk points",
+    note: "Second-best conversion of the live pack. Volume is concentrated in exchange companies and money service businesses.",
+    versions: [
+      { ver: "v2.3", date: "02 May 2026", change: "Pass-through ratio raised from 70% to 80% to cut noise from trade accounts.", who: "F. Nasir, Model Risk", tag: "LIVE", tagColor: "var(--color-accent-800)", canRoll: false },
+      { ver: "v2.2", date: "11 Jan 2026", change: "Transaction-count floor introduced at 10 per week.", who: "S. Iqbal, MLRO", tag: "superseded", tagColor: "var(--color-neutral-600)", canRoll: true }
+    ]
+  },
+  {
+    id: "R3", name: "TBML — invoice value vs. market price", code: "FMU-TB-02", owner: "H. Siddiqui",
+    active: true, volume: 12, conv: 25.0, fp: 21.3, modified: "28 Mar 2026", modifiedBy: "H. Siddiqui, Trade Fin.", draft: false,
+    plain: "Compares the declared unit price on an import or export document against a reference price range for that commodity and route, and alerts when the declared value sits more than 40% outside the range on two or more shipments in a quarter. Reference prices are refreshed monthly from customs and commodity board data.",
+    threshold: "≥40% deviation on 2+ shipments", window: "rolling quarter", category: "TB-02 · trade-based ML",
+    scope: "trade finance — LCs, contracts, open account", suppression: "commodities without a reference price are skipped", weight: "high · +30 risk points",
+    note: "Low volume by design. Depends on the reference price file; a stale file silently reduces coverage.",
+    versions: [
+      { ver: "v1.4", date: "28 Mar 2026", change: "Deviation tolerance loosened from 30% to 40% after false positives on cotton.", who: "H. Siddiqui, Trade Fin.", tag: "LIVE", tagColor: "var(--color-accent-800)", canRoll: false },
+      { ver: "v1.3", date: "05 Dec 2025", change: "Route added to the reference price key.", who: "F. Nasir, Model Risk", tag: "superseded", tagColor: "var(--color-neutral-600)", canRoll: true }
+    ]
+  },
+  {
+    id: "R4", name: "Dormant account reactivation", code: "FMU-DR-01", owner: "F. Nasir",
+    active: true, volume: 19, conv: 10.5, fp: 34.2, modified: "17 Feb 2026", modifiedBy: "F. Nasir, Model Risk", draft: false,
+    plain: "Alerts when an account with no customer-initiated activity for twelve months or more receives credits above PKR 1,000,000 within thirty days of waking up. Interest postings, government payments and bank-initiated entries do not count as activity for the dormancy test.",
+    threshold: "≥PKR 1.0 M within 30 days of reactivation", window: "12 months dormancy, 30-day trigger", category: "DR-01 · dormant reactivation",
+    scope: "all deposit accounts", suppression: "accounts reactivated at a branch counter with fresh KYC are deferred 14 days", weight: "medium · +18 risk points",
+    note: "Conversion has fallen since February. Most alerts resolve as inheritance settlements and returning overseas customers.",
+    versions: [
+      { ver: "v2.0", date: "17 Feb 2026", change: "Dormancy period shortened from 24 to 12 months.", who: "F. Nasir, Model Risk", tag: "LIVE", tagColor: "var(--color-accent-800)", canRoll: true },
+      { ver: "v1.2", date: "30 Sep 2025", change: "Interest postings excluded from the activity test.", who: "S. Iqbal, MLRO", tag: "superseded", tagColor: "var(--color-neutral-600)", canRoll: true }
+    ]
+  },
+  {
+    id: "R5", name: "Cash-intensive business — ratio anomaly", code: "FMU-CI-07", owner: "M. Shafiq",
+    active: true, volume: 43, conv: 4.7, fp: 51.6, modified: "08 Jan 2026", modifiedBy: "M. Shafiq, Compliance", draft: false,
+    plain: "Alerts when a business account's cash-to-total-credit ratio rises more than 25 percentage points above its own twelve-month average in any calendar month. The comparison is against the account's own history rather than a sector benchmark, so seasonal retail businesses trip it regularly.",
+    threshold: "cash ratio +25 pts vs own 12-month average", window: "calendar month", category: "CI-07 · cash-intensive inconsistency",
+    scope: "business current accounts", suppression: "none", weight: "medium · +14 risk points",
+    note: "The noisiest rule in the pack: 43 alerts a month for 2 filings. A sector benchmark and a seasonality adjustment are the obvious tuning candidates.",
+    versions: [
+      { ver: "v1.1", date: "08 Jan 2026", change: "Comparison switched from sector benchmark to the account's own history.", who: "M. Shafiq, Compliance", tag: "LIVE", tagColor: "var(--color-accent-800)", canRoll: true },
+      { ver: "v1.0", date: "14 Jul 2025", change: "Rule introduced with a fixed 60% cash ratio trigger.", who: "F. Nasir, Model Risk", tag: "superseded", tagColor: "var(--color-neutral-600)", canRoll: true }
+    ]
+  },
+  {
+    id: "R6", name: "Cross-border — high-risk corridor inflow", code: "FMU-CB-03", owner: "H. Siddiqui",
+    active: true, volume: 27, conv: 3.7, fp: 58.9, modified: "19 Nov 2025", modifiedBy: "H. Siddiqui, Trade Fin.", draft: false,
+    plain: "Alerts on any inbound remittance from a jurisdiction on the increased-monitoring list where the sender is not already a recorded counterparty for that customer. Every qualifying remittance raises its own alert, with no aggregation and no value floor.",
+    threshold: "any inflow from a monitored jurisdiction", window: "per transaction", category: "CB-03 · geographic risk",
+    scope: "inward remittances, all accounts", suppression: "none", weight: "medium · +12 risk points",
+    note: "Highest false-positive rate in the pack. Most alerts are family remittances under PKR 200,000; a value floor would remove roughly 70% of the volume.",
+    versions: [
+      { ver: "v1.2", date: "19 Nov 2025", change: "Jurisdiction list synchronised with the FATF February statement.", who: "H. Siddiqui, Trade Fin.", tag: "LIVE", tagColor: "var(--color-accent-800)", canRoll: true },
+      { ver: "v1.1", date: "22 Apr 2025", change: "Known-counterparty exclusion added.", who: "F. Nasir, Model Risk", tag: "superseded", tagColor: "var(--color-neutral-600)", canRoll: true }
+    ]
+  },
+  {
+    id: "R7", name: "Third-party depositor clustering", code: "FMU-ST-06", owner: "F. Nasir",
+    active: true, volume: 6, conv: 33.3, fp: 16.7, modified: "07 Aug 2026", modifiedBy: "F. Nasir, Model Risk", draft: false,
+    plain: "Alerts when three or more unrelated individuals deposit cash into the same account within a week and none of them is a recorded signatory, mandate holder or declared counterparty. Depositor identity comes from the teller record, so cash-machine deposits are outside its reach.",
+    threshold: "3+ unrelated depositors", window: "rolling 7 days", category: "ST-06 · third-party deposits",
+    scope: "accounts with counter deposit activity", suppression: "declared collection accounts excluded", weight: "high · +26 risk points",
+    note: "Best conversion of any rule but very low volume — it only sees counter transactions. Extending it to cash machines is on the Q4 roadmap.",
+    versions: [
+      { ver: "v1.1", date: "07 Aug 2026", change: "Declared collection accounts excluded after 4 false positives from school fee accounts.", who: "F. Nasir, Model Risk", tag: "LIVE", tagColor: "var(--color-accent-800)", canRoll: true },
+      { ver: "v1.0", date: "03 Jun 2026", change: "Rule introduced.", who: "S. Iqbal, MLRO", tag: "superseded", tagColor: "var(--color-neutral-600)", canRoll: false }
+    ]
+  },
+  {
+    id: "R8", name: "Round-amount transfer sequences", code: "FMU-ST-09", owner: "M. Shafiq",
+    active: false, volume: 0, conv: 1.8, fp: 71.4, modified: "31 Mar 2026", modifiedBy: "S. Iqbal, MLRO", draft: false,
+    plain: "Alerted when an account made four or more transfers in round multiples of PKR 100,000 within a week. Retired on 31 March 2026: the pattern proved to be ordinary behaviour in the Pakistani market and the rule produced 1 filing in 14 months.",
+    threshold: "4+ round-multiple transfers (retired)", window: "rolling 7 days", category: "ST-09 · structured transfers",
+    scope: "retired — no accounts in scope", suppression: "n/a", weight: "retired · no risk contribution",
+    note: "Retired with MLRO approval and recorded in the model change log. Kept visible for examination purposes; its historic alerts remain searchable.",
+    versions: [
+      { ver: "v1.3", date: "31 Mar 2026", change: "Rule retired following the Q1 tuning review — 1 filing from 312 alerts.", who: "S. Iqbal, MLRO", tag: "RETIRED", tagColor: "var(--color-neutral-600)", canRoll: true },
+      { ver: "v1.2", date: "12 Nov 2025", change: "Count raised from 3 to 4 transfers in an attempt to cut noise.", who: "M. Shafiq, Compliance", tag: "superseded", tagColor: "var(--color-neutral-600)", canRoll: false }
+    ]
+  }
+];
+
+class Component extends DCLogic {
+  state = { sel: "R1", tuneOnly: false, ack: false, confirmOpen: false, promoted: false };
+
+  renderVals() {
+    const s = this.state;
+    const tuneAt = this.props.tuningThreshold ?? 5;
+    const list = s.tuneOnly ? RULES.filter(r => r.conv < tuneAt) : RULES;
+    const d = RULES.find(r => r.id === s.sel) || RULES[0];
+
+    const rows = list.map(r => {
+      const strong = r.conv >= 20, weak = r.conv < tuneAt;
+      return {
+        ...r,
+        volume: r.active ? String(r.volume) : "—",
+        conv: r.conv.toFixed(1) + "%",
+        convBar: Math.min(100, r.conv * 3) + "%",
+        convColor: !r.active ? "var(--color-neutral-500)" : strong ? "var(--color-accent-800)" : weak ? AMBER : "var(--color-neutral-800)",
+        convNote: !r.active ? "at retirement" : strong ? "strong" : weak ? "tuning candidate" : "acceptable",
+        fp: r.fp.toFixed(1) + "%",
+        fpColor: r.fp > 50 ? AMBER : "var(--color-text)",
+        fpNote: r.fp > 50 ? "above 30% tolerance" : "within tolerance",
+        status: r.active ? "Active" : "Retired",
+        statusColor: r.active ? "var(--color-accent-800)" : "var(--color-neutral-600)",
+        statusTrack: r.active ? "var(--color-accent-100)" : "var(--color-neutral-200)",
+        statusKnob: r.active ? "13px" : "1px",
+        rowOpacity: r.active ? "1" : "0.62",
+        hasDraft: r.draft,
+        selected: r.id === s.sel,
+        select: () => this.setState({ sel: r.id })
+      };
+    });
+
+    const complete = s.ack;
+    return {
+      rows,
+      tuneOnly: s.tuneOnly, tuneKnob: s.tuneOnly ? "17px" : "1px",
+      tuneCaption: "conversion under " + tuneAt + "%",
+      toggleTuneOnly: () => this.setState({ tuneOnly: !s.tuneOnly }),
+
+      dHead: d.name + " · " + d.code + " · " + (d.active ? "live" : "retired"),
+      dLiveTag: d.active ? "LIVE — AFFECTING REAL ALERTS" : "RETIRED — NOT RUNNING",
+      dVersionLine: (d.versions.find(v => v.tag === "LIVE") || d.versions[0]).ver + " in production since " + d.modified,
+      dPlain: d.plain, dThreshold: d.threshold, dWindow: d.window, dCategory: d.category,
+      dScope: d.scope, dSuppression: d.suppression, dWeight: d.weight, dNote: d.note,
+      dVersions: d.versions.map(v => ({ ...v, bg: v.draft ? "var(--color-accent-100)" : "var(--color-bg)" })),
+      dVerCount: d.versions.length + " versions",
+
+      testRef: el => { this.testEl = el; },
+      goTest: () => { if (this.testEl) window.scrollTo({ top: this.testEl.offsetTop - 60, behavior: "smooth" }); },
+
+      ackBox: s.ack ? "✕" : "",
+      toggleAck: () => this.setState({ ack: !s.ack }),
+      promoteDisabled: !complete,
+      gateLine: complete
+        ? "Promotion is unlocked. The confirmation step states exactly what changes in live detection."
+        : "Promotion is locked until the volume acknowledgement above is ticked. Nothing here is pre-ticked.",
+
+      confirmOpen: s.confirmOpen,
+      openConfirm: () => { if (complete) this.setState({ confirmOpen: true }); },
+      closeConfirm: () => this.setState({ confirmOpen: false }),
+      doPromote: () => this.setState({ confirmOpen: false, promoted: true }),
+      promoted: s.promoted,
+      dismissPromoted: () => this.setState({ promoted: false })
+    };
+  }
+}
+</script>
+</body>
+</html>

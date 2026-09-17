@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/industry-92a524b8-8757-4847-a147-3c04a6398262/styles.css">
+<script src="_ds/industry-92a524b8-8757-4847-a147-3c04a6398262/_ds_bundle.js"></script>
+<link rel="stylesheet" href="brand.css">
+<style>
+body{margin:0;background:var(--color-bg)}
+.scrollcol{overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--color-neutral-400) transparent}
+.trow{display:grid;grid-template-columns:74px 250px 1fr 220px 168px 150px 52px;align-items:center;border-bottom:1px solid color-mix(in srgb,var(--color-text) 9%,transparent);cursor:pointer;position:relative}
+.trow:hover{background:color-mix(in srgb,var(--color-accent) 6%,transparent)}
+.tcell{padding:9px 10px;min-width:0}
+.thd{padding:7px 10px;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--color-neutral-700)}
+</style>
+</helmet>
+<div style="height:100vh;min-height:900px;overflow-x:auto;overflow-y:hidden"><div style="height:100%;min-width:1360px;display:flex;flex-direction:column;font-family:var(--font-body);color:var(--color-text);background:var(--color-bg);overflow:hidden">
+
+  <div style="display:flex;align-items:center;gap:24px;padding:0 18px;height:44px;flex:none;background:var(--color-accent-900);color:var(--color-bg)">
+    <span style="display:flex;align-items:center;gap:9px;font-family:var(--font-heading);font-weight:600;font-size:17px;letter-spacing:0.06em"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.2" style="flex:none"><path d="M12 1.6 20.6 6.6v10.8L12 22.4 3.4 17.4V6.6z"></path><path d="M12 7.2 16.6 9.9v5.4L12 18l-4.6-2.7V9.9z"></path><path d="M12 1.6v5.6M20.6 6.6l-4 3.3M20.6 17.4l-4-2.1M12 22.4V18M3.4 17.4l4-2.1M3.4 6.6l4 3.3"></path></svg>POLYCHORON<span style="opacity:.6">AI</span></span>
+    <span style="width:1px;height:18px;background:rgba(255,255,255,.22)"></span>
+    <div style="display:flex;gap:18px;font-size:13px;letter-spacing:.01em">
+      <a href="Command Dashboard.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Dashboard</a>
+      <a href="Alert Queue.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Queue</a>
+      <a href="Case Workspace.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Cases</a>
+      <a href="Customer 360.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Customers</a>
+      <a href="Screening Hub.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Screening</a>
+      <a href="Typology Rules Console.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Typologies</a>
+      <a href="Filing Console.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Filings</a>
+      <span style="padding-bottom:2px;border-bottom:2px solid var(--color-accent-400)">goAML tracker</span>
+      <a href="Model Governance.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Governance</a>
+      <a href="Reporting MI.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Reporting</a>
+    </div>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:14px;font-size:12px">
+      <span style="opacity:.7">Habib Metropolitan · FMU liaison</span>
+      <span style="width:1px;height:18px;background:rgba(255,255,255,.22)"></span>
+      <span>A. Raza · Senior Compliance Officer</span>
+      <span style="width:26px;height:26px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.3);font-family:var(--font-heading);font-size:12px">AR</span>
+    </div>
+  </div>
+
+  <!-- portfolio strip -->
+  <div style="display:flex;align-items:stretch;flex:none;border-bottom:1px solid var(--color-divider);background:var(--color-neutral-100)">
+    <div style="padding:9px 18px;border-right:1px solid var(--color-divider);min-width:210px">
+      <div style="font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-neutral-700)">Filings on record</div>
+      <div style="display:flex;align-items:baseline;gap:7px">
+        <span style="font-family:var(--font-heading);font-size:24px;line-height:1.05">1,284</span>
+        <span style="font-size:11px;color:var(--color-neutral-700)">STR-F 412 · CTR 872</span>
+      </div>
+    </div>
+    <div style="padding:9px 18px;border-right:1px solid var(--color-divider);display:flex;gap:24px">
+      <div>
+        <div style="font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-neutral-700)">Awaiting acknowledgement</div>
+        <div style="font-family:var(--font-heading);font-size:20px;line-height:1.1">3</div>
+      </div>
+      <div>
+        <div style="font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-neutral-700)">Acknowledged</div>
+        <div style="font-family:var(--font-heading);font-size:20px;line-height:1.1">1,268</div>
+      </div>
+      <div>
+        <div style="font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-neutral-700)">FMU feedback open</div>
+        <div style="font-family:var(--font-heading);font-size:20px;line-height:1.1">13</div>
+      </div>
+      <div>
+        <div style="font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-accent-700)">Retention review due</div>
+        <div style="font-family:var(--font-heading);font-size:20px;line-height:1.1;color:var(--color-accent-700)">7</div>
+      </div>
+    </div>
+    <div style="padding:9px 18px;display:flex;flex-direction:column;justify-content:center;gap:1px">
+      <div style="font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-neutral-700)">goAML channel</div>
+      <div style="font-size:12px">Connected · last handshake 24 Aug 2026 09:55 PKT · median acknowledgement 1 d 04 h</div>
+    </div>
+    <div style="margin-left:auto;padding:9px 18px;display:flex;align-items:center;gap:8px">
+      <button class="btn btn-secondary" style="font-size:12.5px;padding:5px 10px">Reconcile with goAML</button>
+      <button class="btn btn-secondary" style="font-size:12.5px;padding:5px 10px">Examination export</button>
+    </div>
+  </div>
+
+  <!-- filter bar -->
+  <div style="flex:none;padding:8px 18px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;border-bottom:1px solid var(--color-divider);background:var(--color-bg)">
+    <span style="font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-neutral-700);margin-right:2px">Filter</span>
+    <div style="display:flex;align-items:center;gap:6px;border:1px solid var(--color-divider);padding:4px 9px;font-size:12.5px;cursor:pointer;background:var(--color-neutral-100)" style-hover="border-color:var(--color-accent)">Status <span style="color:var(--color-neutral-600)">all</span> <span style="color:var(--color-neutral-600);font-size:10px">▾</span></div>
+    <div style="display:flex;align-items:center;gap:6px;border:1px solid var(--color-divider);padding:4px 9px;font-size:12.5px;cursor:pointer;background:var(--color-neutral-100)" style-hover="border-color:var(--color-accent)">Report type <span style="color:var(--color-neutral-600)">all</span> <span style="color:var(--color-neutral-600);font-size:10px">▾</span></div>
+    <div style="display:flex;align-items:center;gap:6px;border:1px solid var(--color-divider);padding:4px 9px;font-size:12.5px;cursor:pointer;background:var(--color-neutral-100)" style-hover="border-color:var(--color-accent)">Filed 2016 – 2026 <span style="color:var(--color-neutral-600);font-size:10px">▾</span></div>
+    <div style="display:flex;align-items:center;gap:6px;border:1px solid var(--color-divider);padding:4px 9px;font-size:12.5px;cursor:pointer;background:var(--color-neutral-100)" style-hover="border-color:var(--color-accent)">Filing officer <span style="color:var(--color-neutral-600)">all</span> <span style="color:var(--color-neutral-600);font-size:10px">▾</span></div>
+    <div onClick="{{ toggleRetOnly }}" style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:12.5px;padding:3px 4px" style-hover="background:color-mix(in srgb,var(--color-accent) 8%,transparent)">
+      <span style="width:34px;height:17px;border:1px solid var(--color-neutral-500);position:relative;flex:none;background:var(--color-neutral-200)">
+        <span style="position:absolute;top:1px;bottom:1px;width:14px;background:var(--color-neutral-600);left:{{ retKnob }}"></span>
+      </span>
+      Retention review due only
+    </div>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+      <input class="input" placeholder="goAML reference, customer name or account number" style="width:320px;font-size:12.5px;min-height:31px;background:var(--color-neutral-100)">
+      <button class="btn btn-secondary" style="font-size:12.5px;padding:5px 10px">Saved views</button>
+    </div>
+  </div>
+
+  <!-- list -->
+  <div style="flex:none;display:flex;flex-direction:column;max-height:46%;min-height:0">
+    <div style="display:flex;align-items:center;gap:10px;padding:5px 18px;background:var(--color-neutral-100);border-bottom:1px solid var(--color-divider)">
+      <span style="font-size:11.5px;color:var(--color-neutral-700)">Showing <strong>{{ shownCount }}</strong> of 1,284 · sorted by filed date, newest first</span>
+      <span style="margin-left:auto;font-size:11.5px;color:var(--color-neutral-700)">Select a row to open its submission record below</span>
+    </div>
+    <div class="trow" style="cursor:default;background:var(--color-bg);border-bottom:1px solid var(--color-text)">
+      <div class="thd">Type</div>
+      <div class="thd">Subject / account</div>
+      <div class="thd">Matched typology</div>
+      <div class="thd">Filed · officer</div>
+      <div class="thd">Status</div>
+      <div class="thd">goAML reference</div>
+      <div class="thd" style="text-align:center">Ret.</div>
+    </div>
+    <div class="scrollcol" style="flex:1">
+      <sc-for list="{{ rows }}" as="r" hint-placeholder-count="7">
+        <div class="trow" onClick="{{ r.select }}">
+          <div class="tcell">
+            <span style="display:inline-grid;place-items:center;min-width:52px;height:22px;padding:0 7px;font-family:var(--font-heading);font-size:12px;letter-spacing:.06em;border:1px solid {{ r.typeBorder }};background:{{ r.typeBg }};color:{{ r.typeColor }}">{{ r.type }}</span>
+          </div>
+          <div class="tcell">
+            <div style="font-size:13.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.customer }}</div>
+            <div style="font-size:11px;color:var(--color-neutral-700)">A/C {{ r.account }} · {{ r.branch }}</div>
+          </div>
+          <div class="tcell" style="font-size:12.5px;color:var(--color-neutral-800);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.typology }}</div>
+          <div class="tcell">
+            <div style="font-size:12.5px;font-variant-numeric:tabular-nums">{{ r.filed }}</div>
+            <div style="font-size:11px;color:var(--color-neutral-700)">{{ r.officer }}</div>
+          </div>
+          <div class="tcell">
+            <div style="display:flex;align-items:center;gap:0">
+              <span style="display:grid;place-items:center;width:17px;height:17px;font-size:10px;border:1px solid {{ r.s1b }};background:{{ r.s1bg }};color:{{ r.s1c }}">{{ r.s1 }}</span>
+              <span style="width:12px;height:1px;background:{{ r.l1 }}"></span>
+              <span style="display:grid;place-items:center;width:17px;height:17px;font-size:10px;border:1px solid {{ r.s2b }};background:{{ r.s2bg }};color:{{ r.s2c }}">{{ r.s2 }}</span>
+              <span style="width:12px;height:1px;background:{{ r.l2 }}"></span>
+              <span style="display:grid;place-items:center;width:17px;height:17px;font-size:10px;border:1px solid {{ r.s3b }};background:{{ r.s3bg }};color:{{ r.s3c }}">{{ r.s3 }}</span>
+            </div>
+            <div style="font-size:11px;color:var(--color-neutral-700);margin-top:2px">{{ r.statusLabel }}</div>
+          </div>
+          <div class="tcell" style="font-size:12px;font-variant-numeric:tabular-nums;color:var(--color-neutral-800)">{{ r.ref }}</div>
+          <div class="tcell" style="text-align:center">
+            <sc-if value="{{ r.retFlag }}">
+              <span style="display:inline-grid;place-items:center;width:20px;height:20px;border:1px solid var(--color-accent-700);background:var(--color-accent-100);color:var(--color-accent-800);font-size:11px" title="Approaching 10-year disposal review">R</span>
+            </sc-if>
+          </div>
+          <sc-if value="{{ r.selected }}">
+            <span style="position:absolute;inset:0;box-shadow:inset 0 0 0 2px var(--color-accent-800);background:color-mix(in srgb,var(--color-accent) 9%,transparent);pointer-events:none"></span>
+          </sc-if>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <!-- detail -->
+  <div class="scrollcol" style="flex:1;border-top:2px solid var(--color-neutral-400);background:var(--color-neutral-100);min-height:0">
+    <div style="padding:14px 18px 24px;display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;align-items:baseline;gap:10px">
+        <h5 style="margin:0;letter-spacing:.1em;text-transform:uppercase;font-size:13px">Submission record</h5>
+        <span style="font-size:12px;color:var(--color-neutral-700)">{{ detailHead }}</span>
+        <span style="margin-left:auto;display:flex;gap:8px">
+          <a class="btn btn-secondary" href="Case Workspace.dc.html" style="font-size:12.5px;padding:4px 10px">Open Case Workspace ↗</a>
+          <button class="btn btn-secondary" style="font-size:12.5px;padding:4px 10px">Download filed XML</button>
+          <button class="btn btn-secondary" style="font-size:12.5px;padding:4px 10px">Acknowledgement PDF</button>
+        </span>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1.35fr 1fr;gap:14px;align-items:start">
+
+        <!-- stepper + metadata -->
+        <div class="blueprint" style="padding:14px 16px;background:var(--color-bg)">
+          <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+          <div style="display:flex;align-items:baseline;gap:9px;margin-bottom:12px">
+            <span style="font-family:var(--font-heading);font-size:20px">{{ dRef }}</span>
+            <span class="tag tag-outline" style="font-size:10px">{{ dStatusTag }}</span>
+            <span style="margin-left:auto;font-size:11.5px;color:var(--color-neutral-700)">{{ dFiling }}</span>
+          </div>
+
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0;align-items:start">
+            <div style="display:flex;flex-direction:column;gap:7px;padding-right:14px;border-right:1px solid var(--color-divider)">
+              <div style="display:flex;align-items:center;gap:8px">
+                <span style="display:grid;place-items:center;width:26px;height:26px;font-size:13px;border:1.5px solid {{ d1b }};background:{{ d1bg }};color:{{ d1c }}">{{ d1 }}</span>
+                <span style="font-family:var(--font-heading);font-size:15px">Submitted</span>
+              </div>
+              <div style="font-size:12px;font-variant-numeric:tabular-nums">{{ d1time }}</div>
+              <div style="font-size:11px;color:var(--color-neutral-700);line-height:1.4">{{ d1note }}</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:7px;padding:0 14px;border-right:1px solid var(--color-divider)">
+              <div style="display:flex;align-items:center;gap:8px">
+                <span style="display:grid;place-items:center;width:26px;height:26px;font-size:13px;border:1.5px solid {{ d2b }};background:{{ d2bg }};color:{{ d2c }}">{{ d2 }}</span>
+                <span style="font-family:var(--font-heading);font-size:15px">Acknowledged by FMU</span>
+              </div>
+              <div style="font-size:12px;font-variant-numeric:tabular-nums">{{ d2time }}</div>
+              <div style="font-size:11px;color:var(--color-neutral-700);line-height:1.4">{{ d2note }}</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:7px;padding-left:14px">
+              <div style="display:flex;align-items:center;gap:8px">
+                <span style="display:grid;place-items:center;width:26px;height:26px;font-size:13px;border:1.5px solid {{ d3b }};background:{{ d3bg }};color:{{ d3c }}">{{ d3 }}</span>
+                <span style="font-family:var(--font-heading);font-size:15px">Feedback received</span>
+              </div>
+              <div style="font-size:12px;font-variant-numeric:tabular-nums">{{ d3time }}</div>
+              <div style="font-size:11px;color:var(--color-neutral-700);line-height:1.4">{{ d3note }}</div>
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--color-divider);margin-top:14px">
+            <div style="background:var(--color-bg);padding:8px 10px">
+              <div style="font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-neutral-700)">Subject</div>
+              <div style="font-size:13px">{{ dCustomer }}</div>
+              <div style="font-size:10.5px;color:var(--color-neutral-600)">A/C {{ dAccount }}</div>
+            </div>
+            <div style="background:var(--color-bg);padding:8px 10px">
+              <div style="font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-neutral-700)">Filing officer</div>
+              <div style="font-size:13px">{{ dOfficer }}</div>
+              <div style="font-size:10.5px;color:var(--color-neutral-600)">{{ dOfficerRole }}</div>
+            </div>
+            <div style="background:var(--color-bg);padding:8px 10px">
+              <div style="font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-neutral-700)">Reported value</div>
+              <div style="font-size:13px;font-variant-numeric:tabular-nums">{{ dValue }}</div>
+              <div style="font-size:10.5px;color:var(--color-neutral-600)">{{ dTxnCount }}</div>
+            </div>
+            <div style="background:var(--color-bg);padding:8px 10px">
+              <div style="font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-neutral-700)">Originating case</div>
+              <div style="font-size:13px">{{ dCase }}</div>
+              <div style="font-size:10.5px;color:var(--color-neutral-600)">schema 4.9 · XML validated</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- right column: feedback log + retention -->
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div class="blueprint" style="padding:0;background:var(--color-bg)">
+            <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+            <div style="display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--color-divider)">
+              <h6 style="margin:0">FMU correspondence</h6>
+              <span class="tag tag-neutral" style="font-size:10px">{{ dLogCount }}</span>
+              <span style="margin-left:auto;font-size:11px;color:var(--color-neutral-700)">read-only feed</span>
+            </div>
+            <sc-for list="{{ dLog }}" as="e" hint-placeholder-count="3">
+              <div style="display:flex;gap:11px;padding:9px 12px;border-bottom:1px solid color-mix(in srgb,var(--color-text) 8%,transparent)">
+                <div style="flex:none;width:78px">
+                  <div style="font-size:11.5px;font-variant-numeric:tabular-nums">{{ e.date }}</div>
+                  <div style="font-size:10px;color:var(--color-neutral-600)">{{ e.who }}</div>
+                </div>
+                <div style="min-width:0">
+                  <div style="font-size:12.5px;line-height:1.4">{{ e.text }}</div>
+                  <div style="font-size:10.5px;color:var(--color-neutral-600);margin-top:1px">{{ e.meta }}</div>
+                </div>
+              </div>
+            </sc-for>
+            <div style="padding:7px 12px;font-size:11px;color:var(--color-neutral-700)">Correspondence is recorded automatically from the goAML channel. Responses are drafted in the case, not here.</div>
+          </div>
+
+          <div class="blueprint" style="padding:12px 14px;background:{{ retPanelBg }};border:1px solid {{ retPanelBorder }}">
+            <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+            <div style="display:flex;align-items:baseline;gap:9px">
+              <h6 style="margin:0;color:{{ retTextColor }}">Retention clock</h6>
+              <span style="font-size:11px;color:{{ retTextColor }}">AMLA 2010 s.8 — 10 years from filing</span>
+              <span style="margin-left:auto;font-family:var(--font-heading);font-size:17px;color:{{ retTextColor }}">{{ retElapsed }}</span>
+            </div>
+            <div style="height:10px;background:var(--color-neutral-300);margin-top:9px;position:relative">
+              <span style="position:absolute;left:0;top:0;bottom:0;width:{{ retPct }};background:{{ retBarColor }}"></span>
+              <span style="position:absolute;left:{{ retReviewMark }};top:-3px;bottom:-3px;width:1px;background:var(--color-text)"></span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:10.5px;color:var(--color-neutral-700);margin-top:4px">
+              <span>{{ retStart }}</span><span>{{ retReviewLabel }}</span><span>{{ retEnd }}</span>
+            </div>
+            <div style="font-size:12px;color:{{ retTextColor }};margin-top:8px;line-height:1.45">{{ retNote }}</div>
+            <sc-if value="{{ retFlagged }}">
+              <div style="display:flex;align-items:center;gap:8px;margin-top:9px;border-top:1px solid var(--color-accent-300);padding-top:9px">
+                <span style="display:grid;place-items:center;width:20px;height:20px;border:1px solid var(--color-accent-700);background:var(--color-bg);color:var(--color-accent-800);font-size:11px">R</span>
+                <span style="font-size:12px;color:var(--color-accent-800)">Flagged for disposal review. No record is deleted automatically — an MLRO decision is required.</span>
+              </div>
+            </sc-if>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;retentionReviewYears&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:9,&quot;min&quot;:5,&quot;max&quot;:10,&quot;tsType&quot;:&quot;number&quot;,&quot;section&quot;:&quot;Policy&quot;}}">
+const AMBER = "var(--color-accent-700)", AMBER_DARK = "var(--color-accent-800)", AMBER_BG = "var(--color-accent-100)";
+
+const DATA = [
+  {
+    id: "F1", type: "STR-F", customer: "Bilal Ahmed", account: "0231-7788-4", branch: "Jodia Bazar, Karachi",
+    typology: "Structuring — sub-threshold cash deposits", filed: "24 Aug 2026 · 09:58", officer: "A. Raza",
+    officerRole: "Senior Compliance Officer", stage: 2, ref: "REF-FMU-2026-118420", value: "PKR 11,330,000",
+    txns: "4 transactions", caseId: "ALT-2026-04417", filedYear: 2026, retYears: 0.0,
+    t1: "24 Aug 2026 · 09:58 PKT", t1n: "goAML XML 4.9 accepted, 0 validation errors. Filed 3 d 04 h inside the statutory window.",
+    t2: "25 Aug 2026 · 11:14 PKT", t2n: "FMU acknowledgement received, reference issued. Median for this institution 1 d 04 h.",
+    t3: "—", t3n: "No feedback or follow-up request from the FMU to date.",
+    log: [
+      { date: "25 Aug 26", who: "FMU", text: "Acknowledgement of receipt — report registered under REF-FMU-2026-118420.", meta: "automated · goAML channel" },
+      { date: "24 Aug 26", who: "System", text: "Submission transmitted and validated against goAML schema 4.9.", meta: "filed by A. Raza · session 09:31" }
+    ]
+  },
+  {
+    id: "F2", type: "STR-F", customer: "Al-Barq Currency Exchange", account: "0119-2245-8", branch: "Saddar, Karachi",
+    typology: "High-velocity account / pass-through", filed: "23 Aug 2026 · 16:40", officer: "S. Iqbal",
+    officerRole: "MLRO", stage: 1, ref: "pending", value: "PKR 84,600,000",
+    txns: "31 transactions", caseId: "ALT-2026-04352", filedYear: 2026, retYears: 0.0,
+    t1: "23 Aug 2026 · 16:40 PKT", t1n: "Transmitted and validated. Awaiting FMU registration reference.",
+    t2: "awaiting", t2n: "No acknowledgement yet — 17 h elapsed. Escalate to the FMU help desk after 72 h.",
+    t3: "—", t3n: "Stage not reached.",
+    log: [
+      { date: "24 Aug 26", who: "System", text: "Acknowledgement not yet received; automatic re-poll scheduled every 6 hours.", meta: "goAML channel healthy" },
+      { date: "23 Aug 26", who: "System", text: "Submission transmitted and validated against goAML schema 4.9.", meta: "filed by S. Iqbal · session 16:22" }
+    ]
+  },
+  {
+    id: "F3", type: "CTR", customer: "Rehman Poultry Farms", account: "0902-6631-7", branch: "Faisalabad Main",
+    typology: "Cash threshold report — aggregated deposits", filed: "19 Aug 2026 · 10:05", officer: "M. Shafiq",
+    officerRole: "Compliance Officer", stage: 2, ref: "REF-FMU-2026-117903", value: "PKR 6,200,000",
+    txns: "2 transactions", caseId: "ALT-2026-04409", filedYear: 2026, retYears: 0.0,
+    t1: "19 Aug 2026 · 10:05 PKT", t1n: "Routine currency transaction report, no suspicion asserted.",
+    t2: "20 Aug 2026 · 08:31 PKT", t2n: "Acknowledged by the FMU, reference issued.",
+    t3: "—", t3n: "No feedback expected on routine CTRs.",
+    log: [{ date: "20 Aug 26", who: "FMU", text: "Acknowledgement of receipt — report registered.", meta: "automated · goAML channel" }]
+  },
+  {
+    id: "F4", type: "STR-F", customer: "Nadia Malik", account: "0655-4417-3", branch: "Gulberg III, Lahore",
+    typology: "Dormant reactivation", filed: "11 Jul 2026 · 14:22", officer: "A. Raza",
+    officerRole: "Senior Compliance Officer", stage: 3, ref: "REF-FMU-2026-114188", value: "PKR 8,400,000",
+    txns: "6 transactions", caseId: "ALT-2026-03980", filedYear: 2026, retYears: 0.1,
+    t1: "11 Jul 2026 · 14:22 PKT", t1n: "Filed within 4 days of the officer's disposition.",
+    t2: "12 Jul 2026 · 09:47 PKT", t2n: "Acknowledged, reference issued.",
+    t3: "04 Aug 2026 · 12:10 PKT", t3n: "FMU requested supplementary account statements — response filed 07 Aug 2026.",
+    log: [
+      { date: "07 Aug 26", who: "A. Raza", text: "Supplementary statements (Jan 2024 – Jul 2026) uploaded in response to the FMU request.", meta: "3 attachments · 11.4 MB" },
+      { date: "04 Aug 26", who: "FMU", text: "Follow-up request: full statement history and CNIC copy for the beneficiary of the 08 Jul transfer.", meta: "response due 11 Aug 2026 — met" },
+      { date: "12 Jul 26", who: "FMU", text: "Acknowledgement of receipt — report registered.", meta: "automated · goAML channel" }
+    ]
+  },
+  {
+    id: "F5", type: "CTR", customer: "Zam Zam General Store", account: "0774-2210-8", branch: "Sukkur City",
+    typology: "Cash threshold report — single deposit", filed: "28 Feb 2026 · 11:37", officer: "M. Shafiq",
+    officerRole: "Compliance Officer", stage: 2, ref: "REF-FMU-2026-102771", value: "PKR 2,450,000",
+    txns: "1 transaction", caseId: "ALT-2026-01120", filedYear: 2026, retYears: 0.5,
+    t1: "28 Feb 2026 · 11:37 PKT", t1n: "Routine currency transaction report.",
+    t2: "01 Mar 2026 · 10:02 PKT", t2n: "Acknowledged by the FMU, reference issued.",
+    t3: "—", t3n: "No feedback received.",
+    log: [{ date: "01 Mar 26", who: "FMU", text: "Acknowledgement of receipt — report registered.", meta: "automated · goAML channel" }]
+  },
+  {
+    id: "F6", type: "STR-F", customer: "Sana Textiles (Pvt) Ltd", account: "0448-1120-9", branch: "Jodia Bazar, Karachi",
+    typology: "TBML — over-invoiced textile exports", filed: "09 Oct 2024 · 15:12", officer: "S. Iqbal",
+    officerRole: "MLRO", stage: 3, ref: "REF-FMU-2024-089114", value: "PKR 142,900,000",
+    txns: "18 transactions", caseId: "ALT-2024-07711", filedYear: 2024, retYears: 1.9,
+    t1: "09 Oct 2024 · 15:12 PKT", t1n: "Filed jointly with the trade finance unit.",
+    t2: "10 Oct 2024 · 12:44 PKT", t2n: "Acknowledged, reference issued.",
+    t3: "22 Jan 2025 · 09:30 PKT", t3n: "FMU advised the report was referred onward to an investigating agency. No further action required of the bank.",
+    log: [
+      { date: "22 Jan 25", who: "FMU", text: "Notice of onward referral to an investigating agency; bank to preserve all underlying records.", meta: "no response required" },
+      { date: "10 Oct 24", who: "FMU", text: "Acknowledgement of receipt — report registered.", meta: "automated · goAML channel" }
+    ]
+  },
+  {
+    id: "F7", type: "STR-F", customer: "Imran Shah", account: "0338-9902-5", branch: "Peshawar Cantt",
+    typology: "Cross-border — high-risk corridor", filed: "03 Dec 2017 · 12:55", officer: "F. Haider",
+    officerRole: "Compliance Officer (former)", stage: 3, ref: "REF-FMU-2017-041022", value: "PKR 19,750,000",
+    txns: "9 transactions", caseId: "ALT-2017-02244", filedYear: 2017, retYears: 8.7,
+    t1: "03 Dec 2017 · 12:55 PKT", t1n: "Filed under goAML schema 3.2; migrated record.",
+    t2: "06 Dec 2017 · 10:18 PKT", t2n: "Acknowledged, reference issued.",
+    t3: "14 Feb 2018 · 11:05 PKT", t3n: "FMU closed the matter without further request.",
+    log: [
+      { date: "14 Feb 18", who: "FMU", text: "Matter closed at the FMU; no further information sought from the bank.", meta: "archived correspondence" },
+      { date: "06 Dec 17", who: "FMU", text: "Acknowledgement of receipt — report registered.", meta: "migrated from legacy channel" }
+    ]
+  },
+  {
+    id: "F8", type: "CTR", customer: "Faisal Traders", account: "0771-3390-2", branch: "Jodia Bazar, Karachi",
+    typology: "Cash threshold report — aggregated deposits", filed: "17 Jun 2017 · 09:20", officer: "F. Haider",
+    officerRole: "Compliance Officer (former)", stage: 2, ref: "REF-FMU-2017-036540", value: "PKR 4,100,000",
+    txns: "3 transactions", caseId: "ALT-2017-01088", filedYear: 2017, retYears: 9.2,
+    t1: "17 Jun 2017 · 09:20 PKT", t1n: "Filed under goAML schema 3.2; migrated record.",
+    t2: "19 Jun 2017 · 14:02 PKT", t2n: "Acknowledged, reference issued.",
+    t3: "—", t3n: "No feedback received.",
+    log: [{ date: "19 Jun 17", who: "FMU", text: "Acknowledgement of receipt — report registered.", meta: "migrated from legacy channel" }]
+  }
+];
+
+const STAGE_LABEL = ["", "Submitted", "Acknowledged", "Feedback received"];
+
+class Component extends DCLogic {
+  state = { sel: "F1", retOnly: false };
+
+  step(stage, n, big) {
+    const done = stage > n, current = stage === n;
+    if (done) return { g: "✓", b: "var(--color-accent-800)", bg: "var(--color-accent-800)", c: "var(--color-bg)" };
+    if (current) return { g: big ? "•" : "•", b: "var(--color-accent-800)", bg: "var(--color-accent-100)", c: "var(--color-accent-800)" };
+    return { g: "", b: "var(--color-neutral-300)", bg: "var(--color-bg)", c: "var(--color-neutral-500)" };
+  }
+
+  renderVals() {
+    const s = this.state;
+    const reviewAt = this.props.retentionReviewYears ?? 9;
+    const retFlagged = r => r.retYears >= reviewAt;
+    const list = s.retOnly ? DATA.filter(retFlagged) : DATA;
+    const d = DATA.find(r => r.id === s.sel) || DATA[0];
+
+    const rows = list.map(r => {
+      const a = this.step(r.stage, 1), b = this.step(r.stage, 2), c = this.step(r.stage, 3);
+      const isCtr = r.type === "CTR";
+      return {
+        ...r,
+        selected: r.id === s.sel,
+        select: () => this.setState({ sel: r.id }),
+        typeBorder: isCtr ? "var(--color-neutral-500)" : "var(--color-accent-800)",
+        typeBg: isCtr ? "var(--color-neutral-100)" : "var(--color-accent-100)",
+        typeColor: isCtr ? "var(--color-neutral-800)" : "var(--color-accent-800)",
+        s1: a.g, s1b: a.b, s1bg: a.bg, s1c: a.c,
+        s2: b.g, s2b: b.b, s2bg: b.bg, s2c: b.c,
+        s3: c.g, s3b: c.b, s3bg: c.bg, s3c: c.c,
+        l1: r.stage > 1 ? "var(--color-accent-800)" : "var(--color-neutral-300)",
+        l2: r.stage > 2 ? "var(--color-accent-800)" : "var(--color-neutral-300)",
+        statusLabel: r.stage === 1 ? "Awaiting acknowledgement" : STAGE_LABEL[r.stage],
+        ref: r.ref,
+        retFlag: retFlagged(r)
+      };
+    });
+
+    const d1 = this.step(d.stage, 1, true), d2 = this.step(d.stage, 2, true), d3 = this.step(d.stage, 3, true);
+    const flagged = retFlagged(d);
+    const pct = Math.min(100, (d.retYears / 10) * 100);
+    const yrs = Math.floor(d.retYears), mos = Math.round((d.retYears - yrs) * 12);
+    const endYear = d.filedYear + 10;
+
+    return {
+      rows, shownCount: rows.length,
+      retOnly: s.retOnly, retKnob: s.retOnly ? "17px" : "1px",
+      toggleRetOnly: () => this.setState({ retOnly: !s.retOnly }),
+
+      detailHead: d.type + " · " + d.customer + " · filed " + d.filed + " PKT",
+      dRef: d.ref === "pending" ? "Reference pending" : d.ref,
+      dStatusTag: (d.stage === 1 ? "AWAITING FMU ACKNOWLEDGEMENT" : STAGE_LABEL[d.stage]).toUpperCase(),
+      dFiling: d.type + " · schema " + (d.filedYear < 2019 ? "3.2 (migrated)" : "4.9") + " · " + d.txns,
+      dCustomer: d.customer, dAccount: d.account, dOfficer: d.officer, dOfficerRole: d.officerRole,
+      dValue: d.value, dTxnCount: d.txns, dCase: d.caseId,
+
+      d1: d1.g, d1b: d1.b, d1bg: d1.bg, d1c: d1.c, d1time: d.t1, d1note: d.t1n,
+      d2: d2.g, d2b: d2.b, d2bg: d2.bg, d2c: d2.c, d2time: d.t2, d2note: d.t2n,
+      d3: d3.g, d3b: d3.b, d3bg: d3.bg, d3c: d3.c, d3time: d.t3, d3note: d.t3n,
+
+      dLog: d.log, dLogCount: d.log.length + " entries",
+
+      retFlagged: flagged,
+      retPanelBg: flagged ? AMBER_BG : "var(--color-bg)",
+      retPanelBorder: flagged ? AMBER : "var(--color-divider)",
+      retTextColor: flagged ? AMBER_DARK : "var(--color-text)",
+      retBarColor: flagged ? AMBER : "var(--color-accent-600)",
+      retPct: pct.toFixed(1) + "%",
+      retReviewMark: (reviewAt * 10) + "%",
+      retReviewLabel: "disposal review at " + reviewAt + " yr",
+      retElapsed: yrs + " yr " + mos + " mo elapsed",
+      retStart: "filed " + d.filedYear,
+      retEnd: "disposal " + endYear,
+      retNote: flagged
+        ? "Inside the disposal review window — this record reaches the end of its statutory retention period in " + (endYear - 2026) + " year" + ((endYear - 2026) === 1 ? "" : "s") + ". Queue it for MLRO review before any action is taken."
+        : "Retained until " + endYear + ". Review is raised automatically " + reviewAt + " years after filing; nothing is disposed of without an MLRO decision."
+    };
+  }
+}
+</script>
+</body>
+</html>

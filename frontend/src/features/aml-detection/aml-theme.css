@@ -1,0 +1,163 @@
+/* specs/platform/04-claude-design-integration.md — tokens lifted from
+   design-exports/bfsi/aml-detection/brand.css, the Claude Design
+   visual source of truth for this feature. */
+:root {
+  --aml-accent: #2c4278;
+  --aml-accent-100: #eef1f7;
+  --aml-accent-200: #d6dcea;
+  --aml-accent-300: #aab6d2;
+  --aml-accent-700: #1e3265;
+  --aml-accent-800: #142451;
+  --aml-accent-900: #0c1837;
+  --aml-neutral-100: #f7f7f8;
+  --aml-neutral-300: #d8d8da;
+  --aml-neutral-500: #9a9a9d;
+  --aml-neutral-600: #676769;
+  --aml-neutral-700: #55555a;
+  --aml-alert: #8d3325;
+  --aml-divider: #e5e4e7;
+  --aml-bg: #ffffff;
+  --aml-text: #16171d;
+}
+
+.aml-page {
+  font-family: system-ui, sans-serif;
+  color: var(--aml-text);
+}
+
+.aml-subnav {
+  display: flex;
+  gap: 20px;
+  padding: 0 4px 10px;
+  border-bottom: 1px solid var(--aml-divider);
+  margin-bottom: 16px;
+}
+
+.aml-subnav a {
+  font-size: 13px;
+  color: var(--aml-neutral-700);
+  text-decoration: none;
+  padding-bottom: 8px;
+  border-bottom: 2px solid transparent;
+}
+
+.aml-subnav a.active {
+  color: var(--aml-accent-900);
+  border-bottom-color: var(--aml-accent);
+  font-weight: 600;
+}
+
+.aml-tag {
+  display: inline-block;
+  font-size: 10.5px;
+  border: 1px solid var(--aml-accent-800);
+  background: var(--aml-accent-100);
+  color: var(--aml-accent-800);
+  padding: 2px 7px;
+}
+
+.aml-badge {
+  display: inline-grid;
+  place-items: center;
+  min-width: 38px;
+  height: 26px;
+  padding: 0 4px;
+  font-family: ui-monospace, monospace;
+  font-size: 15px;
+  border: 1px solid var(--aml-neutral-500);
+  background: var(--aml-neutral-100);
+}
+
+.aml-badge--critical {
+  border-color: var(--aml-alert);
+  background: color-mix(in srgb, var(--aml-alert) 12%, transparent);
+  color: var(--aml-alert);
+}
+
+.aml-badge--high {
+  border-color: var(--aml-accent-700);
+  background: color-mix(in srgb, var(--aml-accent-700) 12%, transparent);
+  color: var(--aml-accent-700);
+}
+
+.aml-btn {
+  font-size: 12.5px;
+  padding: 5px 12px;
+  border: 1px solid var(--aml-accent);
+  background: var(--aml-bg);
+  color: var(--aml-accent-900);
+  cursor: pointer;
+}
+
+.aml-btn:hover:not(:disabled) {
+  background: var(--aml-accent-100);
+}
+
+.aml-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.aml-btn--primary {
+  background: var(--aml-accent-900);
+  color: #fff;
+  border-color: var(--aml-accent-900);
+}
+
+.aml-btn--primary:hover:not(:disabled) {
+  background: var(--aml-accent-700);
+}
+
+.aml-card {
+  border: 1px solid var(--aml-divider);
+  padding: 14px 16px;
+  background: var(--aml-bg);
+}
+
+.aml-label {
+  font-size: 9.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--aml-neutral-700);
+}
+
+.aml-status {
+  padding: 2rem;
+  color: var(--aml-neutral-700);
+  font-size: 13px;
+}
+
+.aml-status--error {
+  color: var(--aml-alert);
+}
+
+/* Constitution rule 2: agent-authored vs. human-authored content is
+   always visually distinct — this token pair is reused everywhere the
+   two appear together (Case Workspace, Filing Console). */
+.aml-source-ai {
+  background: var(--aml-accent-100);
+  border-left: 3px solid var(--aml-accent);
+  padding: 8px 10px;
+}
+
+.aml-source-ai__label {
+  font-size: 9.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--aml-accent-800);
+  margin-bottom: 4px;
+}
+
+.aml-source-human {
+  background: var(--aml-neutral-100);
+  border-left: 3px solid var(--aml-neutral-500);
+  padding: 8px 10px;
+}
+
+.aml-source-human__label {
+  font-size: 9.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--aml-neutral-700);
+  margin-bottom: 4px;
+}

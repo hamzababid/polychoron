@@ -1,0 +1,63 @@
+.linked-graph {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+}
+
+.linked-graph__empty {
+  font-size: 12px;
+  color: var(--aml-neutral-600);
+}
+
+.linked-graph__center {
+  flex: none;
+  padding: 10px 14px;
+  border: 2px solid var(--aml-accent-900);
+  background: var(--aml-accent-900);
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.linked-graph__edges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding-top: 6px;
+}
+
+.linked-graph__node {
+  position: relative;
+  padding: 8px 10px;
+  border: 1px solid var(--aml-neutral-500);
+  background: var(--aml-neutral-100);
+  font-size: 12px;
+  min-width: 150px;
+}
+
+.linked-graph__node::before {
+  content: '';
+  position: absolute;
+  left: -14px;
+  top: 50%;
+  width: 14px;
+  height: 1px;
+  background: var(--aml-neutral-500);
+}
+
+.linked-graph__nodeTitle {
+  font-weight: 600;
+}
+
+.linked-graph__nodeRel {
+  font-size: 10.5px;
+  text-transform: capitalize;
+  color: var(--aml-accent-800);
+}
+
+.linked-graph__nodeAccount,
+.linked-graph__nodeNotes {
+  font-size: 10.5px;
+  color: var(--aml-neutral-700);
+  margin-top: 2px;
+}

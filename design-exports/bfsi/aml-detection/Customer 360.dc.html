@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="_ds/industry-92a524b8-8757-4847-a147-3c04a6398262/styles.css">
+<script src="_ds/industry-92a524b8-8757-4847-a147-3c04a6398262/_ds_bundle.js"></script>
+<link rel="stylesheet" href="brand.css">
+<style>
+body{margin:0;background:var(--color-bg)}
+.scrollcol{overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--color-neutral-400) transparent}
+.tlab{font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--color-neutral-700)}
+.sec{display:flex;align-items:baseline;gap:10px;margin-bottom:9px}
+.arow{display:grid;grid-template-columns:150px 1fr 132px 148px 128px 118px;align-items:center;border-bottom:1px solid color-mix(in srgb,var(--color-text) 9%,transparent)}
+.acell{padding:8px 11px;min-width:0}
+.ahd{padding:7px 11px;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--color-neutral-700)}
+</style>
+</helmet>
+<div style="height:100vh;min-height:900px;overflow-x:auto;overflow-y:hidden"><div style="height:100%;min-width:1360px;display:flex;flex-direction:column;font-family:var(--font-body);color:var(--color-text);background:var(--color-bg);overflow:hidden">
+
+  <div style="display:flex;align-items:center;gap:24px;padding:0 18px;height:44px;flex:none;background:var(--color-accent-900);color:var(--color-bg)">
+    <span style="display:flex;align-items:center;gap:9px;font-family:var(--font-heading);font-weight:600;font-size:17px;letter-spacing:0.06em"><svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.2" style="flex:none"><path d="M12 1.6 20.6 6.6v10.8L12 22.4 3.4 17.4V6.6z"></path><path d="M12 7.2 16.6 9.9v5.4L12 18l-4.6-2.7V9.9z"></path><path d="M12 1.6v5.6M20.6 6.6l-4 3.3M20.6 17.4l-4-2.1M12 22.4V18M3.4 17.4l4-2.1M3.4 6.6l4 3.3"></path></svg>POLYCHORON<span style="opacity:.6">AI</span></span>
+    <span style="width:1px;height:18px;background:rgba(255,255,255,.22)"></span>
+    <div style="display:flex;gap:18px;font-size:13px;letter-spacing:.01em">
+      <a href="Command Dashboard.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Dashboard</a>
+      <a href="Alert Queue.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Queue</a>
+      <a href="Case Workspace.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Cases</a>
+      <span style="padding-bottom:2px;border-bottom:2px solid var(--color-accent-400)">Customers</span>
+      <a href="Screening Hub.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Screening</a>
+      <a href="Typology Rules Console.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Typologies</a>
+      <a href="Filing Console.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Filings</a>
+      <a href="goAML Tracker.dc.html" style="opacity:.6;color:inherit;text-decoration:none">goAML tracker</a>
+      <a href="Model Governance.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Governance</a>
+      <a href="Reporting MI.dc.html" style="opacity:.6;color:inherit;text-decoration:none">Reporting</a>
+    </div>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:14px;font-size:12px">
+      <span style="opacity:.7">Habib Metropolitan · Compliance Ops</span>
+      <span style="width:1px;height:18px;background:rgba(255,255,255,.22)"></span>
+      <span>R. Qureshi · Analyst L2</span>
+      <span style="width:26px;height:26px;display:grid;place-items:center;border:1px solid rgba(255,255,255,.3);font-family:var(--font-heading);font-size:12px">RQ</span>
+    </div>
+  </div>
+
+  <!-- confidentiality / provenance bar -->
+  <div style="display:flex;align-items:center;gap:12px;flex:none;padding:6px 18px;border-bottom:1px solid var(--color-divider);background:var(--color-accent-900);color:var(--color-bg)">
+    <span style="font-family:var(--font-heading);font-size:10.5px;letter-spacing:.14em">RESTRICTED — FINANCIAL CRIME RECORD</span>
+    <span style="font-size:11.5px;opacity:.78">Internal compliance use only. Not a customer-facing record and not disclosable to the customer or to branch staff outside the compliance function.</span>
+    <span style="margin-left:auto;font-size:11.5px;opacity:.78">Access logged · R. Qureshi · 25 Aug 2026 10:04 PKT · 4th view this month</span>
+  </div>
+
+  <div class="scrollcol" style="flex:1">
+
+    <!-- identity header -->
+    <div style="display:flex;align-items:stretch;border-bottom:1px solid var(--color-divider);background:var(--color-neutral-100)">
+      <div style="flex:none;padding:14px 18px;border-right:1px solid var(--color-divider);display:flex;gap:14px;align-items:flex-start;min-width:430px">
+        <div class="blueprint" style="flex:none;width:76px;height:88px;display:grid;place-items:center;background:var(--color-bg)">
+          <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+          <div style="text-align:center;padding:0 6px">
+            <div style="font-family:var(--font-heading);font-size:21px;letter-spacing:.04em">BA</div>
+            <div style="font-size:8.5px;letter-spacing:.08em;color:var(--color-neutral-600);line-height:1.25;margin-top:3px">NO PHOTO<br>ON FILE</div>
+          </div>
+        </div>
+        <div style="min-width:0">
+          <div style="display:flex;align-items:center;gap:9px">
+            <span style="font-family:var(--font-heading);font-size:27px;line-height:1.1;letter-spacing:.01em">Bilal Ahmed</span>
+            <span style="display:inline-grid;place-items:center;height:21px;padding:0 8px;border:1px solid var(--color-accent-700);background:var(--color-accent-100);color:var(--color-accent-800);font-family:var(--font-heading);font-size:11px;letter-spacing:.08em">KYC RISK: HIGH</span>
+          </div>
+          <div style="font-size:12.5px;color:var(--color-neutral-800);margin-top:2px">Individual · resident · CNIC 42101-8834192-7 · DOB 14 Mar 1981</div>
+          <div style="font-size:12px;color:var(--color-neutral-700);margin-top:1px">Shop 214, Cloth Market, Jodia Bazar, Karachi 74000</div>
+          <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
+            <span class="tag tag-outline" style="font-size:10.5px">CUSTOMER SINCE JAN 2024</span>
+            <span class="tag tag-outline" style="font-size:10.5px">NOT A PEP</span>
+            <span class="tag tag-accent" style="font-size:10.5px">1 CASE IN PROGRESS</span>
+          </div>
+        </div>
+      </div>
+      <div style="flex:1;display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--color-divider)">
+        <div style="background:var(--color-neutral-100);padding:12px 14px">
+          <div class="tlab">Occupation</div>
+          <div style="font-size:14px;margin-top:2px">Wholesale textile trader</div>
+          <div style="font-size:10.5px;color:var(--color-neutral-600)">self-declared 2023 · unverified</div>
+        </div>
+        <div style="background:var(--color-neutral-100);padding:12px 14px">
+          <div class="tlab">Declared expected turnover</div>
+          <div style="font-size:14px;margin-top:2px">PKR 4.5 M / month</div>
+          <div style="font-size:10.5px;color:var(--color-neutral-600)">at onboarding, never revised</div>
+        </div>
+        <div style="background:var(--color-neutral-100);padding:12px 14px">
+          <div class="tlab">Observed 90-day average</div>
+          <div style="font-size:14px;margin-top:2px">PKR 11.8 M / month</div>
+          <div style="font-size:10.5px;color:var(--color-accent-700)">2.6× declared — unexplained</div>
+        </div>
+        <div style="background:var(--color-neutral-100);padding:12px 14px">
+          <div class="tlab">KYC review</div>
+          <div style="font-size:14px;margin-top:2px">Rescored 12 Jun 2026</div>
+          <div style="font-size:10.5px;color:var(--color-neutral-600)">next periodic review Jun 2027</div>
+        </div>
+      </div>
+      <div style="flex:none;padding:12px 18px;border-left:1px solid var(--color-divider);display:flex;flex-direction:column;gap:7px;justify-content:center">
+        <a class="btn btn-secondary" href="Case Workspace.dc.html" style="font-size:12.5px;padding:5px 10px">Open active case ↗</a>
+        <button class="btn btn-secondary" style="font-size:12.5px;padding:5px 10px">Rescreen now</button>
+        <button class="btn btn-secondary" style="font-size:12.5px;padding:5px 10px">Export profile pack</button>
+      </div>
+    </div>
+
+    <div style="padding:16px 18px 26px;display:flex;flex-direction:column;gap:18px">
+
+      <!-- summary tiles -->
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
+        <div class="blueprint" style="padding:0;background:var(--color-bg)">
+          <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+          <div style="padding:9px 13px;border-bottom:1px solid var(--color-divider)"><span class="tlab">Accounts held</span></div>
+          <div style="padding:11px 13px 13px">
+            <div style="display:flex;align-items:baseline;gap:9px">
+              <span style="font-family:var(--font-heading);font-size:34px;line-height:1">2</span>
+              <span style="font-size:11.5px;color:var(--color-neutral-700);line-height:1.35">1 current, 1 savings<br>both active</span>
+            </div>
+            <div style="font-size:11.5px;color:var(--color-neutral-700);margin-top:9px;border-top:1px solid var(--color-divider);padding-top:7px">Signatory on 1 further corporate account.</div>
+          </div>
+        </div>
+        <div class="blueprint" style="padding:0;background:var(--color-bg)">
+          <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+          <div style="padding:9px 13px;border-bottom:1px solid var(--color-divider)"><span class="tlab">Alert history</span></div>
+          <div style="padding:11px 13px 13px">
+            <div style="display:flex;align-items:baseline;gap:9px">
+              <span style="font-family:var(--font-heading);font-size:34px;line-height:1">2</span>
+              <span style="font-size:11.5px;color:var(--color-neutral-700);line-height:1.35">1 closed<br>1 in progress</span>
+            </div>
+            <div style="font-size:11.5px;color:var(--color-neutral-700);margin-top:9px;border-top:1px solid var(--color-divider);padding-top:7px">First alert 14 Nov 2025, 22 months after opening.</div>
+          </div>
+        </div>
+        <div class="blueprint" style="padding:0;background:var(--color-bg)">
+          <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+          <div style="padding:9px 13px;border-bottom:1px solid var(--color-divider)"><span class="tlab">Regulatory filings</span></div>
+          <div style="padding:11px 13px 13px">
+            <div style="display:flex;align-items:baseline;gap:9px">
+              <span style="font-family:var(--font-heading);font-size:34px;line-height:1">1</span>
+              <span style="font-size:11.5px;color:var(--color-neutral-700);line-height:1.35">STR-F filed 24 Aug 2026<br>no CTR on record</span>
+            </div>
+            <div style="font-size:11.5px;color:var(--color-accent-700);margin-top:9px;border-top:1px solid var(--color-divider);padding-top:7px"><a href="goAML Tracker.dc.html" style="color:inherit">REF-FMU-2026-118420 — acknowledged ↗</a></div>
+          </div>
+        </div>
+        <div class="blueprint" style="padding:0;background:var(--color-bg);border:1px solid var(--color-accent-700)">
+          <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+          <div style="padding:9px 13px;border-bottom:1px solid color-mix(in srgb,var(--color-accent-700) 40%,transparent)"><span class="tlab" style="color:var(--color-accent-700)">Current composite risk score</span></div>
+          <div style="padding:11px 13px 13px">
+            <div style="display:flex;align-items:baseline;gap:9px">
+              <span style="font-family:var(--font-heading);font-size:34px;line-height:1;color:var(--color-accent-800)">78</span>
+              <span style="font-size:11.5px;color:var(--color-accent-800);line-height:1.35">of 100 · high band<br>was 41 in June</span>
+            </div>
+            <div style="height:7px;background:var(--color-neutral-300);margin-top:9px;position:relative">
+              <span style="position:absolute;left:0;top:0;bottom:0;width:78%;background:var(--color-accent-700)"></span>
+              <span style="position:absolute;left:65%;top:-3px;bottom:-3px;width:1px;background:var(--color-text)"></span>
+            </div>
+            <div style="font-size:10.5px;color:var(--color-neutral-700);margin-top:4px">escalation threshold 65</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- accounts -->
+      <div>
+        <div class="sec">
+          <h4 style="margin:0">Accounts held</h4>
+          <span style="font-size:11.5px;color:var(--color-neutral-700)">2 in own name · 1 corporate mandate · figures to 24 Aug 2026</span>
+        </div>
+        <div class="blueprint" style="padding:0;background:var(--color-bg)">
+          <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+          <div class="arow" style="border-bottom:1px solid var(--color-text)">
+            <div class="ahd">Account</div>
+            <div class="ahd">Type · branch</div>
+            <div class="ahd">Opened</div>
+            <div class="ahd" style="text-align:right">Balance (PKR)</div>
+            <div class="ahd" style="text-align:right">90-day turnover</div>
+            <div class="ahd">Status</div>
+          </div>
+          <div class="arow">
+            <div class="acell" style="font-size:13px;font-variant-numeric:tabular-nums">0231-7788-4</div>
+            <div class="acell">
+              <div style="font-size:13px">Current account</div>
+              <div style="font-size:11px;color:var(--color-neutral-700)">Jodia Bazar, Karachi · sole</div>
+            </div>
+            <div class="acell" style="font-size:12.5px">19 Jan 2024</div>
+            <div class="acell" style="text-align:right;font-size:13px;font-variant-numeric:tabular-nums">1,284,600</div>
+            <div class="acell" style="text-align:right;font-size:13px;font-variant-numeric:tabular-nums">35,400,000</div>
+            <div class="acell"><span class="tag tag-accent" style="font-size:10.5px">ACTIVE · UNDER REVIEW</span></div>
+          </div>
+          <div class="arow">
+            <div class="acell" style="font-size:13px;font-variant-numeric:tabular-nums">0231-7788-9</div>
+            <div class="acell">
+              <div style="font-size:13px">Savings account</div>
+              <div style="font-size:11px;color:var(--color-neutral-700)">Jodia Bazar, Karachi · sole</div>
+            </div>
+            <div class="acell" style="font-size:12.5px">19 Jan 2024</div>
+            <div class="acell" style="text-align:right;font-size:13px;font-variant-numeric:tabular-nums">612,000</div>
+            <div class="acell" style="text-align:right;font-size:13px;font-variant-numeric:tabular-nums">840,000</div>
+            <div class="acell"><span class="tag tag-neutral" style="font-size:10.5px">ACTIVE</span></div>
+          </div>
+          <div class="arow" style="background:var(--color-neutral-100)">
+            <div class="acell" style="font-size:13px;font-variant-numeric:tabular-nums">0448-1120-9</div>
+            <div class="acell">
+              <div style="font-size:13px">Corporate current — Sana Textiles (Pvt) Ltd</div>
+              <div style="font-size:11px;color:var(--color-neutral-700)">Jodia Bazar, Karachi · customer is a signatory, not the account holder</div>
+            </div>
+            <div class="acell" style="font-size:12.5px">03 Aug 2022</div>
+            <div class="acell" style="text-align:right;font-size:13px;font-variant-numeric:tabular-nums">8,910,400</div>
+            <div class="acell" style="text-align:right;font-size:13px;font-variant-numeric:tabular-nums">96,200,000</div>
+            <div class="acell"><span class="tag tag-neutral" style="font-size:10.5px">MANDATE ONLY</span></div>
+          </div>
+          <div style="padding:7px 11px;border-top:1px solid var(--color-divider);font-size:11.5px;color:var(--color-neutral-700)">No closed or dormant accounts on record. No accounts at other entities in the group.</div>
+        </div>
+      </div>
+
+      <!-- alert & case history -->
+      <div>
+        <div class="sec">
+          <h4 style="margin:0">Alert &amp; case history</h4>
+          <span style="font-size:11.5px;color:var(--color-neutral-700)">chronological, newest first · 36-month lookback</span>
+          <span style="margin-left:auto;font-size:11.5px;color:var(--color-neutral-700)">Rules that raised these alerts: <a href="Typology Rules Console.dc.html" style="color:var(--color-accent-700)">FMU-ST-04, FMU-ST-11 ↗</a></span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:1px;background:var(--color-divider)">
+          <a href="Case Workspace.dc.html" style="display:flex;gap:14px;align-items:flex-start;padding:12px 13px;background:var(--color-bg);border-left:4px solid var(--color-accent-800);text-decoration:none;color:inherit" style-hover="background:color-mix(in srgb,var(--color-accent) 7%,transparent)">
+            <div style="flex:none;width:118px">
+              <div style="font-family:var(--font-heading);font-size:14px">ALT-2026-04417</div>
+              <div style="font-size:11px;color:var(--color-neutral-700)">21 Aug 2026</div>
+              <div style="font-size:11px;color:var(--color-neutral-700)">R. Qureshi</div>
+            </div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:13.5px;font-weight:500">Structuring — sub-threshold cash deposits</div>
+              <div style="font-size:12px;color:var(--color-neutral-800);margin-top:2px;line-height:1.45">Three cash deposits totalling PKR 5,730,000 across three locations in 6 h 33 m, each 3–6% under the CTR threshold; 97.7% moved on to a currency exchange within 19 hours. Officer disposition: File STR, concurring with the agent.</div>
+              <div style="font-size:11px;color:var(--color-neutral-700);margin-top:3px">Risk score 78 · STR-F/2026/00318 filed 24 Aug 2026 by A. Raza · FMU acknowledged 25 Aug</div>
+            </div>
+            <div style="flex:none;text-align:right">
+              <span style="display:inline-grid;place-items:center;height:22px;padding:0 9px;border:1px solid var(--color-accent-800);background:var(--color-accent-100);color:var(--color-accent-800);font-family:var(--font-heading);font-size:11px;letter-spacing:.08em">STR FILED</span>
+              <div style="font-size:11px;color:var(--color-accent-700);margin-top:5px">open case record →</div>
+            </div>
+          </a>
+          <a href="Case Workspace.dc.html" style="display:flex;gap:14px;align-items:flex-start;padding:12px 13px;background:var(--color-bg);border-left:4px solid var(--color-neutral-400);text-decoration:none;color:inherit" style-hover="background:color-mix(in srgb,var(--color-accent) 7%,transparent)">
+            <div style="flex:none;width:118px">
+              <div style="font-family:var(--font-heading);font-size:14px">ALT-2025-08812</div>
+              <div style="font-size:11px;color:var(--color-neutral-700)">14 Nov 2025</div>
+              <div style="font-size:11px;color:var(--color-neutral-700)">S. Iqbal</div>
+            </div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:13.5px;font-weight:500">Rapid movement of funds — cash in / transfer out within 48 h</div>
+              <div style="font-size:12px;color:var(--color-neutral-800);margin-top:2px;line-height:1.45">Deposits corroborated by three supplier invoices and a bank-attested ledger; volumes consistent with the declared trade cycle at the time. Closed 21 Nov 2025 with no filing.</div>
+              <div style="font-size:11px;color:var(--color-neutral-700);margin-top:3px">Risk score 44 · 7 days to disposition · documentary evidence retained in the case file</div>
+            </div>
+            <div style="flex:none;text-align:right">
+              <span style="display:inline-grid;place-items:center;height:22px;padding:0 9px;border:1px solid var(--color-neutral-500);background:var(--color-neutral-100);color:var(--color-neutral-800);font-family:var(--font-heading);font-size:11px;letter-spacing:.08em">CLEARED — NO SUSPICION</span>
+              <div style="font-size:11px;color:var(--color-accent-700);margin-top:5px">open closed record →</div>
+            </div>
+          </a>
+        </div>
+        <div style="border:1px solid var(--color-divider);border-top:0;background:var(--color-neutral-100);padding:8px 13px;font-size:11.5px;color:var(--color-neutral-800);line-height:1.45">Pattern note: the 2025 alert was cleared on documentation the customer produced within a week. No comparable documentation has been produced for the August 2026 activity — the contrast is material and is recorded in the current filing.</div>
+      </div>
+
+      <!-- relationship graph -->
+      <div>
+        <div class="sec">
+          <h4 style="margin:0">Relationship graph</h4>
+          <span style="font-size:11.5px;color:var(--color-neutral-700)">4 connected accounts · 1 shared signatory · 1 shared address · 1 hop</span>
+          <span style="margin-left:auto;font-size:11.5px;color:var(--color-accent-700)">expand to 2 hops</span>
+        </div>
+        <div class="blueprint" style="padding:12px 14px 8px;background:var(--color-bg)">
+          <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+          <svg viewBox="0 0 700 300" style="width:100%;height:auto;font-family:var(--font-body)">
+            <g stroke="var(--color-neutral-500)" fill="none">
+              <line x1="330" y1="140" x2="160" y2="62"></line>
+              <line x1="370" y1="140" x2="545" y2="70"></line>
+              <line x1="330" y1="162" x2="160" y2="232"></line>
+              <line x1="370" y1="162" x2="545" y2="238" stroke="var(--color-accent-700)" stroke-width="2"></line>
+              <line x1="160" y1="90" x2="160" y2="205" stroke-dasharray="4 4"></line>
+              <line x1="590" y1="98" x2="590" y2="212" stroke-dasharray="4 4"></line>
+            </g>
+            <g font-size="9.5" fill="var(--color-neutral-700)" letter-spacing=".04em">
+              <text x="232" y="92">SHARED SIGNATORY</text>
+              <text x="452" y="98">11 INBOUND TXN · PKR 9.4 M</text>
+              <text x="222" y="215">SHARED ADDRESS</text>
+              <text x="440" y="212" fill="var(--color-accent-800)">OUTWARD PKR 5.6 M · 22 AUG</text>
+              <text x="168" y="152">same premises</text>
+              <text x="598" y="158">common director</text>
+            </g>
+            <g>
+              <rect x="270" y="118" width="160" height="64" fill="var(--color-accent-900)"></rect>
+              <text x="282" y="138" font-size="13" font-family="var(--font-heading)" font-weight="600" fill="#f2f2f3" letter-spacing=".03em">BILAL AHMED</text>
+              <text x="282" y="153" font-size="10" fill="#f2f2f3" opacity=".8">2 accounts · individual</text>
+              <text x="282" y="169" font-size="10" fill="#f2f2f3" opacity=".8">THIS CUSTOMER · risk 78</text>
+            </g>
+            <g fill="none" stroke="var(--color-text)">
+              <rect x="40" y="26" width="176" height="64" fill="var(--color-bg)"></rect>
+              <rect x="40" y="205" width="176" height="64" fill="var(--color-bg)"></rect>
+              <rect x="500" y="34" width="180" height="64" fill="var(--color-bg)"></rect>
+              <rect x="500" y="212" width="180" height="64" fill="var(--color-bg)" stroke="var(--color-accent-800)" stroke-width="2"></rect>
+            </g>
+            <g font-size="11.5" font-family="var(--font-heading)" font-weight="600" fill="var(--color-text)">
+              <text x="52" y="47">SANA TEXTILES (PVT) LTD</text>
+              <text x="52" y="226">ZEESHAN AHMED</text>
+              <text x="512" y="55">FAISAL TRADERS</text>
+              <text x="512" y="233">AL-BARQ CURRENCY EXCH.</text>
+            </g>
+            <g font-size="10" fill="var(--color-neutral-700)">
+              <text x="52" y="63">A/C 0448-1120-9 · corporate</text>
+              <text x="52" y="80">customer is signatory · KYC med</text>
+              <text x="52" y="242">A/C 0231-9043-1 · individual</text>
+              <text x="52" y="259">brother · KYC low · no alerts</text>
+              <text x="512" y="71">A/C 0771-3390-2 · corporate</text>
+              <text x="512" y="88">counterparty · KYC med</text>
+              <text x="512" y="249">A/C 0119-2245-8 · exchange co.</text>
+              <text x="512" y="266" fill="var(--color-accent-800)">STR filed · internal watchlist</text>
+            </g>
+            <g stroke="var(--color-neutral-500)" fill="var(--color-bg)">
+              <rect x="34" y="52" width="12" height="12"></rect>
+              <rect x="34" y="231" width="12" height="12"></rect>
+              <rect x="674" y="60" width="12" height="12"></rect>
+              <rect x="674" y="238" width="12" height="12" stroke="var(--color-accent-800)"></rect>
+            </g>
+          </svg>
+          <div style="display:flex;gap:16px;font-size:10px;color:var(--color-neutral-700);border-top:1px solid var(--color-divider);padding-top:6px;margin-top:2px">
+            <span>—— transactional link</span><span>- - - static attribute link</span><span style="color:var(--color-accent-800)">—— material to an open matter</span>
+            <span style="margin-left:auto">Graph rebuilt 24 Aug 2026 09:12 from core banking, mandate register and address index.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- screening history -->
+      <div>
+        <div class="sec">
+          <h4 style="margin:0">Sanctions, PEP &amp; adverse-media screening history</h4>
+          <span style="font-size:11.5px;color:var(--color-neutral-700)">every screen run against this customer since onboarding</span>
+          <span style="margin-left:auto;font-size:11.5px;color:var(--color-accent-700)"><a href="Screening Hub.dc.html" style="color:inherit">open screening desk ↗</a></span>
+        </div>
+        <div style="display:grid;grid-template-columns:270px 1fr;gap:14px;align-items:start">
+          <div class="blueprint" style="padding:13px 14px;background:var(--color-bg)">
+            <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+            <div class="tlab">Current screening state</div>
+            <div style="display:flex;align-items:center;gap:9px;margin-top:7px">
+              <span style="display:inline-grid;place-items:center;height:24px;padding:0 10px;border:1px solid var(--color-neutral-500);background:var(--color-neutral-100);color:var(--color-neutral-800);font-family:var(--font-heading);font-size:12px;letter-spacing:.08em">NO OPEN HITS</span>
+            </div>
+            <div style="font-size:12px;color:var(--color-neutral-800);line-height:1.5;margin-top:9px">No sanctions, proscribed-persons or PEP match has ever been recorded against this customer. One adverse-media partial match remains on file as a documented false positive.</div>
+            <div style="font-size:11px;color:var(--color-neutral-700);line-height:1.45;margin-top:9px;border-top:1px solid var(--color-divider);padding-top:8px">Rescreened automatically on every list update and on any transaction above PKR 1.0 M. Last run 24 Aug 2026 09:12.</div>
+          </div>
+
+          <div class="blueprint" style="padding:0;background:var(--color-bg)">
+            <i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i>
+            <div style="display:grid;grid-template-columns:104px 1fr 132px 116px 1fr;background:var(--color-neutral-100);border-bottom:1px solid var(--color-text)">
+              <div class="ahd">Severity</div>
+              <div class="ahd">List screened</div>
+              <div class="ahd">Date</div>
+              <div class="ahd" style="text-align:right">Confidence</div>
+              <div class="ahd">Outcome</div>
+            </div>
+            <div style="display:grid;grid-template-columns:104px 1fr 132px 116px 1fr;align-items:center;border-bottom:1px solid color-mix(in srgb,var(--color-text) 9%,transparent);background:var(--color-neutral-100);opacity:.85">
+              <div class="acell" style="border-left:4px solid var(--color-accent-700)">
+                <span style="display:inline-grid;place-items:center;height:20px;padding:0 7px;font-family:var(--font-heading);font-size:10.5px;letter-spacing:.08em;border:1px solid var(--color-accent-700);background:var(--color-accent-100);color:var(--color-accent-800)">ADVERSE</span>
+              </div>
+              <div class="acell">
+                <div style="font-size:13px">Adverse media — 2024 customs enforcement report</div>
+                <div style="font-size:11px;color:var(--color-neutral-700)">Namesake, different CNIC, Lahore-based</div>
+              </div>
+              <div class="acell" style="font-size:12.5px">24 Aug 2026</div>
+              <div class="acell" style="text-align:right;font-family:var(--font-heading);font-size:16px;color:var(--color-accent-800)">62%</div>
+              <div class="acell">
+                <div style="font-size:12.5px">False positive — assessed and documented</div>
+                <div style="font-size:11px;color:var(--color-neutral-700)">R. Qureshi · recorded in ALT-2026-04417</div>
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:104px 1fr 132px 116px 1fr;align-items:center;border-bottom:1px solid color-mix(in srgb,var(--color-text) 9%,transparent)">
+              <div class="acell" style="border-left:4px solid var(--color-neutral-400)">
+                <span style="display:inline-grid;place-items:center;height:20px;padding:0 7px;font-family:var(--font-heading);font-size:10.5px;letter-spacing:.08em;border:1px solid var(--color-neutral-500);background:var(--color-bg);color:var(--color-neutral-700)">NO MATCH</span>
+              </div>
+              <div class="acell">
+                <div style="font-size:13px">UNSC consolidated · OFAC SDN · EU · MoI Schedule IV · PEP</div>
+                <div style="font-size:11px;color:var(--color-neutral-700)">Name, CNIC and DOB screened, including linked entities</div>
+              </div>
+              <div class="acell" style="font-size:12.5px">24 Aug 2026</div>
+              <div class="acell" style="text-align:right;font-size:13px;color:var(--color-neutral-600)">—</div>
+              <div class="acell" style="font-size:12.5px;color:var(--color-neutral-800)">Clear · automated run</div>
+            </div>
+            <div style="display:grid;grid-template-columns:104px 1fr 132px 116px 1fr;align-items:center;border-bottom:1px solid color-mix(in srgb,var(--color-text) 9%,transparent)">
+              <div class="acell" style="border-left:4px solid var(--color-neutral-400)">
+                <span style="display:inline-grid;place-items:center;height:20px;padding:0 7px;font-family:var(--font-heading);font-size:10.5px;letter-spacing:.08em;border:1px solid var(--color-neutral-500);background:var(--color-bg);color:var(--color-neutral-700)">NO MATCH</span>
+              </div>
+              <div class="acell">
+                <div style="font-size:13px">Full list screen — periodic KYC rescore</div>
+                <div style="font-size:11px;color:var(--color-neutral-700)">All lists plus internal watchlist</div>
+              </div>
+              <div class="acell" style="font-size:12.5px">12 Jun 2026</div>
+              <div class="acell" style="text-align:right;font-size:13px;color:var(--color-neutral-600)">—</div>
+              <div class="acell" style="font-size:12.5px;color:var(--color-neutral-800)">Clear · automated run</div>
+            </div>
+            <div style="display:grid;grid-template-columns:104px 1fr 132px 116px 1fr;align-items:center">
+              <div class="acell" style="border-left:4px solid var(--color-neutral-400)">
+                <span style="display:inline-grid;place-items:center;height:20px;padding:0 7px;font-family:var(--font-heading);font-size:10.5px;letter-spacing:.08em;border:1px solid var(--color-neutral-500);background:var(--color-bg);color:var(--color-neutral-700)">NO MATCH</span>
+              </div>
+              <div class="acell">
+                <div style="font-size:13px">Onboarding screen — all lists</div>
+                <div style="font-size:11px;color:var(--color-neutral-700)">NADRA verisys passed at the same time</div>
+              </div>
+              <div class="acell" style="font-size:12.5px">19 Jan 2024</div>
+              <div class="acell" style="text-align:right;font-size:13px;color:var(--color-neutral-600)">—</div>
+              <div class="acell" style="font-size:12.5px;color:var(--color-neutral-800)">Clear · branch onboarding</div>
+            </div>
+            <div style="padding:7px 11px;border-top:1px solid var(--color-divider);font-size:11.5px;color:var(--color-neutral-700)">14 further automated list-update rescreens returned no match and are collapsed. <span style="color:var(--color-accent-700)">show all runs</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div></div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}"></script>
+</body>
+</html>
