@@ -2,6 +2,7 @@ import { apiFetch } from '../../../auth/apiClient';
 import type {
   ActivityLogEntry,
   AlertQueueRow,
+  BacktestJob,
   CaseDetail,
   CaseStatus,
   DashboardSummary,
@@ -12,6 +13,9 @@ import type {
   Paginated,
   RiskTier,
   StrFieldsDraft,
+  TypologyConfigVersion,
+  TypologyPromotion,
+  TypologyRow,
 } from './types';
 
 const BASE = '/features/aml_detection';
@@ -103,4 +107,31 @@ export function addFollowup(filingId: string, note: string, createdBy: string) {
 
 export function getDashboardSummary() {
   return apiFetch<DashboardSummary>(`${BASE}/reports/summary-basic`);
+}
+
+export function listTypologies() {
+  return apiFetch<TypologyRow[]>(`${BASE}/typologies`);
+}
+
+export function getTypologyHistory(code: string) {
+  return apiFetch<TypologyConfigVersion[]>(`${BASE}/typologies/${code}/history`);
+}
+
+export function updateTypology(
+  code: string,
+  body: { rule_logic_description?: string; active?: boolean; change_reason: string; changed_by: string },
+) {
+  return apiFetch<TypologyRow>(`${BASE}/typologies/${code}`, { method: 'POST', body: JSON.stringify(body) });
+}
+
+export function startTypologyBacktest(code: string) {
+  return apiFetch<BacktestJob>(`${BASE}/typologies/${code}/backtest`, { method: 'POST' });
+}
+
+export function getBacktestJob(jobId: string) {
+  return apiFetch<BacktestJob>(`${BASE}/typologies/backtest-jobs/${jobId}`);
+}
+
+export function promoteTypology(code: string, body: { backtest_job_id?: string; reason: string; promoted_by: string }) {
+  return apiFetch<TypologyPromotion>(`${BASE}/typologies/${code}/promote`, { method: 'POST', body: JSON.stringify(body) });
 }
