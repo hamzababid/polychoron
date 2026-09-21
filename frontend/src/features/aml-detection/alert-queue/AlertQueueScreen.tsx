@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { claimAlert, listAlerts } from '../api/client';
 import type { AlertQueueRow, CaseStatus, RiskTier } from '../api/types';
+import { useFeatureBasePath } from '../useFeatureBasePath';
 import './alert-queue.css';
 
 const PAGE_SIZE = 20;
@@ -20,6 +21,7 @@ const STATUSES: CaseStatus[] = ['open', 'claimed', 'investigating', 'escalated',
  * api-contracts-phase1.md's Phase 1 surface. */
 export function AlertQueueScreen() {
   const navigate = useNavigate();
+  const base = useFeatureBasePath();
   const [searchParams, setSearchParams] = useSearchParams();
   const [rows, setRows] = useState<AlertQueueRow[] | null>(null);
   const [total, setTotal] = useState(0);
@@ -122,7 +124,7 @@ export function AlertQueueScreen() {
                 <tr
                   key={r.caseId}
                   className={r.pastSla ? 'alert-queue__row alert-queue__row--pastSla' : 'alert-queue__row'}
-                  onClick={() => navigate(`cases/${r.caseId}`)}
+                  onClick={() => navigate(`${base}/cases/${r.caseId}`)}
                 >
                   <td>
                     {r.riskScore !== null ? (

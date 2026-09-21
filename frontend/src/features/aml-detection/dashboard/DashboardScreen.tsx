@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getDashboardSummary } from '../api/client';
 import type { DashboardSummary } from '../api/types';
+import { useFeatureBasePath } from '../useFeatureBasePath';
 import './dashboard.css';
 
 const TIER_ORDER: Array<{ key: keyof DashboardSummary['openAlertsByTier']; label: string }> = [
@@ -21,6 +22,7 @@ export function DashboardScreen() {
   const [summary, setSummary] = useState<DashboardSummary | null>(null);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const base = useFeatureBasePath();
 
   useEffect(() => {
     getDashboardSummary()
@@ -58,7 +60,7 @@ export function DashboardScreen() {
       <div className="dashboard__tiles">
         <div
           className="aml-card dashboard__tile"
-          onClick={() => navigate('/bfsi/aml_detection/alerts')}
+          onClick={() => navigate(`${base}/alerts`)}
           role="button"
           tabIndex={0}
         >
@@ -89,7 +91,7 @@ export function DashboardScreen() {
 
         <div
           className={`aml-card dashboard__tile ${summary.agingAlertsCount > 0 ? 'dashboard__tile--aging' : ''}`}
-          onClick={() => navigate('/bfsi/aml_detection/alerts')}
+          onClick={() => navigate(`${base}/alerts`)}
           role="button"
           tabIndex={0}
         >

@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { attestFiling, getFilingDraft, submitFiling } from '../api/client';
 import type { FilingDraftResponse, StrFieldsDraft } from '../api/types';
 import { useAuth } from '../../../auth/AuthContext';
+import { useFeatureBasePath } from '../useFeatureBasePath';
 import './filing-console.css';
 
 // Mirrors agent-service/app/features/aml_detection/typology_catalog.py's
@@ -16,6 +17,7 @@ const TYPOLOGY_OPTIONS = [
 export function FilingConsoleScreen() {
   const { caseId = '' } = useParams();
   const navigate = useNavigate();
+  const base = useFeatureBasePath();
   const { session } = useAuth();
   const [draft, setDraft] = useState<FilingDraftResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -79,7 +81,7 @@ export function FilingConsoleScreen() {
       // that this button being enabled means the server will agree.
       const submitted = await submitFiling(caseId);
       setDraft(submitted);
-      navigate('/bfsi/aml_detection/filings');
+      navigate(`${base}/filings`);
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
     } finally {
@@ -95,7 +97,7 @@ export function FilingConsoleScreen() {
         {draft.goamlReference && <div>goAML reference: {draft.goamlReference}</div>}
         {draft.submittedAt && <div>Submitted: {new Date(draft.submittedAt).toLocaleString()}</div>}
         {draft.acknowledgedAt && <div>Acknowledged: {new Date(draft.acknowledgedAt).toLocaleString()}</div>}
-        <button className="aml-btn" onClick={() => navigate('/bfsi/aml_detection/filings')}>
+        <button className="aml-btn" onClick={() => navigate(`${base}/filings`)}>
           Go to goAML Tracker
         </button>
       </div>
@@ -107,7 +109,7 @@ export function FilingConsoleScreen() {
       <div className="aml-card">
         <div className="aml-label">Case summary</div>
         <div>Risk score: {draft.riskScore}/100 · Agent recommendation: {draft.recommendation.replace('_', ' ')}</div>
-        <button className="aml-btn" onClick={() => navigate(`/bfsi/aml_detection/cases/${caseId}`)}>
+        <button className="aml-btn" onClick={() => navigate(`${base}/cases/${caseId}`)}>
           ← Back to Case Workspace
         </button>
       </div>
