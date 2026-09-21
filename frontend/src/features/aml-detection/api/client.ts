@@ -20,6 +20,10 @@ import type {
 
 const BASE = '/features/aml_detection';
 
+export function searchCases(q: string) {
+  return apiFetch<AlertQueueRow[]>(`${BASE}/search?q=${encodeURIComponent(q)}`);
+}
+
 export function listAlerts(params: { status?: CaseStatus; riskTier?: RiskTier; page?: number; pageSize?: number }) {
   const query = new URLSearchParams();
   if (params.status) query.set('status', params.status);

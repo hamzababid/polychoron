@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { NavLink, Outlet, useNavigate, useParams } from 'react-router-dom';
 import { usePlatformRegistry } from './usePlatformRegistry';
 import { FEATURE_NAV_ITEMS } from './featureNav';
+import { TopHeader } from './TopHeader';
 import { useAuth } from '../auth/AuthContext';
 import './shell.css';
 
@@ -154,6 +155,7 @@ export function NavigationShell() {
         )}
       </aside>
       <main className="shell__content">
+        <TopHeader />
         <Outlet />
       </main>
     </div>

@@ -1,15 +1,146 @@
 .shell {
   display: flex;
   flex-direction: row;
-  min-height: 100vh;
+  /* Fixed, not min-height — bounds the whole shell to the viewport so
+     the browser window itself never scrolls. Each screen owns its own
+     internal `flex: 1; overflow-y: auto` body instead, so scrolling a
+     long screen scrolls only that screen's content, never the sidebar
+     or the header below. */
+  height: 100vh;
+  overflow: hidden;
 }
 
 .shell__content {
   flex: 1;
   min-width: 0;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   background: var(--color-bg);
+}
+
+/* — top header: persistent breadcrumbs + global search above every
+     screen's own scrolling body, same nav color as the sidenav — */
+.topheader {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 0 18px;
+  height: 44px;
+  background: var(--color-accent-900);
+  color: var(--color-bg);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.breadcrumbs__item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.breadcrumbs__sep {
+  opacity: 0.4;
+}
+
+.breadcrumbs a {
+  color: inherit;
+  opacity: 0.7;
+  text-decoration: none;
+}
+
+.breadcrumbs a:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+.breadcrumbs__current {
+  font-family: var(--font-heading);
+  font-weight: 600;
+}
+
+.topheader__search {
+  position: relative;
+  margin-left: auto;
+  width: 300px;
+  flex: none;
+}
+
+.topheader__searchInput {
+  width: 100%;
+  min-height: 30px;
+  padding: 5px 10px;
+  font-size: 12.5px;
+  color: var(--color-text);
+  background: var(--color-bg);
+  border: 1px solid transparent;
+}
+
+.topheader__searchInput:focus-visible {
+  outline: 2px solid var(--color-accent-400);
+  outline-offset: 1px;
+}
+
+.topheader__results {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  width: 100%;
+  min-width: 320px;
+  background: var(--color-bg);
+  color: var(--color-text);
+  border: 1px solid var(--color-divider);
+  box-shadow: var(--shadow-md);
+  z-index: 30;
+  max-height: 340px;
+  overflow-y: auto;
+}
+
+.topheader__resultsEmpty {
+  padding: 10px 12px;
+  font-size: 12px;
+  color: var(--color-neutral-700);
+}
+
+.topheader__result {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 8px 12px;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--color-divider);
+  cursor: pointer;
+  font: inherit;
+}
+
+.topheader__result:last-child {
+  border-bottom: none;
+}
+
+.topheader__result:hover {
+  background: var(--color-accent-100);
+}
+
+.topheader__resultTitle {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.topheader__resultSubtitle {
+  font-size: 11px;
+  color: var(--color-neutral-700);
+  margin-top: 2px;
 }
 
 .shell-status {
