@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from datetime import datetime
 from enum import Enum
-from typing import Optional
 from uuid import UUID, uuid4
 
 from pydantic import BaseModel, Field
@@ -27,9 +26,9 @@ class RegulatoryDocument(BaseModel):
     source_type: RegulatorySourceType
     issuing_authority: str
     version_label: str
-    effective_date: Optional[datetime] = None
-    superseded_by: Optional[UUID] = None
-    source_url: Optional[str] = None
+    effective_date: datetime | None = None
+    superseded_by: UUID | None = None
+    source_url: str | None = None
     ingested_at: datetime = Field(default_factory=datetime.utcnow)
     ingested_by: str
 
