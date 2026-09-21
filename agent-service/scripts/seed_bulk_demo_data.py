@@ -25,6 +25,13 @@ Usage:
     python scripts/seed_bulk_demo_data.py               # ~68 cases
     python scripts/seed_bulk_demo_data.py --count 150    # bigger
     python scripts/seed_bulk_demo_data.py --reset-only   # just delete
+
+Before an investor demo, don't run this on its own — use
+`reset_demo_environment.py --populated` instead, which resets to the
+clean two-scenario state first and then calls this script, so you
+never end up with bulk data mixed into an otherwise-unreset
+environment. Run `reset_demo_environment.py` with no flags right
+before the actual investor walkthrough to strip this back out.
 """
 
 from __future__ import annotations
