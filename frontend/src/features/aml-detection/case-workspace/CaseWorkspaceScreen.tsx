@@ -4,6 +4,7 @@ import { getActivityLog, getCase, recordDisposition } from '../api/client';
 import type { ActivityLogEntry, AgentRecommendation, CaseDetail, DispositionType } from '../api/types';
 import { LinkedEntityGraph } from '../shared/LinkedEntityGraph';
 import { useAuth } from '../../../auth/AuthContext';
+import { useFeatureBasePath } from '../useFeatureBasePath';
 import './case-workspace.css';
 
 const RECOMMENDATION_TO_DISPOSITION: Record<AgentRecommendation, DispositionType> = {
@@ -32,6 +33,7 @@ const FILING_ROLES = ['aml_detection.senior_officer_l2', 'aml_detection.mlro_com
 export function CaseWorkspaceScreen() {
   const { caseId = '' } = useParams();
   const navigate = useNavigate();
+  const base = useFeatureBasePath();
   const { session } = useAuth();
   const [caseDetail, setCaseDetail] = useState<CaseDetail | null>(null);
   const [activityLog, setActivityLog] = useState<ActivityLogEntry[] | null>(null);
@@ -83,7 +85,7 @@ export function CaseWorkspaceScreen() {
         override_reason: isOverride ? overrideReason : undefined,
       });
       if (selectedDisposition === 'file_str' || selectedDisposition === 'file_ctr') {
-        navigate(`/bfsi/aml_detection/cases/${caseId}/filing`);
+        navigate(`${base}/cases/${caseId}/filing`);
       } else {
         load();
       }
@@ -225,7 +227,7 @@ export function CaseWorkspaceScreen() {
               <p className="case-workspace__overrideNote">Override reason: {caseDetail.disposition!.override_reason}</p>
             )}
             {caseDetail.status === 'pending_filing' && (
-              <button className="aml-btn aml-btn--primary" onClick={() => navigate(`/bfsi/aml_detection/cases/${caseId}/filing`)}>
+              <button className="aml-btn aml-btn--primary" onClick={() => navigate(`${base}/cases/${caseId}/filing`)}>
                 Go to Filing Console
               </button>
             )}

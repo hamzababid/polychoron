@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { addFollowup, getFilingDetail, listFilings, simulateAcknowledgment } from '../api/client';
 import type { FilingDetail, FilingSummary } from '../api/types';
 import { useAuth } from '../../../auth/AuthContext';
+import { useFeatureBasePath } from '../useFeatureBasePath';
 import './goaml-tracker.css';
 
 const STEPS = ['draft', 'submitted', 'acknowledged'] as const;
@@ -15,6 +16,7 @@ function stepIndex(status: FilingSummary['submissionStatus']): number {
 /** specs/suites/bfsi/features/aml-detection/screens/05-goaml-tracker.md */
 export function GoamlTrackerScreen() {
   const navigate = useNavigate();
+  const base = useFeatureBasePath();
   const { session } = useAuth();
   const [filings, setFilings] = useState<FilingSummary[] | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -123,7 +125,7 @@ export function GoamlTrackerScreen() {
               </button>
             )}
 
-            <button className="aml-btn" onClick={() => navigate(`/bfsi/aml_detection/cases/${detail.caseId}`)}>
+            <button className="aml-btn" onClick={() => navigate(`${base}/cases/${detail.caseId}`)}>
               ← Back to case
             </button>
 
