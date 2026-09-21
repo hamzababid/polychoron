@@ -37,6 +37,15 @@
 ## Dashboard (minimal — Phase 2 has the full version)
 - `GET /api/v1/features/aml_detection/reports/summary-basic` → just the four top-line counts
   needed for a non-empty Phase 1 dashboard tile row
+- `GET /api/v1/features/aml_detection/reports/summary-trends` → **ADDITIVE**
+  (TASKS.md's "ADDITIVE — Dashboard Trend Widgets"), fixed 6-month
+  window, no query params yet (Phase 2's `reports/summary` adds
+  `period`/`compare_previous`): last-6-months monthly trend (alerts
+  raised, STR filed, STR conversion rate, false-positive rate),
+  agreed-vs-overrode disposition breakdown, top-3 most-aging open
+  alerts. Same `DashboardController`/`DashboardService` as
+  `summary-basic`, not a new service — see
+  `screens/01-dashboard.md`'s "single source of truth" note
 
 ## What's deliberately NOT in Phase 1
 Everything under `/api/v1/features/aml_detection/typologies`, `/api/v1/features/aml_detection/screening`,
