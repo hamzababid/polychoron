@@ -66,7 +66,12 @@ export function AlertQueueScreen() {
     const next = new URLSearchParams(searchParams);
     if (value) next.set(key, value);
     else next.delete(key);
-    next.delete('page');
+    // Reset to page 1 when a filter or page size changes — but not
+    // when the caller IS setting "page" itself (Prev/Next), which
+    // this unconditionally undid: it set the new page, then deleted
+    // it right back out on the same call, so paging always snapped
+    // back to page 1.
+    if (key !== 'page') next.delete('page');
     setSearchParams(next);
   };
 
