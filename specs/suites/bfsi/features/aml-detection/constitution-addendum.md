@@ -25,3 +25,11 @@ Recognizing a series of under-threshold cash transactions as
 structuring (changing a routine CTR into a suspicious STR) is a
 disposition decision requiring the same override/reasoning discipline
 as any other human override — never an automatic reclassification.
+
+## A5. Regulatory citations ground reasoning; they never decide it
+When the Pattern Matching or Case & Narrative agent retrieves and cites
+regulatory text (see `platform/10-regulatory-knowledge-base-spec.md`
+and `regulatory-corpus-manifest.md`), that citation is supporting
+context attached to `TypologyMatch.regulatory_citations` or
+`CaseAssessment.regulatory_context_used` — it is never treated as, or
+presented to the officer as, a suspicion determination in itself.

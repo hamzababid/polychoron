@@ -23,6 +23,12 @@ export class AmlTypologyMatch {
   @Column({ name: 'plain_language_rationale' })
   plainLanguageRationale!: string;
 
+  /** ADDITIVE (specs/platform/10-regulatory-knowledge-base-spec.md) —
+   * supporting context only, never a suspicion determination in itself
+   * (constitution-addendum A5). Defaults to [] at the DB layer. */
+  @Column({ name: 'regulatory_citations', type: 'jsonb' })
+  regulatoryCitations!: Record<string, unknown>[];
+
   @Column({ name: 'matched_at', type: 'timestamptz' })
   matchedAt!: Date;
 

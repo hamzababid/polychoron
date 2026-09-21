@@ -57,10 +57,12 @@ def save_typology_match(match: TypologyMatch) -> None:
                 """
                 INSERT INTO aml_typology_matches (
                     case_id, typology_code, typology_label, confidence,
-                    matched_indicators, plain_language_rationale, matched_at, agent_version
+                    matched_indicators, plain_language_rationale, regulatory_citations,
+                    matched_at, agent_version
                 ) VALUES (
                     :case_id, :typology_code, :typology_label, :confidence,
-                    cast(:matched_indicators as jsonb), :plain_language_rationale, :matched_at, :agent_version
+                    cast(:matched_indicators as jsonb), :plain_language_rationale,
+                    cast(:regulatory_citations as jsonb), :matched_at, :agent_version
                 )
                 ON CONFLICT (case_id) DO UPDATE SET
                     typology_code = EXCLUDED.typology_code,
@@ -68,6 +70,7 @@ def save_typology_match(match: TypologyMatch) -> None:
                     confidence = EXCLUDED.confidence,
                     matched_indicators = EXCLUDED.matched_indicators,
                     plain_language_rationale = EXCLUDED.plain_language_rationale,
+                    regulatory_citations = EXCLUDED.regulatory_citations,
                     matched_at = EXCLUDED.matched_at,
                     agent_version = EXCLUDED.agent_version
                 """
@@ -79,6 +82,7 @@ def save_typology_match(match: TypologyMatch) -> None:
                 "confidence": match.confidence,
                 "matched_indicators": json.dumps([i.model_dump(mode="json") for i in match.matched_indicators]),
                 "plain_language_rationale": match.plain_language_rationale,
+                "regulatory_citations": json.dumps([c.model_dump(mode="json") for c in match.regulatory_citations]),
                 "matched_at": match.matched_at,
                 "agent_version": match.agent_version,
             },
@@ -93,10 +97,12 @@ def save_case_assessment(assessment: CaseAssessment) -> None:
                 """
                 INSERT INTO aml_case_assessments (
                     case_id, risk_score, recommendation, recommendation_confidence,
-                    draft_narrative, str_fields_draft, assessed_at, agent_version
+                    draft_narrative, str_fields_draft, regulatory_context_used,
+                    assessed_at, agent_version
                 ) VALUES (
                     :case_id, :risk_score, :recommendation, :recommendation_confidence,
-                    :draft_narrative, cast(:str_fields_draft as jsonb), :assessed_at, :agent_version
+                    :draft_narrative, cast(:str_fields_draft as jsonb),
+                    cast(:regulatory_context_used as jsonb), :assessed_at, :agent_version
                 )
                 ON CONFLICT (case_id) DO UPDATE SET
                     risk_score = EXCLUDED.risk_score,
@@ -104,6 +110,7 @@ def save_case_assessment(assessment: CaseAssessment) -> None:
                     recommendation_confidence = EXCLUDED.recommendation_confidence,
                     draft_narrative = EXCLUDED.draft_narrative,
                     str_fields_draft = EXCLUDED.str_fields_draft,
+                    regulatory_context_used = EXCLUDED.regulatory_context_used,
                     assessed_at = EXCLUDED.assessed_at,
                     agent_version = EXCLUDED.agent_version
                 """
@@ -116,6 +123,9 @@ def save_case_assessment(assessment: CaseAssessment) -> None:
                 "draft_narrative": assessment.draft_narrative,
                 "str_fields_draft": (
                     assessment.str_fields_draft.model_dump_json() if assessment.str_fields_draft else None
+                ),
+                "regulatory_context_used": json.dumps(
+                    [c.model_dump(mode="json") for c in assessment.regulatory_context_used]
                 ),
                 "assessed_at": assessment.assessed_at,
                 "agent_version": assessment.agent_version,

@@ -31,6 +31,13 @@ export class AmlCaseAssessment {
   @Column({ name: 'str_fields_draft', type: 'jsonb', nullable: true })
   strFieldsDraft?: Record<string, unknown>;
 
+  /** ADDITIVE (specs/platform/10-regulatory-knowledge-base-spec.md) —
+   * same non-decisional supporting-context role as
+   * AmlTypologyMatch.regulatoryCitations. Currently unpopulated: only
+   * the Pattern Matching node's retrieval call is wired up so far. */
+  @Column({ name: 'regulatory_context_used', type: 'jsonb' })
+  regulatoryContextUsed!: Record<string, unknown>[];
+
   @Column({ name: 'assessed_at', type: 'timestamptz' })
   assessedAt!: Date;
 
