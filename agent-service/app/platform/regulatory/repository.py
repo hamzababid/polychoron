@@ -5,7 +5,7 @@ helpers used by seed scripts."""
 from __future__ import annotations
 
 import json
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from uuid import UUID
 
 from sqlalchemy import text
@@ -81,7 +81,7 @@ def ingest_document(
                 "issuing_authority": issuing_authority,
                 "version_label": version_label,
                 "source_url": source_url,
-                "ingested_at": datetime.now(timezone.utc),
+                "ingested_at": datetime.now(UTC),
                 "ingested_by": ingested_by,
             },
         )
