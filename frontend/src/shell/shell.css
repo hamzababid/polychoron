@@ -1,14 +1,14 @@
 .shell {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   min-height: 100vh;
 }
 
 .shell__content {
   flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  min-height: 0;
   background: var(--color-bg);
 }
 
@@ -20,26 +20,222 @@
   color: var(--color-alert);
 }
 
-.suite-switcher {
-  position: relative;
+/* — sidenav — */
+.sidenav {
+  flex: none;
+  width: 230px;
+  transition: width 0.15s ease;
+  background: var(--color-accent-900);
+  color: var(--color-bg);
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow: hidden;
 }
 
-.suite-switcher__select {
+.shell--collapsed .sidenav {
+  width: 56px;
+}
+
+.sidenav__brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 14px;
+  flex: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.sidenav__brandMark {
+  display: flex;
+  flex: none;
+}
+
+.sidenav__brandText {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+.sidenav__brandText small {
+  opacity: 0.6;
+  font-weight: 400;
+}
+
+.sidenav__collapseBtn {
+  margin-left: auto;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: inherit;
+  width: 20px;
+  height: 20px;
+  flex: none;
+  cursor: pointer;
+  font-size: 11px;
+  line-height: 1;
+  display: grid;
+  place-items: center;
+}
+
+.sidenav__collapseBtn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.sidenav__suite {
+  flex: none;
+  padding: 8px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.sidenav__suiteSelect {
+  width: 100%;
   appearance: none;
   background: transparent;
   color: inherit;
   border: none;
   font-family: var(--font-heading);
   font-weight: 600;
-  font-size: 12.5px;
-  letter-spacing: 0.02em;
-  padding-right: 14px;
+  font-size: 11.5px;
+  letter-spacing: 0.04em;
   cursor: pointer;
+  padding: 0;
 }
 
-.suite-switcher__select option {
+.sidenav__suiteSelect option {
   color: var(--color-text);
   background: var(--color-bg);
+}
+
+.sidenav__scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 10px 0;
+}
+
+.sidenav__group + .sidenav__group {
+  margin-top: 14px;
+}
+
+.sidenav__groupLabel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 14px 6px;
+  font-size: 9.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.55;
+  white-space: nowrap;
+}
+
+.sidenav__groupBadge {
+  font-size: 8px;
+  padding: 1px 5px;
+  border-color: rgba(255, 255, 255, 0.4);
+  color: inherit;
+}
+
+.sidenav__link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 14px;
+  color: inherit;
+  text-decoration: none;
+  opacity: 0.72;
+  font-size: 13px;
+  white-space: nowrap;
+  border-left: 2px solid transparent;
+}
+
+.sidenav__link:hover {
+  opacity: 0.95;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.sidenav__link.active {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.1);
+  border-left-color: var(--color-accent-400);
+  font-weight: 500;
+}
+
+.sidenav__linkDot {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  font-family: var(--font-heading);
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+.sidenav__link.active .sidenav__linkDot {
+  border-color: var(--color-accent-400);
+  background: var(--color-accent-400);
+  color: var(--color-accent-900);
+}
+
+.sidenav__footer {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.sidenav__avatar {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  font-family: var(--font-heading);
+  font-size: 11px;
+}
+
+.sidenav__who {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.sidenav__whoName {
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidenav__whoRole {
+  font-size: 10.5px;
+  opacity: 0.65;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidenav__logout {
+  margin-left: auto;
+  flex: none;
+  background: transparent;
+  border: none;
+  color: inherit;
+  opacity: 0.7;
+  font: inherit;
+  font-size: 11.5px;
+  cursor: pointer;
+  padding: 0;
+}
+
+.sidenav__logout:hover {
+  opacity: 1;
+  text-decoration: underline;
 }

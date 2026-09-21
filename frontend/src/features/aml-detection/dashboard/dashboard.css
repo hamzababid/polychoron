@@ -93,7 +93,12 @@
 }
 
 .dashboard__heatmap {
-  margin: 0 18px 18px;
+  /* No horizontal margin — .dashboard__scroll already supplies the
+     18px side padding that .dashboard__tiles (padding: 0 inside
+     .dashboard__scroll) relies on for the same left/right edge. This
+     tile used to add its own 18px on top of that, so it sat further
+     in than the KPI tiles above it. */
+  margin: 0;
 }
 
 .dashboard__heatmapTable th:not(:first-child),

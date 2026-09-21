@@ -11,6 +11,7 @@
   flex-direction: column;
   flex: 1;
   min-height: 0;
+  overflow: hidden;
   /* Back-compat aliases — every screen's own .css file was written
      against these names before the shared design system existed;
      keeping them here (rather than hunting through every file) means
@@ -32,24 +33,6 @@
   --aml-bg: var(--color-bg);
   --aml-text: var(--color-text);
 }
-
-.aml-page__body {
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-/* Second, recessed command-bar row — the feature's own screen nav,
-   directly beneath the platform shell's cmdbar so the two read as one
-   continuous dark command region. */
-.aml-subnav {
-  height: 36px;
-  background: var(--color-accent-800);
-  gap: 18px;
-}
-.aml-subnav a { font-size: 12px; }
 
 .aml-tag {
   display: inline-flex;

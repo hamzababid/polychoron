@@ -218,38 +218,6 @@ a.tile:hover { border-color: var(--color-accent); box-shadow: var(--shadow-sm); 
 .dialog-body { font-size: 13px; line-height: 1.5; }
 .dialog-actions { display: flex; justify-content: flex-end; gap: var(--space-2); margin-top: var(--space-2); }
 
-/* — command bar: the one nav treatment every screen shares — */
-.cmdbar {
-  display: flex; align-items: center; gap: 22px;
-  padding: 0 18px; height: 44px; flex: none;
-  background: var(--color-accent-900); color: var(--color-bg);
-}
-.cmdbar__brand {
-  display: flex; align-items: center; gap: 8px;
-  font-family: var(--font-heading); font-weight: 600; font-size: 16px; letter-spacing: 0.06em;
-  white-space: nowrap;
-}
-.cmdbar__brand small { opacity: 0.6; font-weight: 400; }
-.cmdbar__rule { width: 1px; height: 18px; background: rgba(255, 255, 255, 0.22); flex: none; }
-.cmdbar__nav { display: flex; gap: 16px; font-size: 12.5px; overflow-x: auto; }
-.cmdbar__nav a {
-  color: inherit; text-decoration: none; opacity: 0.6; white-space: nowrap;
-  padding-bottom: 2px; border-bottom: 2px solid transparent;
-}
-.cmdbar__nav a:hover { opacity: 0.85; }
-.cmdbar__nav a.active { opacity: 1; border-bottom-color: var(--color-accent-400); }
-.cmdbar__user { margin-left: auto; display: flex; align-items: center; gap: 12px; font-size: 12px; white-space: nowrap; }
-.cmdbar__avatar {
-  width: 24px; height: 24px; display: grid; place-items: center;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  font-family: var(--font-heading); font-size: 11px; flex: none;
-}
-.cmdbar__logout {
-  background: transparent; border: none; color: inherit; opacity: 0.7;
-  font: inherit; font-size: 12px; cursor: pointer; padding: 0;
-}
-.cmdbar__logout:hover { opacity: 1; text-decoration: underline; }
-
 /* — dense info strip: summary bars / filter bars shared by
      Alert Queue, goAML Tracker, Dashboard, Case Workspace, Filing
      Console header regions — */
