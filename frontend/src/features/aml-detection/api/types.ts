@@ -10,6 +10,7 @@ export interface AlertQueueRow {
   caseId: string;
   sourceAlertId: string;
   customerId: string;
+  customerName: string | null;
   accountIds: string[];
   ruleFired: string;
   status: CaseStatus;
