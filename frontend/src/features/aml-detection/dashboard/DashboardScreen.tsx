@@ -1,7 +1,7 @@
 import { Fragment, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getDashboardSummary } from '../api/client';
-import type { DashboardSummary } from '../api/types';
+import { getDashboardSummary, getDashboardTrends } from '../api/client';
+import type { DashboardSummary, DashboardTrends, MonthlyTrendPoint } from '../api/types';
 import { useFeatureBasePath } from '../useFeatureBasePath';
 import './dashboard.css';
 
@@ -13,18 +13,15 @@ const TIER_ORDER: Array<{ key: keyof DashboardSummary['openAlertsByTier']; label
 ];
 
 /** specs/suites/bfsi/features/aml-detection/screens/01-dashboard.md
- * Phase 1's "basic Dashboard" — the four top-line figures from
- * api-contracts-phase1.md's reports/summary-basic contract, plus the
- * branch heat-map (BranchRiskSnapshot), restyled to match
- * design-exports/bfsi/aml-detection/Command Dashboard.dc.html's tile
- * language. That mockup also shows a 6-month trend chart, an
- * IRAR-by-risk-type heat-map and an agent-vs-officer disposition
- * breakdown — none of which Phase 1's actual API computes, so rather
- * than fabricate numbers for those, this screen only renders what
- * reports/summary-basic actually returns. The full trend/time-series
- * version is Phase 2 (Reporting & MI) scope. */
+ * Phase 1's stat tiles (reports/summary-basic) plus, per TASKS.md's
+ * "ADDITIVE — Dashboard Trend Widgets", four widgets pulled forward
+ * from Phase 2 Reporting & MI (reports/summary-trends) — all real
+ * computations over existing data, no fabricated numbers. The
+ * mockup's IRAR risk-by-type heat-map stays deferred: it's a
+ * periodic human-assessed artifact, not a query. */
 export function DashboardScreen() {
   const [summary, setSummary] = useState<DashboardSummary | null>(null);
+  const [trends, setTrends] = useState<DashboardTrends | null>(null);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const base = useFeatureBasePath();
@@ -33,6 +30,9 @@ export function DashboardScreen() {
     getDashboardSummary()
       .then(setSummary)
       .catch((err: unknown) => setError(err instanceof Error ? err.message : String(err)));
+    getDashboardTrends()
+      .then(setTrends)
+      .catch(() => undefined);
   }, []);
 
   if (error) return <div className="aml-status aml-status--error">Could not load dashboard: {error}</div>;
@@ -55,7 +55,7 @@ export function DashboardScreen() {
           ))}
         </div>
       ) : (
-        <DashboardBody summary={summary} navigate={navigate} base={base} />
+        <DashboardBody summary={summary} trends={trends} navigate={navigate} base={base} />
       )}
     </div>
   );
@@ -189,12 +189,116 @@ function BranchRiskHeatmap({ heatmap }: { heatmap: DashboardSummary['branchRiskH
   );
 }
 
+function monthShortLabel(month: string): string {
+  const [y, m] = month.split('-').map(Number);
+  return new Date(Date.UTC(y, m - 1, 1)).toLocaleDateString('en-US', { month: 'short', timeZone: 'UTC' });
+}
+
+/** Hand-coded SVG, no charting library — matches how the Claude Design
+ * mockup itself builds its charts. `barValue`/`lineValue` are both
+ * optional so the same component covers the volume+conversion combo
+ * chart (bars + line) and the false-positive-only line chart. */
+function TrendChart({
+  points,
+  barValue,
+  lineValue,
+  lineFormat,
+}: {
+  points: MonthlyTrendPoint[];
+  barValue?: (p: MonthlyTrendPoint) => number;
+  lineValue?: (p: MonthlyTrendPoint) => number;
+  lineFormat?: (v: number) => string;
+}) {
+  const W = 560;
+  const H = 150;
+  const padL = 6;
+  const padR = 6;
+  const padT = 20;
+  const padB = 20;
+  const plotW = W - padL - padR;
+  const plotH = H - padT - padB;
+  const slotW = plotW / points.length;
+  const barGap = 8;
+  const barWidth = Math.max(4, slotW - barGap);
+  const maxBar = Math.max(1, ...(barValue ? points.map(barValue) : [0]));
+  const formatLine = lineFormat ?? ((v: number) => `${Math.round(v * 100)}%`);
+
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: 'auto', fontFamily: 'var(--font-body)' }}>
+      <g stroke="var(--color-divider)">
+        <line x1={padL} y1={padT + plotH} x2={W - padR} y2={padT + plotH} />
+        <line x1={padL} y1={padT + plotH * 0.5} x2={W - padR} y2={padT + plotH * 0.5} strokeDasharray="3 4" />
+        <line x1={padL} y1={padT} x2={W - padR} y2={padT} strokeDasharray="3 4" />
+      </g>
+
+      {barValue &&
+        points.map((p, i) => {
+          const v = barValue(p);
+          const x = padL + i * slotW + (slotW - barWidth) / 2;
+          const h = (v / maxBar) * plotH;
+          const y = padT + plotH - h;
+          const isLast = i === points.length - 1;
+          return (
+            <g key={p.month}>
+              <rect x={x} y={y} width={barWidth} height={Math.max(h, 0)} fill={isLast ? 'var(--color-accent-900)' : 'var(--color-accent-500)'} />
+              {v > 0 && (
+                <text x={x + barWidth / 2} y={y - 4} fontSize="9.5" textAnchor="middle" fill="var(--color-neutral-700)">
+                  {v}
+                </text>
+              )}
+            </g>
+          );
+        })}
+
+      {lineValue && (
+        <>
+          <polyline
+            points={points
+              .map((p, i) => {
+                const x = padL + i * slotW + slotW / 2;
+                const y = padT + plotH * (1 - Math.max(0, Math.min(1, lineValue(p))));
+                return `${x},${y}`;
+              })
+              .join(' ')}
+            fill="none"
+            stroke="var(--color-accent-800)"
+            strokeWidth="2"
+          />
+          {points.map((p, i) => {
+            const v = lineValue(p);
+            const x = padL + i * slotW + slotW / 2;
+            const y = padT + plotH * (1 - Math.max(0, Math.min(1, v)));
+            return (
+              <g key={`pt-${p.month}`}>
+                <rect x={x - 3} y={y - 3} width={6} height={6} fill="var(--color-bg)" stroke="var(--color-accent-800)" strokeWidth="1.5" />
+                <text x={x} y={y - 7} fontSize="9" textAnchor="middle" fill="var(--color-accent-800)">
+                  {formatLine(v)}
+                </text>
+              </g>
+            );
+          })}
+        </>
+      )}
+
+      <g fontSize="10" fill="var(--color-neutral-700)" textAnchor="middle">
+        {points.map((p, i) => (
+          <text key={p.month} x={padL + i * slotW + slotW / 2} y={H - 4}>
+            {monthShortLabel(p.month)}
+          </text>
+        ))}
+      </g>
+    </svg>
+  );
+}
+
 function DashboardBody({
   summary,
+  trends,
   navigate,
   base,
 }: {
   summary: DashboardSummary;
+  trends: DashboardTrends | null;
   navigate: ReturnType<typeof useNavigate>;
   base: string;
 }) {
@@ -322,7 +426,136 @@ function DashboardBody({
         </div>
       </div>
 
+      {trends && (
+        <>
+          <div className="dashboard__row">
+            <div className="tile">
+              <i className="corner tl" />
+              <i className="corner tr" />
+              <i className="corner bl" />
+              <i className="corner br" />
+              <div className="tile-head">
+                <span className="aml-label">Alert volume &amp; STR conversion</span>
+                <span className="dashboard__tileHint">last 6 months · bars = alerts raised, line = share filed as STR</span>
+              </div>
+              <div className="tile-body">
+                <TrendChart points={trends.monthlyTrend} barValue={(p) => p.alertsRaised} lineValue={(p) => p.strConversionRate} />
+              </div>
+            </div>
+
+            <div className="tile">
+              <i className="corner tl" />
+              <i className="corner tr" />
+              <i className="corner bl" />
+              <i className="corner br" />
+              <div className="tile-head">
+                <span className="aml-label">Agent vs. officer disposition</span>
+                <span className="dashboard__tileHint">last 6 months · {trends.dispositionBreakdown.totalDispositioned} dispositioned</span>
+              </div>
+              <div className="tile-body">
+                {trends.dispositionBreakdown.totalDispositioned === 0 ? (
+                  <div className="dashboard__muted">No dispositions recorded in this window yet.</div>
+                ) : (
+                  <DispositionBreakdownBars breakdown={trends.dispositionBreakdown} />
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="dashboard__row">
+            <div className="tile">
+              <i className="corner tl" />
+              <i className="corner tr" />
+              <i className="corner bl" />
+              <i className="corner br" />
+              <div className="tile-head">
+                <span className="aml-label">False-positive rate</span>
+                <span className="dashboard__tileHint">agent-flagged suspicion, cleared with no suspicion · share of alerts raised</span>
+              </div>
+              <div className="tile-body">
+                <TrendChart points={trends.monthlyTrend} lineValue={(p) => p.falsePositiveRate} />
+              </div>
+            </div>
+
+            <div className="tile">
+              <i className="corner tl" />
+              <i className="corner tr" />
+              <i className="corner bl" />
+              <i className="corner br" />
+              <div className="tile-head">
+                <span className="aml-label">Most aging alerts</span>
+                <span style={{ marginLeft: 'auto', fontSize: 10.5, color: 'var(--color-accent-700)' }}>open queue →</span>
+              </div>
+              <div>
+                {trends.mostAgingAlerts.length === 0 ? (
+                  <div className="dashboard__muted" style={{ padding: '11px 13px 13px' }}>
+                    No open alerts.
+                  </div>
+                ) : (
+                  trends.mostAgingAlerts.map((a) => (
+                    <div key={a.caseId} className="dashboard__agingRow" onClick={() => navigate(`${base}/cases/${a.caseId}`)}>
+                      {a.riskScore !== null && (
+                        <span className={`aml-badge ${a.riskScore >= 80 ? 'aml-badge--critical' : a.riskScore >= 50 ? 'aml-badge--high' : ''}`}>{a.riskScore}</span>
+                      )}
+                      <div style={{ minWidth: 0, flex: 1 }}>
+                        <div style={{ fontSize: 13 }}>{a.customerName ?? a.sourceAlertId}</div>
+                        <div style={{ fontSize: 11, color: 'var(--color-neutral-700)' }}>
+                          {a.sourceAlertId}
+                          {a.typologyLabel ? ` · ${a.typologyLabel}` : ''} · {a.assignedAnalystName ?? 'unassigned'}
+                        </div>
+                      </div>
+                      {a.slaRemainingHours !== null && (
+                        <div style={{ flex: 'none', textAlign: 'right' }}>
+                          <div style={{ fontSize: 12, color: a.slaRemainingHours < 0 ? 'var(--color-alert)' : 'var(--color-accent-700)' }}>
+                            {a.slaRemainingHours < 0 ? `past due ${Math.abs(a.slaRemainingHours).toFixed(1)}h` : `${a.slaRemainingHours.toFixed(1)}h left`}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
       {summary.branchRiskHeatmap.length > 0 && <BranchRiskHeatmap heatmap={summary.branchRiskHeatmap} />}
     </div>
+  );
+}
+
+function DispositionBreakdownBars({ breakdown }: { breakdown: DashboardTrends['dispositionBreakdown'] }) {
+  const { totalDispositioned, agreedWithAgent, overrodeAgent } = breakdown;
+  const agreedPct = (agreedWithAgent / totalDispositioned) * 100;
+  const overridePct = (overrodeAgent / totalDispositioned) * 100;
+
+  return (
+    <>
+      <div style={{ display: 'flex', height: 16, gap: 1 }}>
+        <span style={{ width: `${agreedPct}%`, background: 'var(--color-accent-500)' }} />
+        <span style={{ width: `${overridePct}%`, background: 'var(--color-accent-900)' }} />
+      </div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 9, marginTop: 12 }}>
+        <div style={{ display: 'flex', gap: 9, alignItems: 'flex-start' }}>
+          <span className="dot" style={{ background: 'var(--color-accent-500)', marginTop: 4 }} />
+          <div style={{ minWidth: 0 }}>
+            <div style={{ fontSize: 13 }}>
+              <strong>{Math.round(agreedPct)}%</strong> agreed with the agent's recommendation
+            </div>
+            <div style={{ fontSize: 11, color: 'var(--color-neutral-700)' }}>{agreedWithAgent} dispositions</div>
+          </div>
+        </div>
+        <div style={{ display: 'flex', gap: 9, alignItems: 'flex-start' }}>
+          <span className="dot" style={{ background: 'var(--color-accent-900)', marginTop: 4 }} />
+          <div style={{ minWidth: 0 }}>
+            <div style={{ fontSize: 13 }}>
+              <strong>{Math.round(overridePct)}%</strong> overrode the agent's recommendation
+            </div>
+            <div style={{ fontSize: 11, color: 'var(--color-neutral-700)' }}>{overrodeAgent} dispositions, each with a logged reason</div>
+          </div>
+        </div>
+      </div>
+    </>
   );
 }

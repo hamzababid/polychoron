@@ -1,5 +1,5 @@
 import { Controller, Get, UseGuards } from '@nestjs/common';
-import { DashboardService, type DashboardSummary } from './dashboard.service.js';
+import { DashboardService, type DashboardSummary, type DashboardTrends } from './dashboard.service.js';
 import { SessionGuard } from '../../../common/auth/session.guard.js';
 
 /** specs/suites/bfsi/features/aml-detection/screens/01-dashboard.md
@@ -13,5 +13,10 @@ export class DashboardController {
   @Get('summary-basic')
   async getSummary(): Promise<DashboardSummary> {
     return this.dashboardService.getSummary();
+  }
+
+  @Get('summary-trends')
+  async getTrends(): Promise<DashboardTrends> {
+    return this.dashboardService.getTrends();
   }
 }

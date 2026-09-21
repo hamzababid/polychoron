@@ -209,6 +209,71 @@ the Pattern Matching node rather than a hard dependency.
 
 ---
 
+## ADDITIVE — Dashboard Trend Widgets (pulled forward from Phase 2 Reporting & MI)
+See `specs/suites/bfsi/features/aml-detection/screens/01-dashboard.md`
+(acceptance criteria updated) and
+`specs/suites/bfsi/features/aml-detection/phase-1-aml-core/api-contracts-phase1.md`
+(new `reports/summary-trends` contract added). Four of the five
+widgets `screens/01-dashboard.md` originally specified are real
+computations over data that already exists — no new tables, no
+fabricated numbers. The fifth (IRAR risk-by-type heat-map) stays
+deferred; it's a periodic human-assessed artifact, not a query, and
+belongs under Model Governance & Audit below, not here.
+
+**Architectural constraint carried forward from
+`phase-2-full-aml/api-contracts-phase2.md`'s Reporting & MI section:**
+"`reports/summary` → same aggregation `DashboardService` already
+computes, at full granularity ... single source of truth." So these
+four widgets are new methods **on `DashboardService` itself**, not a
+new service — when Phase 2's parameterized `reports/summary` is
+eventually built, it calls the same methods at full granularity by
+construction, rather than needing to be reconciled against a
+separately-computed dashboard number later.
+
+**Spec resolution — false-positive rate:** the Claude Design mockup's
+label text ("alerts closed with no suspicion, as a share of alerts
+raised") is looser than `screens/01-dashboard.md`'s actual definition
+("`Case` count where `disposition_type == CLEAR` and
+`assessment.recommendation` was `escalate`/`recommend_str`, over
+time"). Per `platform/04-claude-design-integration.md`, the spec wins
+behavioral questions — built to the stricter definition (agent flagged
+suspicion, officer cleared it), not "any cleared case."
+
+- [x] `DashboardService`: `getMonthlyTrend()` — last 6 months, grouped
+      by the case's `created_at` month: alerts raised, STR filed count,
+      STR conversion rate, false-positive rate (per the resolution
+      above)
+- [x] `DashboardService`: `getDispositionBreakdown()` — over the same
+      6-month window: agreed-with-agent vs. overrode-agent counts, from
+      `aml_dispositions.overrides_agent_recommendation`. **Scope note:**
+      the mockup's 3-way split (agent-cleared-signed-off / full-manual-
+      investigation / officer-overrode) assumes a distinct low-friction
+      sign-off path this system doesn't have — every disposition goes
+      through the same Case Workspace form regardless. Built as an
+      honest 2-way split instead of inventing a distinction the data
+      doesn't carry.
+- [x] `DashboardService`: `getMostAgingAlerts()` — top 3 open-status
+      cases by SLA remaining ascending, reusing the same
+      `riskTierForScore`/`SLA_HOURS_BY_TIER` computation
+      `getAgingAlertsCount()` already uses
+- [x] New `GET .../reports/summary-trends` route on the existing
+      `DashboardController` (same `SessionGuard`-only RBAC as
+      `summary-basic` — this screen has no role restriction)
+- [x] Frontend: 4 new Dashboard tiles (volume+STR-conversion chart,
+      disposition breakdown, false-positive-rate chart,
+      most-aging-alerts list — split into two chart tiles rather than
+      one combined chart, matching the mockup's own two-chart layout)
+      matching the blueprint tile language already established —
+      hand-coded SVG for both charts, consistent with the mockup's own
+      approach, no new charting library
+- [x] Test: verified `GET .../reports/summary-trends` against real
+      seeded data — April/May 2026 (no cases yet) render as real
+      zeros, not omitted; most-aging-alerts correctly sorted
+      most-overdue-first; disposition breakdown and monthly trend
+      numbers match the underlying seed data by inspection
+
+---
+
 ## AML Detection — Phase 2 (Full Feature Set)
 - [x] Write `phase-2-full-aml/api-contracts-phase2.md` — three scope
       decisions made explicitly with the project owner first (demo-stub

@@ -6,6 +6,7 @@ import type {
   CaseDetail,
   CaseStatus,
   DashboardSummary,
+  DashboardTrends,
   DispositionType,
   FilingDetail,
   FilingDraftResponse,
@@ -111,6 +112,10 @@ export function addFollowup(filingId: string, note: string, createdBy: string) {
 
 export function getDashboardSummary() {
   return apiFetch<DashboardSummary>(`${BASE}/reports/summary-basic`);
+}
+
+export function getDashboardTrends() {
+  return apiFetch<DashboardTrends>(`${BASE}/reports/summary-trends`);
 }
 
 export function listTypologies() {

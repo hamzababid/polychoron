@@ -220,6 +220,36 @@ export interface DashboardSummary {
   branchRiskHeatmap: Array<{ branchCode: string; riskTier: RiskTier; openCaseCount: number }>;
 }
 
+export interface MonthlyTrendPoint {
+  month: string;
+  alertsRaised: number;
+  strFiled: number;
+  strConversionRate: number;
+  falsePositiveRate: number;
+}
+
+export interface DispositionBreakdown {
+  totalDispositioned: number;
+  agreedWithAgent: number;
+  overrodeAgent: number;
+}
+
+export interface AgingAlertSummary {
+  caseId: string;
+  sourceAlertId: string;
+  customerName: string | null;
+  riskScore: number | null;
+  slaRemainingHours: number | null;
+  typologyLabel: string | null;
+  assignedAnalystName: string | null;
+}
+
+export interface DashboardTrends {
+  monthlyTrend: MonthlyTrendPoint[];
+  dispositionBreakdown: DispositionBreakdown;
+  mostAgingAlerts: AgingAlertSummary[];
+}
+
 export interface TypologyRow {
   typologyCode: string;
   typologyLabel: string;
