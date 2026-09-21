@@ -57,6 +57,19 @@
   min-width: 0;
 }
 
+/* The grid's own columns only carry 10px of inter-column padding —
+   without this, the first/last cell's content sits noticeably closer
+   to the edge than the breadcrumbs/heading and the strip/filter bars
+   above it (18px), which is what read as "congested" against the rest
+   of the page. */
+.qrow > .qcell:first-child {
+  padding-left: 18px;
+}
+
+.qrow > .qcell:last-child {
+  padding-right: 18px;
+}
+
 .alert-queue__pending {
   font-size: 11px;
   color: var(--color-neutral-600);
@@ -127,8 +140,35 @@
 .alert-queue__pagination {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
   padding: 10px 18px;
   font-size: 11.5px;
   color: var(--color-neutral-700);
+  flex-wrap: wrap;
+}
+
+.alert-queue__pageSize {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.alert-queue__pageSize select {
+  font-size: 11.5px;
+  padding: 2px 5px;
+  border: 1px solid var(--color-divider);
+  background: var(--color-neutral-100);
+  color: var(--color-text);
+}
+
+.alert-queue__pageNav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+
+.alert-queue__pageNav .aml-btn {
+  font-size: 11.5px;
+  padding: 3px 9px;
 }

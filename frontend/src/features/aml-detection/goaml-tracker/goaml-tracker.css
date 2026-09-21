@@ -61,6 +61,17 @@
   min-width: 0;
 }
 
+/* Same edge-alignment fix as Alert Queue's .qcell — without this the
+   first/last cell sits closer to the edge than the 18px the
+   breadcrumbs/heading and portfolio strip use. */
+.trow > .tcell:first-child {
+  padding-left: 18px;
+}
+
+.trow > .tcell:last-child {
+  padding-right: 18px;
+}
+
 .goaml-tracker__miniStepper {
   display: flex;
   gap: 2px;

@@ -225,12 +225,14 @@ a.tile:hover { border-color: var(--color-accent); box-shadow: var(--shadow-sm); 
   display: flex; align-items: stretch; flex: none;
   border-bottom: 1px solid var(--color-divider); background: var(--color-neutral-100);
 }
-.stripbar__cell { padding: 9px 16px; border-right: 1px solid var(--color-divider); }
+/* 18px, not 16 — matches PageHeader's own side padding so a strip's
+   first/last cell lines up with the breadcrumbs/heading above it. */
+.stripbar__cell { padding: 9px 18px; border-right: 1px solid var(--color-divider); }
 .stripbar__cell:last-child { border-right: none; }
 .stripbar__big { font-family: var(--font-heading); font-size: 22px; line-height: 1.05; }
 
 .filterbar {
-  flex: none; padding: 8px 16px; display: flex; align-items: center; gap: 8px;
+  flex: none; padding: 8px 18px; display: flex; align-items: center; gap: 8px;
   flex-wrap: wrap; border-bottom: 1px solid var(--color-divider); background: var(--color-bg);
 }
 .filterbar select, .filterbar .filter-pill {

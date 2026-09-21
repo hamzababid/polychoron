@@ -5,7 +5,8 @@ import type { AlertQueueRow, CaseStatus, DashboardSummary, RiskTier } from '../a
 import { useFeatureBasePath } from '../useFeatureBasePath';
 import './alert-queue.css';
 
-const PAGE_SIZE = 20;
+const DEFAULT_PAGE_SIZE = 10;
+const PAGE_SIZE_OPTIONS = [10, 25, 50];
 
 const RISK_TIERS: RiskTier[] = ['critical', 'high', 'medium', 'low'];
 const STATUSES: CaseStatus[] = ['open', 'claimed', 'investigating', 'escalated', 'pending_filing', 'cleared', 'filed'];
@@ -39,16 +40,17 @@ export function AlertQueueScreen() {
   const status = (searchParams.get('status') as CaseStatus | null) ?? undefined;
   const riskTier = (searchParams.get('risk_tier') as RiskTier | null) ?? undefined;
   const page = Number(searchParams.get('page') ?? '1');
+  const pageSize = Number(searchParams.get('page_size') ?? String(DEFAULT_PAGE_SIZE));
 
   const load = useCallback(() => {
     setRows(null);
-    listAlerts({ status, riskTier, page, pageSize: PAGE_SIZE })
+    listAlerts({ status, riskTier, page, pageSize })
       .then((res) => {
         setRows(res.items);
         setTotal(res.total);
       })
       .catch((err: unknown) => setError(err instanceof Error ? err.message : String(err)));
-  }, [status, riskTier, page]);
+  }, [status, riskTier, page, pageSize]);
 
   useEffect(() => {
     load();
@@ -83,7 +85,7 @@ export function AlertQueueScreen() {
 
   if (error) return <div className="aml-status aml-status--error">Could not load alert queue: {error}</div>;
 
-  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const totalPages = Math.max(1, Math.ceil(total / pageSize));
   const openTotal = summary ? Object.values(summary.openAlertsByTier).reduce((a, b) => a + b, 0) : null;
 
   return (
@@ -244,17 +246,30 @@ export function AlertQueueScreen() {
           ))}
           <div className="alert-queue__pagination">
             <span>
-              Rows {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, total)} of {total} · page size {PAGE_SIZE}
+              Rows {(page - 1) * pageSize + 1}–{Math.min(page * pageSize, total)} of {total}
             </span>
-            <button className="aml-btn" disabled={page <= 1} onClick={() => updateParam('page', String(page - 1))} style={{ marginLeft: 'auto' }}>
-              ← Prev
-            </button>
-            <span>
-              Page {page} of {totalPages}
-            </span>
-            <button className="aml-btn" disabled={page >= totalPages} onClick={() => updateParam('page', String(page + 1))}>
-              Next →
-            </button>
+            <label className="alert-queue__pageSize">
+              Show
+              <select value={pageSize} onChange={(e) => updateParam('page_size', e.target.value)}>
+                {PAGE_SIZE_OPTIONS.map((n) => (
+                  <option key={n} value={n}>
+                    {n}
+                  </option>
+                ))}
+              </select>
+              per page
+            </label>
+            <div className="alert-queue__pageNav">
+              <button className="aml-btn" disabled={page <= 1} onClick={() => updateParam('page', String(page - 1))}>
+                ← Prev
+              </button>
+              <span>
+                Page {page} of {totalPages}
+              </span>
+              <button className="aml-btn" disabled={page >= totalPages} onClick={() => updateParam('page', String(page + 1))}>
+                Next →
+              </button>
+            </div>
           </div>
         </div>
       )}
