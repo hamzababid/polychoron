@@ -23,14 +23,14 @@ export function AmlDetectionRoutes() {
 
   return (
     <div className="aml-page">
-      <nav className="aml-subnav">
-        {/* Absolute paths, not relative ("dashboard") — this <nav> is a
-            sibling of the <Routes> below, not a descendant of any of
-            its <Route>s, so relative "to" values resolve against the
-            current full pathname (React Router's route-context
-            resolution) and double up segments, e.g. navigating from
-            /dashboard to a relative "alerts" produces
-            /dashboard/alerts instead of /alerts. */}
+      {/* Absolute paths, not relative ("dashboard") — this <nav> is a
+          sibling of the <Routes> below, not a descendant of any of
+          its <Route>s, so relative "to" values resolve against the
+          current full pathname (React Router's route-context
+          resolution) and double up segments, e.g. navigating from
+          /dashboard to a relative "alerts" produces
+          /dashboard/alerts instead of /alerts. */}
+      <nav className="cmdbar aml-subnav">
         <NavLink to={`${base}/dashboard`} className={({ isActive }) => (isActive ? 'active' : undefined)}>
           Dashboard
         </NavLink>
@@ -46,15 +46,17 @@ export function AmlDetectionRoutes() {
           </NavLink>
         )}
       </nav>
-      <Routes>
-        <Route index element={<Navigate to="dashboard" replace />} />
-        <Route path="dashboard" element={<DashboardScreen />} />
-        <Route path="alerts" element={<AlertQueueScreen />} />
-        <Route path="cases/:caseId" element={<CaseWorkspaceScreen />} />
-        <Route path="cases/:caseId/filing" element={<FilingConsoleScreen />} />
-        <Route path="filings" element={<GoamlTrackerScreen />} />
-        <Route path="typologies" element={<TypologyRulesConsoleScreen />} />
-      </Routes>
+      <div className="aml-page__body">
+        <Routes>
+          <Route index element={<Navigate to="dashboard" replace />} />
+          <Route path="dashboard" element={<DashboardScreen />} />
+          <Route path="alerts" element={<AlertQueueScreen />} />
+          <Route path="cases/:caseId" element={<CaseWorkspaceScreen />} />
+          <Route path="cases/:caseId/filing" element={<FilingConsoleScreen />} />
+          <Route path="filings" element={<GoamlTrackerScreen />} />
+          <Route path="typologies" element={<TypologyRulesConsoleScreen />} />
+        </Routes>
+      </div>
     </div>
   );
 }

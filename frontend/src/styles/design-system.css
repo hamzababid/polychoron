@@ -1,0 +1,276 @@
+/* Polychoron AI — design system.
+   Ported from design-exports/bfsi/aml-detection/{brand.css, _ds/.../styles.css}
+   and the corresponding Claude Design .dc.html exports — those are this
+   platform's visual source of truth (specs/platform/04-claude-design-integration.md).
+   A "blueprint" wireframe aesthetic: square corners, hairline borders,
+   transparent surfaces, corner-bracket framing on primary content
+   tiles, condensed display type for numbers/labels, dense uppercase
+   micro-labels. State is carried by weight, fill and border — not by
+   introducing new hues beyond the one accent ramp and the one alert
+   red reserved for breach/overturned-decision content. */
+
+@import url('https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;700&family=Barlow+Condensed:wght@400;600&display=swap');
+
+:root {
+  /* — brand.css: single-hue navy ink palette — */
+  --color-accent: #2c4278;
+  --color-accent-100: #eef1f7;
+  --color-accent-200: #d6dcea;
+  --color-accent-300: #aab6d2;
+  --color-accent-400: #7486b2;
+  --color-accent-500: #465a90;
+  --color-accent-600: #2c4278;
+  --color-accent-700: #1e3265;
+  --color-accent-800: #142451;
+  --color-accent-900: #0c1837;
+  --color-alert: #8d3325;
+
+  /* — _ds structural tokens — */
+  --color-bg: #f2f2f3;
+  --color-surface: #e9e9ea;
+  --color-text: #1d1f20;
+  --color-divider: color-mix(in srgb, #1d1f20 16%, transparent);
+
+  --color-neutral-100: #f5f5f8;
+  --color-neutral-200: #e7e7ea;
+  --color-neutral-300: #d4d4d7;
+  --color-neutral-400: #b7b7ba;
+  --color-neutral-500: #98989b;
+  --color-neutral-600: #676769; /* darkened from the base ramp for 4.5:1 on paper */
+  --color-neutral-700: #5d5d60;
+  --color-neutral-800: #424244;
+  --color-neutral-900: #2b2b2d;
+
+  --font-heading: "Barlow Condensed", system-ui, sans-serif;
+  --font-heading-weight: 600;
+  --font-body: "Barlow", system-ui, sans-serif;
+
+  --space-1: 3.4px;
+  --space-2: 6.8px;
+  --space-3: 10.2px;
+  --space-4: 13.6px;
+  --space-6: 20.4px;
+  --space-8: 27.2px;
+
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 7px;
+
+  --shadow-sm: 0 1px 2px color-mix(in srgb, #2b2b2d 14%, transparent);
+  --shadow-md: 0 3px 10px color-mix(in srgb, #2b2b2d 16%, transparent);
+  --shadow-lg: 0 12px 32px color-mix(in srgb, #2b2b2d 22%, transparent);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html, body, #root { height: 100%; }
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--color-text);
+  background: var(--color-bg);
+}
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
+  line-height: 1.12;
+  letter-spacing: -0.01em;
+  margin: 0 0 var(--space-2);
+}
+h6 { letter-spacing: 0.08em; text-transform: uppercase; font-size: 11px; }
+p { margin: 0 0 var(--space-3); }
+a { color: var(--color-accent); text-underline-offset: 3px; }
+:focus { outline: none; }
+:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }
+
+.text-muted { color: var(--color-neutral-700); }
+.font-heading { font-family: var(--font-heading); font-weight: var(--font-heading-weight); }
+.tabular { font-variant-numeric: tabular-nums; }
+.microlabel {
+  font-size: 9.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-neutral-700);
+}
+
+/* — buttons — */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  cursor: pointer; text-decoration: none;
+  font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+  font-size: 12.5px; line-height: 1.2; color: var(--color-text);
+  background: transparent; border: 1px solid var(--color-divider);
+  padding: 5px 12px; border-radius: 0;
+}
+.btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.btn-primary { background: var(--color-accent-800); color: var(--color-bg); border-color: var(--color-accent-800); }
+.btn-primary:hover:not(:disabled) { background: var(--color-accent-900); }
+.btn-secondary { border-color: var(--color-divider); background: var(--color-bg); }
+.btn-secondary:hover:not(:disabled) { background: color-mix(in srgb, var(--color-text) 6%, transparent); }
+.btn-ghost { color: var(--color-accent-700); border-color: transparent; padding-inline: 4px; }
+.btn-ghost:hover { background: color-mix(in srgb, var(--color-accent) 8%, transparent); }
+
+/* — forms — */
+.field > label {
+  display: block; font-size: 12px; margin-bottom: 5px;
+  color: var(--color-neutral-700);
+}
+.input {
+  width: 100%; min-height: 31px; padding: 5px 9px; font: inherit;
+  font-size: 12.5px; color: var(--color-text); caret-color: var(--color-accent);
+  background: var(--color-neutral-100);
+  border: 1px solid var(--color-divider); border-radius: 0;
+}
+.input:hover { border-color: color-mix(in srgb, var(--color-text) 45%, transparent); }
+.input:focus-visible { border-color: var(--color-accent); }
+textarea.input { min-height: 90px; resize: vertical; line-height: 1.55; }
+
+.seg { display: inline-flex; overflow: hidden; border: 1px solid var(--color-divider); }
+.seg-opt { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; font-size: 12px; cursor: pointer; }
+.seg-opt + .seg-opt { border-left: 1px solid var(--color-divider); }
+.seg-opt:has(input:checked) { background: var(--color-accent-800); color: var(--color-bg); }
+.seg-opt:not(:has(input:checked)):hover { background: color-mix(in srgb, var(--color-text) 7%, transparent); }
+.seg-opt input { position: absolute; opacity: 0; width: 0; height: 0; }
+
+/* — blueprint tile: the platform's primary content-card treatment.
+     Square, hairline-bordered, transparent, with four corner
+     brackets — deliberately drafting-table rather than soft/rounded. — */
+.tile {
+  position: relative;
+  border: 1px solid var(--color-divider);
+  background: var(--color-bg);
+}
+.tile > .corner {
+  position: absolute; width: 11px; height: 11px;
+  color: color-mix(in srgb, var(--color-text) 55%, transparent);
+  pointer-events: none;
+}
+.tile > .corner::before, .tile > .corner::after { content: ""; position: absolute; background: currentColor; }
+.tile > .corner::before { left: 5px; top: 0; width: 1px; height: 100%; }
+.tile > .corner::after { top: 5px; left: 0; width: 100%; height: 1px; }
+.tile > .corner.tl { top: -6px; left: -6px; }
+.tile > .corner.tr { top: -6px; right: -6px; }
+.tile > .corner.bl { bottom: -6px; left: -6px; }
+.tile > .corner.br { bottom: -6px; right: -6px; }
+a.tile { text-decoration: none; color: inherit; display: block; }
+a.tile:hover { border-color: var(--color-accent); box-shadow: var(--shadow-sm); }
+.tile-head {
+  display: flex; align-items: baseline; gap: 9px;
+  padding: 9px 13px; border-bottom: 1px solid var(--color-divider);
+}
+.tile-body { padding: 11px 13px 13px; }
+
+/* — tags/chips — */
+.tag {
+  display: inline-flex; align-items: center; font-size: 10.5px;
+  letter-spacing: 0.04em; padding: 2px 8px; border-radius: 0;
+  font-family: var(--font-heading); font-weight: var(--font-heading-weight);
+}
+.tag-accent { background: var(--color-accent-100); color: var(--color-accent-800); }
+.tag-neutral { background: var(--color-neutral-200); color: var(--color-neutral-800); }
+.tag-outline { border: 1px solid var(--color-accent-700); color: var(--color-accent-800); font-weight: 400; font-family: var(--font-body); letter-spacing: 0.06em; }
+.tag-alert { background: color-mix(in srgb, var(--color-alert) 12%, transparent); color: var(--color-alert); }
+.tag-solid { background: var(--color-accent-800); color: var(--color-bg); }
+
+/* — table — */
+.table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.table th {
+  text-align: left; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--color-neutral-700); padding: 6px 10px; border-bottom: 1px solid var(--color-divider);
+}
+.table td { padding: 6px 10px; border-bottom: 1px solid color-mix(in srgb, var(--color-text) 8%, transparent); }
+.table tbody tr:hover { background: color-mix(in srgb, var(--color-text) 4%, transparent); }
+
+/* — AI-drafted vs officer-authored (constitution rule 2): the same
+     hatch-and-band pattern applies everywhere agent content meets
+     human content — Case Workspace, Filing Console, Typology
+     Console's live-vs-draft, all draw from this one pair. — */
+.ai-hatch {
+  background-image: repeating-linear-gradient(135deg, color-mix(in srgb, var(--color-accent) 14%, transparent) 0 2px, transparent 2px 7px);
+}
+.ai-band {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 12px; background: var(--color-accent-800); color: var(--color-bg);
+  font-family: var(--font-heading); font-size: 11px; letter-spacing: 0.12em;
+}
+.officer-band {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 12px; border-bottom: 1px solid var(--color-divider);
+  font-family: var(--font-heading); font-size: 11px; letter-spacing: 0.12em;
+}
+
+/* — status/risk dot — */
+.dot { display: inline-block; width: 7px; height: 7px; flex: none; }
+
+/* — dialog — */
+.dialog-backdrop {
+  position: fixed; inset: 0; z-index: 20; display: grid; place-items: center;
+  padding: var(--space-4);
+  background: color-mix(in srgb, var(--color-neutral-900) 50%, transparent);
+}
+.dialog {
+  width: min(480px, 100%); display: flex; flex-direction: column; gap: var(--space-3);
+  padding: var(--space-4); background: var(--color-bg); box-shadow: var(--shadow-lg);
+  border: 1px solid var(--color-divider);
+}
+.dialog-title { font-family: var(--font-heading); font-weight: var(--font-heading-weight); font-size: 19px; }
+.dialog-body { font-size: 13px; line-height: 1.5; }
+.dialog-actions { display: flex; justify-content: flex-end; gap: var(--space-2); margin-top: var(--space-2); }
+
+/* — command bar: the one nav treatment every screen shares — */
+.cmdbar {
+  display: flex; align-items: center; gap: 22px;
+  padding: 0 18px; height: 44px; flex: none;
+  background: var(--color-accent-900); color: var(--color-bg);
+}
+.cmdbar__brand {
+  display: flex; align-items: center; gap: 8px;
+  font-family: var(--font-heading); font-weight: 600; font-size: 16px; letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+.cmdbar__brand small { opacity: 0.6; font-weight: 400; }
+.cmdbar__rule { width: 1px; height: 18px; background: rgba(255, 255, 255, 0.22); flex: none; }
+.cmdbar__nav { display: flex; gap: 16px; font-size: 12.5px; overflow-x: auto; }
+.cmdbar__nav a {
+  color: inherit; text-decoration: none; opacity: 0.6; white-space: nowrap;
+  padding-bottom: 2px; border-bottom: 2px solid transparent;
+}
+.cmdbar__nav a:hover { opacity: 0.85; }
+.cmdbar__nav a.active { opacity: 1; border-bottom-color: var(--color-accent-400); }
+.cmdbar__user { margin-left: auto; display: flex; align-items: center; gap: 12px; font-size: 12px; white-space: nowrap; }
+.cmdbar__avatar {
+  width: 24px; height: 24px; display: grid; place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  font-family: var(--font-heading); font-size: 11px; flex: none;
+}
+.cmdbar__logout {
+  background: transparent; border: none; color: inherit; opacity: 0.7;
+  font: inherit; font-size: 12px; cursor: pointer; padding: 0;
+}
+.cmdbar__logout:hover { opacity: 1; text-decoration: underline; }
+
+/* — dense info strip: summary bars / filter bars shared by
+     Alert Queue, goAML Tracker, Dashboard, Case Workspace, Filing
+     Console header regions — */
+.stripbar {
+  display: flex; align-items: stretch; flex: none;
+  border-bottom: 1px solid var(--color-divider); background: var(--color-neutral-100);
+}
+.stripbar__cell { padding: 9px 16px; border-right: 1px solid var(--color-divider); }
+.stripbar__cell:last-child { border-right: none; }
+.stripbar__big { font-family: var(--font-heading); font-size: 22px; line-height: 1.05; }
+
+.filterbar {
+  flex: none; padding: 8px 16px; display: flex; align-items: center; gap: 8px;
+  flex-wrap: wrap; border-bottom: 1px solid var(--color-divider); background: var(--color-bg);
+}
+.filterbar select, .filterbar .filter-pill {
+  display: flex; align-items: center; gap: 6px;
+  border: 1px solid var(--color-divider); padding: 4px 9px; font-size: 12px;
+  background: var(--color-neutral-100); color: var(--color-text); font-family: var(--font-body);
+  cursor: pointer;
+}
+.filterbar select:hover, .filterbar .filter-pill:hover { border-color: var(--color-accent); }
+
+.scrollcol { overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--color-neutral-400) transparent; }

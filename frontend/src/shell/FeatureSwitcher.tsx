@@ -11,15 +11,15 @@ interface Props {
  * (specs/platform/01-platform-architecture.md). */
 export function FeatureSwitcher({ suiteCode, features }: Props) {
   return (
-    <nav className="feature-switcher" aria-label="Switch feature">
+    <nav className="cmdbar__nav" aria-label="Switch feature" style={{ flex: 'none' }}>
       {features.map((feature) => (
         <NavLink
           key={feature.featureCode}
           to={`/${suiteCode}/${feature.featureCode}`}
-          className={({ isActive }) => `feature-switcher__tab${isActive ? ' feature-switcher__tab--active' : ''}`}
+          className={({ isActive }) => (isActive ? 'active' : undefined)}
         >
           {feature.featureName}
-          {feature.status !== 'ga' && <span className="feature-switcher__badge">{feature.status}</span>}
+          {feature.status !== 'ga' && <span className="tag tag-outline" style={{ marginLeft: 6, fontSize: 9 }}>{feature.status}</span>}
         </NavLink>
       ))}
     </nav>

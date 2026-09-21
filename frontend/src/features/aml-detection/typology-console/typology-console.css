@@ -22,7 +22,7 @@
 }
 
 .typology-console__row--live td:first-child {
-  border-left-color: #1a7f37;
+  border-left-color: var(--aml-accent-800);
 }
 
 .typology-console__row--draft td:first-child {
@@ -37,7 +37,7 @@
 .typology-console__liveBadge {
   font-size: 9px;
   font-weight: 700;
-  color: #1a7f37;
+  color: var(--aml-accent-800);
 }
 
 .typology-console__draftBadge {

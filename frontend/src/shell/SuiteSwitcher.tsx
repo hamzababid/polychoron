@@ -21,7 +21,6 @@ export function SuiteSwitcher({ suites, activeSuiteCode }: Props) {
 
   return (
     <label className="suite-switcher">
-      <span className="suite-switcher__label">Suite</span>
       <select
         className="suite-switcher__select"
         value={activeSuiteCode}
@@ -30,7 +29,7 @@ export function SuiteSwitcher({ suites, activeSuiteCode }: Props) {
       >
         {suites.map((suite) => (
           <option key={suite.suiteCode} value={suite.suiteCode}>
-            {suite.suiteName}
+            {suite.suiteName.toUpperCase()}
           </option>
         ))}
       </select>

@@ -1,59 +1,64 @@
-/* specs/platform/04-claude-design-integration.md — tokens lifted from
-   design-exports/bfsi/aml-detection/brand.css, the Claude Design
-   visual source of truth for this feature. */
-:root {
-  --aml-accent: #2c4278;
-  --aml-accent-100: #eef1f7;
-  --aml-accent-200: #d6dcea;
-  --aml-accent-300: #aab6d2;
-  --aml-accent-700: #1e3265;
-  --aml-accent-800: #142451;
-  --aml-accent-900: #0c1837;
-  --aml-neutral-100: #f7f7f8;
-  --aml-neutral-300: #d8d8da;
-  --aml-neutral-500: #9a9a9d;
-  --aml-neutral-600: #676769;
-  --aml-neutral-700: #55555a;
-  --aml-alert: #8d3325;
-  --aml-divider: #e5e4e7;
-  --aml-bg: #ffffff;
-  --aml-text: #16171d;
-}
+/* specs/platform/04-claude-design-integration.md — this file maps the
+   AML feature's existing component class names onto the shared
+   design system (src/styles/design-system.css), which is the actual
+   visual source of truth ported from
+   design-exports/bfsi/aml-detection/. Kept as thin aliases rather than
+   inlined per-screen so every screen picks up the same restyle at
+   once. */
 
 .aml-page {
-  font-family: system-ui, sans-serif;
-  color: var(--aml-text);
-}
-
-.aml-subnav {
   display: flex;
-  gap: 20px;
-  padding: 0 4px 10px;
-  border-bottom: 1px solid var(--aml-divider);
-  margin-bottom: 16px;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  /* Back-compat aliases — every screen's own .css file was written
+     against these names before the shared design system existed;
+     keeping them here (rather than hunting through every file) means
+     one restyle propagates everywhere at once. */
+  --aml-accent: var(--color-accent);
+  --aml-accent-100: var(--color-accent-100);
+  --aml-accent-200: var(--color-accent-200);
+  --aml-accent-300: var(--color-accent-300);
+  --aml-accent-700: var(--color-accent-700);
+  --aml-accent-800: var(--color-accent-800);
+  --aml-accent-900: var(--color-accent-900);
+  --aml-neutral-100: var(--color-neutral-100);
+  --aml-neutral-300: var(--color-neutral-300);
+  --aml-neutral-500: var(--color-neutral-500);
+  --aml-neutral-600: var(--color-neutral-600);
+  --aml-neutral-700: var(--color-neutral-700);
+  --aml-alert: var(--color-alert);
+  --aml-divider: var(--color-divider);
+  --aml-bg: var(--color-bg);
+  --aml-text: var(--color-text);
 }
 
-.aml-subnav a {
-  font-size: 13px;
-  color: var(--aml-neutral-700);
-  text-decoration: none;
-  padding-bottom: 8px;
-  border-bottom: 2px solid transparent;
+.aml-page__body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
-.aml-subnav a.active {
-  color: var(--aml-accent-900);
-  border-bottom-color: var(--aml-accent);
-  font-weight: 600;
+/* Second, recessed command-bar row — the feature's own screen nav,
+   directly beneath the platform shell's cmdbar so the two read as one
+   continuous dark command region. */
+.aml-subnav {
+  height: 36px;
+  background: var(--color-accent-800);
+  gap: 18px;
 }
+.aml-subnav a { font-size: 12px; }
 
 .aml-tag {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   font-size: 10.5px;
-  border: 1px solid var(--aml-accent-800);
-  background: var(--aml-accent-100);
-  color: var(--aml-accent-800);
-  padding: 2px 7px;
+  letter-spacing: 0.04em;
+  padding: 2px 8px;
+  background: var(--color-accent-100);
+  color: var(--color-accent-800);
 }
 
 .aml-badge {
@@ -62,102 +67,117 @@
   min-width: 38px;
   height: 26px;
   padding: 0 4px;
-  font-family: ui-monospace, monospace;
+  font-family: var(--font-heading);
   font-size: 15px;
-  border: 1px solid var(--aml-neutral-500);
-  background: var(--aml-neutral-100);
+  border: 1px solid var(--color-neutral-500);
+  background: var(--color-neutral-100);
+  color: var(--color-text);
 }
 
 .aml-badge--critical {
-  border-color: var(--aml-alert);
-  background: color-mix(in srgb, var(--aml-alert) 12%, transparent);
-  color: var(--aml-alert);
+  border-color: var(--color-alert);
+  background: color-mix(in srgb, var(--color-alert) 12%, transparent);
+  color: var(--color-alert);
 }
 
 .aml-badge--high {
-  border-color: var(--aml-accent-700);
-  background: color-mix(in srgb, var(--aml-accent-700) 12%, transparent);
-  color: var(--aml-accent-700);
+  border-color: var(--color-accent-700);
+  background: color-mix(in srgb, var(--color-accent-700) 12%, transparent);
+  color: var(--color-accent-700);
 }
 
 .aml-btn {
+  font-family: var(--font-heading);
+  font-weight: var(--font-heading-weight);
   font-size: 12.5px;
   padding: 5px 12px;
-  border: 1px solid var(--aml-accent);
-  background: var(--aml-bg);
-  color: var(--aml-accent-900);
+  border: 1px solid var(--color-divider);
+  background: var(--color-bg);
+  color: var(--color-text);
   cursor: pointer;
 }
 
 .aml-btn:hover:not(:disabled) {
-  background: var(--aml-accent-100);
+  background: color-mix(in srgb, var(--color-text) 6%, transparent);
 }
 
 .aml-btn:disabled {
-  opacity: 0.5;
+  opacity: 0.45;
   cursor: not-allowed;
 }
 
 .aml-btn--primary {
-  background: var(--aml-accent-900);
-  color: #fff;
-  border-color: var(--aml-accent-900);
+  background: var(--color-accent-800);
+  color: var(--color-bg);
+  border-color: var(--color-accent-800);
 }
 
 .aml-btn--primary:hover:not(:disabled) {
-  background: var(--aml-accent-700);
+  background: var(--color-accent-900);
 }
 
 .aml-card {
-  border: 1px solid var(--aml-divider);
+  position: relative;
+  border: 1px solid var(--color-divider);
   padding: 14px 16px;
-  background: var(--aml-bg);
+  background: var(--color-bg);
 }
 
 .aml-label {
   font-size: 9.5px;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--aml-neutral-700);
+  color: var(--color-neutral-700);
 }
 
 .aml-status {
   padding: 2rem;
-  color: var(--aml-neutral-700);
+  color: var(--color-neutral-700);
   font-size: 13px;
 }
 
 .aml-status--error {
-  color: var(--aml-alert);
+  color: var(--color-alert);
 }
 
 /* Constitution rule 2: agent-authored vs. human-authored content is
-   always visually distinct — this token pair is reused everywhere the
-   two appear together (Case Workspace, Filing Console). */
+   always visually distinct — this pair is reused everywhere the two
+   appear together (Case Workspace, Filing Console, Typology Console's
+   live-vs-draft). Matches the Claude Design exports' hatched-band
+   treatment exactly, not a generic "info box" look. */
 .aml-source-ai {
-  background: var(--aml-accent-100);
-  border-left: 3px solid var(--aml-accent);
-  padding: 8px 10px;
+  border: 1px solid var(--color-accent-600);
+  background-color: var(--color-accent-100);
+  background-image: repeating-linear-gradient(135deg, color-mix(in srgb, var(--color-accent) 14%, transparent) 0 2px, transparent 2px 7px);
 }
 
 .aml-source-ai__label {
-  font-size: 9.5px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--aml-accent-800);
-  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-accent) 45%, transparent);
+  font-family: var(--font-heading);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: var(--color-accent-800);
+  margin-bottom: 0;
 }
 
 .aml-source-human {
-  background: var(--aml-neutral-100);
-  border-left: 3px solid var(--aml-neutral-500);
-  padding: 8px 10px;
+  border: 1px solid var(--color-text);
+  background: var(--color-bg);
 }
 
 .aml-source-human__label {
-  font-size: 9.5px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--aml-neutral-700);
-  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  border-bottom: 1px solid var(--color-divider);
+  font-family: var(--font-heading);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: var(--color-text);
+  margin-bottom: 0;
 }

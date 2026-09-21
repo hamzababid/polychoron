@@ -1,61 +1,144 @@
 .goaml-tracker {
-  display: grid;
-  grid-template-columns: 280px 1fr;
-  gap: 16px;
-  align-items: start;
-}
-
-.goaml-tracker__row {
   display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.goaml-tracker__body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.goaml-tracker__list {
+  flex: none;
+  max-height: 42%;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.goaml-tracker__listScroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.trow {
+  display: grid;
+  grid-template-columns: 90px 100px 1fr 160px 52px;
   align-items: center;
-  gap: 8px;
-  width: 100%;
-  text-align: left;
-  padding: 8px 6px;
-  border: none;
-  border-bottom: 1px solid var(--aml-divider);
-  background: none;
+  border-bottom: 1px solid var(--color-divider);
   cursor: pointer;
-  font-size: 12.5px;
 }
 
-.goaml-tracker__row--selected {
-  background: var(--aml-accent-100);
+.trow:hover {
+  background: color-mix(in srgb, var(--color-accent) 6%, transparent);
 }
 
-.goaml-tracker__rowStatus {
-  text-transform: capitalize;
-  color: var(--aml-neutral-700);
-}
-
-.goaml-tracker__retentionFlag {
-  margin-left: auto;
+.trow--head {
+  cursor: default;
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-text);
   font-size: 10px;
-  color: var(--aml-accent-700);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-neutral-700);
+}
+
+.trow--head:hover {
+  background: var(--color-bg);
+}
+
+.trow--selected {
+  background: color-mix(in srgb, var(--color-accent) 9%, transparent);
+}
+
+.tcell {
+  padding: 8px 10px;
+  min-width: 0;
+}
+
+.goaml-tracker__miniStepper {
+  display: flex;
+  gap: 2px;
+}
+
+.goaml-tracker__miniDot,
+.goaml-tracker__miniDot--done {
+  width: 14px;
+  height: 3px;
+  background: var(--color-neutral-300);
+}
+
+.goaml-tracker__miniDot--done {
+  background: var(--color-accent-800);
+}
+
+.goaml-tracker__retFlag {
+  display: inline-grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--color-accent-700);
+  background: var(--color-accent-100);
+  color: var(--color-accent-800);
+  font-size: 10px;
+}
+
+.goaml-tracker__detail {
+  flex: 1;
+  min-height: 0;
+  border-top: 2px solid var(--color-neutral-400);
+  background: var(--color-neutral-100);
+}
+
+.goaml-tracker__detailScroll {
+  height: 100%;
+  overflow-y: auto;
+  padding: 14px 18px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
 .goaml-tracker__stepper {
   display: flex;
-  gap: 4px;
-  margin-bottom: 12px;
+  gap: 0;
+  border-top: 1px solid var(--color-divider);
+  border-bottom: 1px solid var(--color-divider);
+  padding: 10px 0;
+  margin: 6px 0;
 }
 
 .goaml-tracker__step {
   flex: 1;
-  text-align: center;
-  padding: 6px;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  background: var(--aml-neutral-100);
-  color: var(--aml-neutral-600);
-  border-bottom: 3px solid var(--aml-neutral-300);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-neutral-500);
 }
 
 .goaml-tracker__step--done {
-  color: var(--aml-accent-900);
-  border-bottom-color: var(--aml-accent);
-  font-weight: 600;
+  color: var(--color-text);
+}
+
+.goaml-tracker__stepDot {
+  width: 20px;
+  height: 20px;
+  display: grid;
+  place-items: center;
+  border: 1.5px solid var(--color-neutral-300);
+  font-size: 11px;
+  color: var(--color-neutral-500);
+}
+
+.goaml-tracker__step--done .goaml-tracker__stepDot {
+  border-color: var(--color-accent-800);
+  background: var(--color-accent-800);
+  color: var(--color-bg);
 }
 
 .goaml-tracker__meta {
@@ -64,28 +147,23 @@
   flex-direction: column;
   gap: 3px;
   margin-bottom: 10px;
-}
-
-.goaml-tracker__followups {
-  margin-top: 16px;
-  border-top: 1px solid var(--aml-divider);
-  padding-top: 10px;
+  color: var(--color-neutral-800);
 }
 
 .goaml-tracker__muted {
   font-size: 12px;
-  color: var(--aml-neutral-600);
+  color: var(--color-neutral-600);
 }
 
 .goaml-tracker__followup {
-  padding: 6px 0;
-  border-bottom: 1px solid var(--aml-divider);
+  padding: 8px 0;
+  border-bottom: 1px solid var(--color-divider);
   font-size: 12.5px;
 }
 
 .goaml-tracker__followupMeta {
   font-size: 10.5px;
-  color: var(--aml-neutral-600);
+  color: var(--color-neutral-600);
 }
 
 .goaml-tracker__addFollowup {
@@ -96,7 +174,4 @@
 
 .goaml-tracker__addFollowup input {
   flex: 1;
-  font-size: 12.5px;
-  padding: 5px 7px;
-  border: 1px solid var(--aml-divider);
 }
