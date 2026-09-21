@@ -19,8 +19,8 @@
   background: var(--color-bg);
 }
 
-/* — top header: persistent breadcrumbs + global search above every
-     screen's own scrolling body, same nav color as the sidenav — */
+/* — top header: persistent global search above every screen's own
+     scrolling body, same nav color as the sidenav — */
 .topheader {
   flex: none;
   display: flex;
@@ -33,14 +33,30 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.14);
 }
 
+/* — page header: breadcrumbs + that screen's own heading, on the main
+     page's own (light) background, directly below the dark
+     TopHeader — */
+.pageheader {
+  flex: none;
+  padding: 12px 18px 14px;
+  border-bottom: 1px solid var(--color-divider);
+  background: var(--color-bg);
+}
+
+.pageheader__title {
+  margin: 4px 0 0;
+  font-size: 21px;
+}
+
 .breadcrumbs {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 12.5px;
+  font-size: 12px;
   min-width: 0;
   overflow: hidden;
   white-space: nowrap;
+  color: var(--color-neutral-700);
 }
 
 .breadcrumbs__item {
@@ -50,23 +66,23 @@
 }
 
 .breadcrumbs__sep {
-  opacity: 0.4;
+  opacity: 0.5;
 }
 
 .breadcrumbs a {
-  color: inherit;
-  opacity: 0.7;
+  color: var(--color-neutral-700);
   text-decoration: none;
 }
 
 .breadcrumbs a:hover {
-  opacity: 1;
+  color: var(--color-accent-800);
   text-decoration: underline;
 }
 
 .breadcrumbs__current {
   font-family: var(--font-heading);
   font-weight: 600;
+  color: var(--color-text);
 }
 
 .topheader__search {
