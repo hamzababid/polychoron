@@ -76,16 +76,35 @@ function heatStyle(count: number, maxCount: number): { bg: string; fg: string } 
   return HEAT_STEPS.find((s) => ratio <= s.max) ?? HEAT_STEPS[HEAT_STEPS.length - 1];
 }
 
+const HEAT_PAGE_SIZE_OPTIONS = [10, 25, 50];
+const DEFAULT_HEAT_PAGE_SIZE = 10;
+
 /** A single-hue intensity ramp (one accent, five steps) rather than
  * one hue per risk tier — the tier is already labeled by the column
  * header, so coloring each cell by its own tier color turned the
  * table into an unreadable four-color mosaic instead of a heat-map.
  * Matches design-exports/.../Command Dashboard.dc.html's IRAR
  * grid treatment (low→high on one ramp, cell fills the full block,
- * text flips light on the two darkest steps). */
+ * text flips light on the two darkest steps).
+ *
+ * Paginated client-side — the whole heat-map already arrives in one
+ * reports/summary-basic response (it's not its own paginated
+ * endpoint), so there's nothing to fetch per page, only a slice of
+ * what's already in memory. */
 function BranchRiskHeatmap({ heatmap }: { heatmap: DashboardSummary['branchRiskHeatmap'] }) {
-  const branches = Array.from(new Set(heatmap.map((r) => r.branchCode))).sort();
+  const allBranches = Array.from(new Set(heatmap.map((r) => r.branchCode))).sort();
   const maxCount = Math.max(1, ...heatmap.map((r) => r.openCaseCount));
+
+  const [pageSize, setPageSize] = useState(DEFAULT_HEAT_PAGE_SIZE);
+  const [page, setPage] = useState(1);
+
+  const totalPages = Math.max(1, Math.ceil(allBranches.length / pageSize));
+  useEffect(() => {
+    if (page > totalPages) setPage(totalPages);
+  }, [page, totalPages]);
+
+  const start = (page - 1) * pageSize;
+  const branches = allBranches.slice(start, start + pageSize);
 
   return (
     <div className="tile dashboard__heatmap">
@@ -107,7 +126,9 @@ function BranchRiskHeatmap({ heatmap }: { heatmap: DashboardSummary['branchRiskH
       </div>
       <div className="tile-body">
         <div className="dashboard__heatGrid" style={{ gridTemplateColumns: `160px repeat(${TIER_ORDER.length}, 1fr)` }}>
-          <div />
+          <div className="dashboard__heatColHead" style={{ textAlign: 'left' }}>
+            Branch
+          </div>
           {TIER_ORDER.map((t) => (
             <div key={t.key} className="dashboard__heatColHead">
               {t.label}
@@ -128,6 +149,40 @@ function BranchRiskHeatmap({ heatmap }: { heatmap: DashboardSummary['branchRiskH
               })}
             </Fragment>
           ))}
+        </div>
+
+        <div className="dashboard__heatPagination">
+          <span>
+            Showing {allBranches.length === 0 ? 0 : start + 1}–{Math.min(start + pageSize, allBranches.length)} of {allBranches.length} branches
+          </span>
+          <label className="dashboard__heatPageSize">
+            Show
+            <select
+              value={pageSize}
+              onChange={(e) => {
+                setPageSize(Number(e.target.value));
+                setPage(1);
+              }}
+            >
+              {HEAT_PAGE_SIZE_OPTIONS.map((n) => (
+                <option key={n} value={n}>
+                  {n}
+                </option>
+              ))}
+            </select>
+            per page
+          </label>
+          <div className="dashboard__heatPageNav">
+            <button className="aml-btn" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
+              ← Prev
+            </button>
+            <span>
+              Page {page} of {totalPages}
+            </span>
+            <button className="aml-btn" disabled={page >= totalPages} onClick={() => setPage((p) => p + 1)}>
+              Next →
+            </button>
+          </div>
         </div>
       </div>
     </div>
