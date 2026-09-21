@@ -1,92 +1,181 @@
 .filing-console {
+  flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  max-width: 720px;
+}
+
+.filing-console__scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  gap: 22px;
+  padding: 20px 18px 32px;
+  align-items: start;
+}
+
+.filing-console__col {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+
+.filing-console__sectionHead {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.filing-console__sectionNum {
+  font-family: var(--font-heading);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: var(--color-neutral-700);
+}
+
+.filing-console__sectionNote {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--color-neutral-700);
+}
+
+.filing-console__grid {
+  display: grid;
+  gap: 1px;
+  background: var(--color-divider);
+}
+
+.filing-console__cell {
+  background: var(--color-bg);
+  padding: 8px 11px;
+}
+
+.filing-console__val {
+  font-size: 13.5px;
+  margin-top: 2px;
 }
 
 .filing-console__fields {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-top: 8px;
+  gap: 1px;
+  background: var(--color-divider);
 }
 
-.filing-console__fields label {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  font-size: 11px;
-  color: var(--aml-neutral-700);
+.filing-console__fields .field {
+  background: var(--color-bg);
+  padding: 8px 11px;
+  margin: 0;
 }
 
-.filing-console__fields input,
-.filing-console__fields select {
-  font-size: 13px;
-  padding: 5px 7px;
-  border: 1px solid var(--aml-divider);
+.filing-console__fields .field > span {
+  display: block;
+  font-size: 9.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-neutral-700);
+  margin-bottom: 3px;
 }
 
 .filing-console__narrative {
   width: 100%;
-  box-sizing: border-box;
-  font-family: inherit;
+  min-height: 200px;
+  border: 0;
+  border-top: none;
+  background: transparent;
   font-size: 13px;
-  padding: 8px;
-  border: 1px solid var(--aml-accent-300);
-  margin-top: 6px;
+  line-height: 1.6;
+  padding: 12px 14px;
   resize: vertical;
 }
 
-/* Attestation panel: amber, most visually prominent element on the
-   screen per screens/04-filing-console.md. */
+/* Attestation panel — the single most visually prominent element on
+   this screen, per screens/04-filing-console.md. Still within the
+   platform's one accent ramp ("state is carried by weight, fill and
+   border, not by hue") — no separate gold/amber colourway. */
 .filing-console__attestation {
-  border: 2px solid #b8860b;
-  background: #fdf6e3;
-  padding: 14px 16px;
+  border: 2px solid var(--color-accent-700);
+  background-color: var(--color-accent-100);
+  background-image: repeating-linear-gradient(135deg, color-mix(in srgb, var(--color-accent-800) 10%, transparent) 0 3px, transparent 3px 9px);
+  box-shadow: var(--shadow-md);
 }
 
-.filing-console__attestationTitle {
-  font-weight: 700;
-  font-size: 13px;
-  color: #7a5c00;
-  margin-bottom: 8px;
+.filing-console__attestationBand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 14px;
+  background: var(--color-accent-700);
+  color: var(--color-bg);
+  font-family: var(--font-heading);
+  font-size: 12.5px;
+  letter-spacing: 0.1em;
+}
+
+.filing-console__attestNote {
+  font-size: 12.5px;
+  color: var(--color-accent-800);
+  line-height: 1.5;
 }
 
 .filing-console__check {
   display: flex;
   align-items: flex-start;
-  gap: 8px;
-  font-size: 12.5px;
-  margin-bottom: 6px;
+  gap: 10px;
+  font-size: 13px;
+  line-height: 1.4;
   cursor: pointer;
+  border: 1px solid var(--color-accent-300);
+  background: var(--color-bg);
+  padding: 9px 11px;
+}
+
+.filing-console__check:hover {
+  border-color: var(--color-accent-700);
+}
+
+.filing-console__check input {
+  margin-top: 2px;
+  flex: none;
 }
 
 .filing-console__check--main {
-  font-weight: 600;
-  margin-top: 8px;
-  padding-top: 8px;
-  border-top: 1px solid #e2cf8f;
+  border: 1.5px solid var(--color-accent-700);
+  font-family: var(--font-heading);
+  font-size: 13.5px;
 }
 
-.filing-console__actions {
+.filing-console__attestDivider {
+  height: 1px;
+  background: var(--color-accent-300);
+}
+
+.filing-console__actionBar {
+  flex: none;
+  border-top: 2px solid var(--color-neutral-400);
+  padding-top: 12px;
   display: flex;
-  gap: 10px;
-  margin-top: 12px;
-}
-
-.filing-console__submit--disabled {
-  opacity: 0.4;
-  filter: grayscale(1);
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
 }
 
 .filing-console__final {
-  max-width: 480px;
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 40px 22px;
 }
 
 .filing-console__finalStatus {
-  font-size: 20px;
-  font-weight: 600;
+  font-family: var(--font-heading);
+  font-size: 22px;
   text-transform: uppercase;
   margin: 4px 0 8px;
 }

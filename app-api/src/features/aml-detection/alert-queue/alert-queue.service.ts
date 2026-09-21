@@ -18,6 +18,7 @@ export interface AlertQueueRow {
   caseId: string;
   sourceAlertId: string;
   customerId: string;
+  customerName: string | null;
   accountIds: string[];
   ruleFired: string;
   status: CaseStatus;
@@ -48,6 +49,7 @@ interface AlertQueueRawRow {
   draft_narrative: string | null;
   typology_code: string | null;
   typology_label: string | null;
+  customer_name: string | null;
 }
 
 @Injectable()
@@ -91,11 +93,13 @@ export class AlertQueueService {
          c.case_id, c.alert, c.status, c.assigned_analyst_id, c.created_at,
          u.display_name AS assigned_analyst_name,
          a.risk_score, a.recommendation, a.recommendation_confidence, a.draft_narrative,
-         t.typology_code, t.typology_label
+         t.typology_code, t.typology_label,
+         e.kyc ->> 'customer_name' AS customer_name
        FROM aml_cases c
        LEFT JOIN aml_case_assessments a ON a.case_id = c.case_id
        LEFT JOIN aml_typology_matches t ON t.case_id = c.case_id
        LEFT JOIN platform_users u ON u.user_id = c.assigned_analyst_id
+       LEFT JOIN aml_evidence_bundles e ON e.case_id = c.case_id
        ${whereClause}
        ORDER BY a.risk_score DESC NULLS LAST, c.created_at DESC
        LIMIT $${rowParams.length - 1} OFFSET $${rowParams.length}`,
@@ -103,6 +107,38 @@ export class AlertQueueService {
     )) as AlertQueueRawRow[];
 
     return { items: rows.map((r) => this.toRow(r)), total };
+  }
+
+  /** Global search (shell/TopHeader) — matches on the alert's own
+   * fields (source_alert_id, customer_id) and the assembled evidence
+   * bundle's customer_name, whichever exist for a given case at query
+   * time. Capped at 8 results; this is a jump-to-case finder, not a
+   * general reporting surface. */
+  async search(q: string): Promise<AlertQueueRow[]> {
+    const term = q.trim();
+    if (!term) return [];
+
+    const rows = (await this.dataSource.query(
+      `SELECT
+         c.case_id, c.alert, c.status, c.assigned_analyst_id, c.created_at,
+         u.display_name AS assigned_analyst_name,
+         a.risk_score, a.recommendation, a.recommendation_confidence, a.draft_narrative,
+         t.typology_code, t.typology_label,
+         e.kyc ->> 'customer_name' AS customer_name
+       FROM aml_cases c
+       LEFT JOIN aml_case_assessments a ON a.case_id = c.case_id
+       LEFT JOIN aml_typology_matches t ON t.case_id = c.case_id
+       LEFT JOIN platform_users u ON u.user_id = c.assigned_analyst_id
+       LEFT JOIN aml_evidence_bundles e ON e.case_id = c.case_id
+       WHERE c.alert ->> 'source_alert_id' ILIKE $1
+          OR c.alert ->> 'customer_id' ILIKE $1
+          OR e.kyc ->> 'customer_name' ILIKE $1
+       ORDER BY c.created_at DESC
+       LIMIT 8`,
+      [`%${term}%`],
+    )) as AlertQueueRawRow[];
+
+    return rows.map((r) => this.toRow(r));
   }
 
   async claim(caseId: string, user: PlatformUser): Promise<{ caseId: string; assignedAnalystId: string }> {
@@ -132,6 +168,7 @@ export class AlertQueueService {
       caseId: r.case_id,
       sourceAlertId: r.alert.source_alert_id,
       customerId: r.alert.customer_id,
+      customerName: r.customer_name,
       accountIds: r.alert.account_ids,
       ruleFired: r.alert.rule_fired,
       status: r.status,

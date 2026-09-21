@@ -3,6 +3,7 @@ import { AmlDetectionService, type IngestResult } from './aml-detection.service.
 import { InboundAlertDto } from './dto/inbound-alert.dto.js';
 import { DispositionDto } from './dto/disposition.dto.js';
 import { ListAlertsQueryDto } from './dto/list-alerts-query.dto.js';
+import { SearchQueryDto } from './dto/search-query.dto.js';
 import { CaseStatus } from './entities/aml-case.entity.js';
 import { AlertQueueService, type AlertQueueRow } from './alert-queue/alert-queue.service.js';
 import { CaseWorkspaceService, type ActivityLogEntry, type CaseDetail } from './case-workspace/case-workspace.service.js';
@@ -50,6 +51,14 @@ export class AmlDetectionController {
     @CurrentUser() user: PlatformUser,
   ): Promise<{ caseId: string; assignedAnalystId: string }> {
     return this.alertQueueService.claim(caseId, user);
+  }
+
+  // --- Global search (frontend shell's persistent header) ---
+
+  @UseGuards(SessionGuard)
+  @Get('search')
+  async search(@Query() query: SearchQueryDto): Promise<AlertQueueRow[]> {
+    return this.alertQueueService.search(query.q);
   }
 
   // --- Case Workspace (screens/03-case-workspace.md) ---

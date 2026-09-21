@@ -1,23 +1,28 @@
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getDashboardSummary } from '../api/client';
 import type { DashboardSummary } from '../api/types';
 import { useFeatureBasePath } from '../useFeatureBasePath';
 import './dashboard.css';
 
-const TIER_ORDER: Array<{ key: keyof DashboardSummary['openAlertsByTier']; label: string }> = [
-  { key: 'critical', label: 'Critical' },
-  { key: 'high', label: 'High' },
-  { key: 'medium', label: 'Medium' },
-  { key: 'low', label: 'Low' },
+const TIER_ORDER: Array<{ key: keyof DashboardSummary['openAlertsByTier']; label: string; color: string }> = [
+  { key: 'critical', label: 'Critical', color: 'var(--color-alert)' },
+  { key: 'high', label: 'High', color: 'var(--color-accent-700)' },
+  { key: 'medium', label: 'Medium', color: 'var(--color-accent-400)' },
+  { key: 'low', label: 'Low', color: 'var(--color-neutral-400)' },
 ];
 
 /** specs/suites/bfsi/features/aml-detection/screens/01-dashboard.md
  * Phase 1's "basic Dashboard" — the four top-line figures from
  * api-contracts-phase1.md's reports/summary-basic contract, plus the
- * branch heat-map (BranchRiskSnapshot). The full trend-chart /
- * false-positive-trend version described in the screen spec reuses
- * the Reporting & MI endpoint, which is Phase 2 scope. */
+ * branch heat-map (BranchRiskSnapshot), restyled to match
+ * design-exports/bfsi/aml-detection/Command Dashboard.dc.html's tile
+ * language. That mockup also shows a 6-month trend chart, an
+ * IRAR-by-risk-type heat-map and an agent-vs-officer disposition
+ * breakdown — none of which Phase 1's actual API computes, so rather
+ * than fabricate numbers for those, this screen only renders what
+ * reports/summary-basic actually returns. The full trend/time-series
+ * version is Phase 2 (Reporting & MI) scope. */
 export function DashboardScreen() {
   const [summary, setSummary] = useState<DashboardSummary | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -31,23 +36,179 @@ export function DashboardScreen() {
   }, []);
 
   if (error) return <div className="aml-status aml-status--error">Could not load dashboard: {error}</div>;
-  if (!summary) {
-    return (
-      <div className="dashboard__tiles">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="aml-card dashboard__tile dashboard__tile--skeleton" />
-        ))}
-      </div>
-    );
-  }
 
+  return (
+    <div className="dashboard">
+      <div className="dashboard__strip">
+        <div>
+          <h4 style={{ margin: 0 }}>AML programme — command view</h4>
+          <div className="aml-label" style={{ textTransform: 'none', letterSpacing: 0, marginTop: 2 }}>
+            Figures refresh on load only, so a number does not move while you are reading it.
+          </div>
+        </div>
+      </div>
+
+      {!summary ? (
+        <div className="dashboard__tiles">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="tile dashboard__tile--skeleton" />
+          ))}
+        </div>
+      ) : (
+        <DashboardBody summary={summary} navigate={navigate} base={base} />
+      )}
+    </div>
+  );
+}
+
+const HEAT_STEPS = [
+  { max: 0, bg: 'transparent', fg: 'var(--color-neutral-400)' },
+  { max: 0.15, bg: 'var(--color-accent-100)', fg: 'var(--color-text)' },
+  { max: 0.35, bg: 'var(--color-accent-300)', fg: 'var(--color-text)' },
+  { max: 0.6, bg: 'var(--color-accent-500)', fg: 'var(--color-bg)' },
+  { max: 0.8, bg: 'var(--color-accent-700)', fg: 'var(--color-bg)' },
+  { max: Infinity, bg: 'var(--color-accent-900)', fg: 'var(--color-bg)' },
+];
+
+function heatStyle(count: number, maxCount: number): { bg: string; fg: string } {
+  if (count === 0) return HEAT_STEPS[0];
+  const ratio = count / maxCount;
+  return HEAT_STEPS.find((s) => ratio <= s.max) ?? HEAT_STEPS[HEAT_STEPS.length - 1];
+}
+
+const HEAT_PAGE_SIZE_OPTIONS = [10, 25, 50];
+const DEFAULT_HEAT_PAGE_SIZE = 10;
+
+/** A single-hue intensity ramp (one accent, five steps) rather than
+ * one hue per risk tier — the tier is already labeled by the column
+ * header, so coloring each cell by its own tier color turned the
+ * table into an unreadable four-color mosaic instead of a heat-map.
+ * Matches design-exports/.../Command Dashboard.dc.html's IRAR
+ * grid treatment (low→high on one ramp, cell fills the full block,
+ * text flips light on the two darkest steps).
+ *
+ * Paginated client-side — the whole heat-map already arrives in one
+ * reports/summary-basic response (it's not its own paginated
+ * endpoint), so there's nothing to fetch per page, only a slice of
+ * what's already in memory. */
+function BranchRiskHeatmap({ heatmap }: { heatmap: DashboardSummary['branchRiskHeatmap'] }) {
+  const allBranches = Array.from(new Set(heatmap.map((r) => r.branchCode))).sort();
+  const maxCount = Math.max(1, ...heatmap.map((r) => r.openCaseCount));
+
+  const [pageSize, setPageSize] = useState(DEFAULT_HEAT_PAGE_SIZE);
+  const [page, setPage] = useState(1);
+
+  const totalPages = Math.max(1, Math.ceil(allBranches.length / pageSize));
+  useEffect(() => {
+    if (page > totalPages) setPage(totalPages);
+  }, [page, totalPages]);
+
+  const start = (page - 1) * pageSize;
+  const branches = allBranches.slice(start, start + pageSize);
+
+  return (
+    <div className="tile dashboard__heatmap">
+      <i className="corner tl" />
+      <i className="corner tr" />
+      <i className="corner bl" />
+      <i className="corner br" />
+      <div className="tile-head">
+        <span className="aml-label">Branch risk heat-map — open cases</span>
+        <span className="dashboard__heatLegend">
+          low
+          <span className="dashboard__heatLegendRamp">
+            {HEAT_STEPS.slice(1).map((s, i) => (
+              <span key={i} style={{ background: s.bg }} />
+            ))}
+          </span>
+          high
+        </span>
+      </div>
+      <div className="tile-body">
+        <div className="dashboard__heatGrid" style={{ gridTemplateColumns: `160px repeat(${TIER_ORDER.length}, 1fr)` }}>
+          <div className="dashboard__heatColHead" style={{ textAlign: 'left' }}>
+            Branch
+          </div>
+          {TIER_ORDER.map((t) => (
+            <div key={t.key} className="dashboard__heatColHead">
+              {t.label}
+            </div>
+          ))}
+          {branches.map((branch) => (
+            <Fragment key={branch}>
+              <div className="dashboard__heatBranch">{branch}</div>
+              {TIER_ORDER.map((t) => {
+                const cell = heatmap.find((r) => r.branchCode === branch && r.riskTier === t.key);
+                const count = cell?.openCaseCount ?? 0;
+                const style = heatStyle(count, maxCount);
+                return (
+                  <div key={t.key} className="dashboard__heatCell" style={{ background: style.bg, color: style.fg }}>
+                    {count > 0 ? count : ''}
+                  </div>
+                );
+              })}
+            </Fragment>
+          ))}
+        </div>
+
+        <div className="dashboard__heatPagination">
+          <span>
+            Showing {allBranches.length === 0 ? 0 : start + 1}–{Math.min(start + pageSize, allBranches.length)} of {allBranches.length} branches
+          </span>
+          <label className="dashboard__heatPageSize">
+            Show
+            <select
+              value={pageSize}
+              onChange={(e) => {
+                setPageSize(Number(e.target.value));
+                setPage(1);
+              }}
+            >
+              {HEAT_PAGE_SIZE_OPTIONS.map((n) => (
+                <option key={n} value={n}>
+                  {n}
+                </option>
+              ))}
+            </select>
+            per page
+          </label>
+          <div className="dashboard__heatPageNav">
+            <button className="aml-btn" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
+              ← Prev
+            </button>
+            <span>
+              Page {page} of {totalPages}
+            </span>
+            <button className="aml-btn" disabled={page >= totalPages} onClick={() => setPage((p) => p + 1)}>
+              Next →
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DashboardBody({
+  summary,
+  navigate,
+  base,
+}: {
+  summary: DashboardSummary;
+  navigate: ReturnType<typeof useNavigate>;
+  base: string;
+}) {
   const totalOpen = TIER_ORDER.reduce((sum, t) => sum + summary.openAlertsByTier[t.key], 0);
   const hasAnyCases = totalOpen > 0 || summary.strCtrVolumeThisPeriod.str > 0 || summary.strCtrVolumeThisPeriod.ctr > 0;
 
   if (!hasAnyCases) {
     return (
-      <div className="aml-card dashboard__empty">
-        <p>No cases yet for this tenant.</p>
+      <div className="tile dashboard__empty">
+        <i className="corner tl" />
+        <i className="corner tr" />
+        <i className="corner bl" />
+        <i className="corner br" />
+        <p style={{ margin: 0 }}>No cases yet for this tenant.</p>
         <p className="dashboard__emptyHint">
           Inject the demo scenarios (agent-service/scripts/inject_demo_alert.py) to see the queue populate.
         </p>
@@ -55,85 +216,113 @@ export function DashboardScreen() {
     );
   }
 
+  const aging = summary.agingAlertsCount > 0;
+
   return (
-    <div>
+    <div className="dashboard__scroll">
       <div className="dashboard__tiles">
-        <div
-          className="aml-card dashboard__tile"
-          onClick={() => navigate(`${base}/alerts`)}
-          role="button"
-          tabIndex={0}
+        <a
+          className="tile"
+          onClick={(e) => {
+            e.preventDefault();
+            navigate(`${base}/alerts`);
+          }}
+          href={`${base}/alerts`}
         >
-          <div className="aml-label">Open alerts by tier</div>
-          <div className="dashboard__tierRow">
-            {TIER_ORDER.map((t) => (
-              <div key={t.key} className={`dashboard__tierStat dashboard__tierStat--${t.key}`}>
-                <div className="dashboard__tierValue">{summary.openAlertsByTier[t.key]}</div>
-                <div className="dashboard__tierLabel">{t.label}</div>
+          <i className="corner tl" />
+          <i className="corner tr" />
+          <i className="corner bl" />
+          <i className="corner br" />
+          <div className="tile-head">
+            <span className="aml-label">Open alerts</span>
+            <span style={{ marginLeft: 'auto', fontSize: 10.5, color: 'var(--color-accent-700)' }}>open queue →</span>
+          </div>
+          <div className="tile-body">
+            <div className="dashboard__bigNumber">{totalOpen}</div>
+            <div className="dashboard__tierBar">
+              {TIER_ORDER.map((t) => {
+                const count = summary.openAlertsByTier[t.key];
+                const pct = totalOpen > 0 ? (count / totalOpen) * 100 : 0;
+                return <span key={t.key} style={{ width: `${pct}%`, background: t.color }} />;
+              })}
+            </div>
+            <div className="dashboard__tierLegend">
+              {TIER_ORDER.map((t) => (
+                <span key={t.key}>
+                  <span className="dot" style={{ background: t.color }} />
+                  {t.label} {summary.openAlertsByTier[t.key]}
+                </span>
+              ))}
+            </div>
+          </div>
+        </a>
+
+        <div className="tile">
+          <i className="corner tl" />
+          <i className="corner tr" />
+          <i className="corner bl" />
+          <i className="corner br" />
+          <div className="tile-head">
+            <span className="aml-label">STR / CTR volume this period</span>
+          </div>
+          <div className="tile-body">
+            <div style={{ display: 'flex', gap: 24 }}>
+              <div>
+                <div className="dashboard__bigNumber">{summary.strCtrVolumeThisPeriod.str}</div>
+                <div className="dashboard__bigNumberLabel">STR filed</div>
               </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="aml-card dashboard__tile">
-          <div className="aml-label">STR / CTR volume this period</div>
-          <div className="dashboard__bigNumberRow">
-            <div>
-              <div className="dashboard__bigNumber">{summary.strCtrVolumeThisPeriod.str}</div>
-              <div className="dashboard__bigNumberLabel">STR filed</div>
-            </div>
-            <div>
-              <div className="dashboard__bigNumber">{summary.strCtrVolumeThisPeriod.ctr}</div>
-              <div className="dashboard__bigNumberLabel">CTR filed</div>
+              <div>
+                <div className="dashboard__bigNumber">{summary.strCtrVolumeThisPeriod.ctr}</div>
+                <div className="dashboard__bigNumberLabel">CTR filed</div>
+              </div>
             </div>
           </div>
         </div>
 
-        <div
-          className={`aml-card dashboard__tile ${summary.agingAlertsCount > 0 ? 'dashboard__tile--aging' : ''}`}
-          onClick={() => navigate(`${base}/alerts`)}
-          role="button"
-          tabIndex={0}
+        <a
+          className="tile"
+          style={aging ? { borderColor: 'var(--color-alert)', borderWidth: 2, background: 'color-mix(in srgb, var(--color-alert) 6%, transparent)' } : undefined}
+          onClick={(e) => {
+            e.preventDefault();
+            navigate(`${base}/alerts`);
+          }}
+          href={`${base}/alerts`}
         >
-          <div className="aml-label">Aging alerts (past SLA)</div>
-          <div className="dashboard__bigNumber">{summary.agingAlertsCount}</div>
-        </div>
+          <i className="corner tl" />
+          <i className="corner tr" />
+          <i className="corner bl" />
+          <i className="corner br" />
+          <div className="tile-head">
+            <span className="aml-label" style={aging ? { color: 'var(--color-alert)' } : undefined}>
+              Aging alerts (past SLA)
+            </span>
+            <span style={{ marginLeft: 'auto', fontSize: 10.5, color: aging ? 'var(--color-alert)' : 'var(--color-accent-700)' }}>
+              open queue →
+            </span>
+          </div>
+          <div className="tile-body">
+            <div className="dashboard__bigNumber" style={aging ? { color: 'var(--color-alert)' } : undefined}>
+              {summary.agingAlertsCount}
+            </div>
+          </div>
+        </a>
 
-        <div className="aml-card dashboard__tile">
-          <div className="aml-label">Agent / human override rate</div>
-          <div className="dashboard__bigNumber">{Math.round(summary.agentVsHumanOverrideRate * 100)}%</div>
-          <div className="dashboard__bigNumberLabel">of dispositions overrode the agent's recommendation</div>
+        <div className="tile">
+          <i className="corner tl" />
+          <i className="corner tr" />
+          <i className="corner bl" />
+          <i className="corner br" />
+          <div className="tile-head">
+            <span className="aml-label">Agent / human override rate</span>
+          </div>
+          <div className="tile-body">
+            <div className="dashboard__bigNumber">{Math.round(summary.agentVsHumanOverrideRate * 100)}%</div>
+            <div className="dashboard__bigNumberLabel">of dispositions overrode the agent's recommendation</div>
+          </div>
         </div>
       </div>
 
-      {summary.branchRiskHeatmap.length > 0 && (
-        <div className="aml-card dashboard__heatmap">
-          <div className="aml-label" style={{ marginBottom: 8 }}>
-            Branch risk heat-map (open cases)
-          </div>
-          <table className="dashboard__heatmapTable">
-            <thead>
-              <tr>
-                <th>Branch</th>
-                {TIER_ORDER.map((t) => (
-                  <th key={t.key}>{t.label}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {Array.from(new Set(summary.branchRiskHeatmap.map((r) => r.branchCode))).map((branch) => (
-                <tr key={branch}>
-                  <td>{branch}</td>
-                  {TIER_ORDER.map((t) => {
-                    const cell = summary.branchRiskHeatmap.find((r) => r.branchCode === branch && r.riskTier === t.key);
-                    return <td key={t.key}>{cell?.openCaseCount ?? 0}</td>;
-                  })}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
+      {summary.branchRiskHeatmap.length > 0 && <BranchRiskHeatmap heatmap={summary.branchRiskHeatmap} />}
     </div>
   );
 }
