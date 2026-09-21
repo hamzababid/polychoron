@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { claimAlert, getDashboardSummary, listAlerts } from '../api/client';
 import type { AlertQueueRow, CaseStatus, DashboardSummary, RiskTier } from '../api/types';
 import { useFeatureBasePath } from '../useFeatureBasePath';
+import { useToast } from '../../../shell/ToastProvider';
 import './alert-queue.css';
 
 const DEFAULT_PAGE_SIZE = 10;
@@ -30,6 +31,7 @@ const TIER_COLOR: Record<RiskTier, string> = {
 export function AlertQueueScreen() {
   const navigate = useNavigate();
   const base = useFeatureBasePath();
+  const toast = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
   const [rows, setRows] = useState<AlertQueueRow[] | null>(null);
   const [total, setTotal] = useState(0);
@@ -81,8 +83,13 @@ export function AlertQueueScreen() {
     try {
       await claimAlert(caseId);
       load();
+      toast.success('Alert claimed.');
     } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
+      // A failed claim shouldn't blow away the whole queue behind it
+      // — this used to feed the same `error` state the load failure
+      // does, replacing the entire screen for what's really a
+      // transient, single-row action failure.
+      toast.error(err instanceof Error ? err.message : String(err));
     } finally {
       setClaiming(null);
     }

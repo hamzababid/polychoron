@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { addFollowup, getFilingDetail, listFilings, simulateAcknowledgment } from '../api/client';
 import type { FilingDetail, FilingSummary } from '../api/types';
 import { useAuth } from '../../../auth/AuthContext';
+import { ApiError } from '../../../auth/apiClient';
+import { useToast } from '../../../shell/ToastProvider';
 import { useFeatureBasePath } from '../useFeatureBasePath';
 import './goaml-tracker.css';
 
@@ -16,17 +18,19 @@ function stepIndex(status: FilingSummary['submissionStatus']): number {
 
 /** specs/suites/bfsi/features/aml-detection/screens/05-goaml-tracker.md
  * restyled to match design-exports/.../goAML Tracker.dc.html's
- * portfolio-strip + dense-list + stepper-detail language. The mockup
- * shows customer name and matched typology per row — FilingSummary
- * doesn't carry either (it's filing-record data, not case data), so
- * rows show what's real: report type, case, status, reference,
- * retention flag. */
+ * portfolio-strip + dense-list + stepper-detail language. This
+ * endpoint is restricted to senior_officer_l2/mlro_compliance_head
+ * server-side (goaml-tracker.controller.ts); the sidebar nav link is
+ * hidden for anyone else (shell/featureNav.ts), so hitting a 403 here
+ * means a stale link/bookmark or a direct URL, not the normal path —
+ * shown as a proper access-restricted state, not a raw error. */
 export function GoamlTrackerScreen() {
   const navigate = useNavigate();
   const base = useFeatureBasePath();
   const { session } = useAuth();
+  const toast = useToast();
   const [filings, setFilings] = useState<FilingSummary[] | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState<ApiError | Error | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [detail, setDetail] = useState<FilingDetail | null>(null);
   const [followupNote, setFollowupNote] = useState('');
@@ -38,7 +42,7 @@ export function GoamlTrackerScreen() {
         setFilings(res.items);
         setSelectedId((current) => current ?? res.items[0]?.filingId ?? null);
       })
-      .catch((err: unknown) => setError(err instanceof Error ? err.message : String(err)));
+      .catch((err: unknown) => setLoadError(err instanceof Error ? err : new Error(String(err))));
   }, []);
 
   useEffect(() => {
@@ -52,7 +56,8 @@ export function GoamlTrackerScreen() {
     }
     getFilingDetail(selectedId)
       .then(setDetail)
-      .catch((err: unknown) => setError(err instanceof Error ? err.message : String(err)));
+      .catch((err: unknown) => toast.error(err instanceof Error ? err.message : String(err)));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedId]);
 
   const handleAcknowledge = async () => {
@@ -63,8 +68,9 @@ export function GoamlTrackerScreen() {
       loadList();
       const updated = await getFilingDetail(selectedId);
       setDetail(updated);
+      toast.success('Acknowledgment simulated.');
     } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
+      toast.error(err instanceof Error ? err.message : String(err));
     } finally {
       setAcking(false);
     }
@@ -77,8 +83,9 @@ export function GoamlTrackerScreen() {
       setFollowupNote('');
       const updated = await getFilingDetail(selectedId);
       setDetail(updated);
+      toast.success('Follow-up note added.');
     } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
+      toast.error(err instanceof Error ? err.message : String(err));
     }
   };
 
@@ -92,7 +99,45 @@ export function GoamlTrackerScreen() {
     };
   }, [filings]);
 
-  if (error) return <div className="aml-status aml-status--error">Could not load filings: {error}</div>;
+  if (loadError) {
+    const isForbidden = loadError instanceof ApiError && loadError.status === 403;
+    return (
+      <div className="tile goaml-tracker__accessState">
+        <i className="corner tl" />
+        <i className="corner tr" />
+        <i className="corner bl" />
+        <i className="corner br" />
+        <div className="tile-body">
+          {isForbidden ? (
+            <>
+              <div className="goaml-tracker__accessTitle">You don't have access to the goAML Tracker</div>
+              <p className="goaml-tracker__accessBody">
+                Viewing filings requires a Senior Compliance Officer or MLRO / Compliance Head role. If you believe this is wrong,
+                check with your MLRO.
+              </p>
+              <button className="aml-btn" onClick={() => navigate(`${base}/dashboard`)}>
+                ← Back to Dashboard
+              </button>
+            </>
+          ) : (
+            <>
+              <div className="goaml-tracker__accessTitle">Could not load filings</div>
+              <p className="goaml-tracker__accessBody">{loadError.message}</p>
+              <button
+                className="aml-btn"
+                onClick={() => {
+                  setLoadError(null);
+                  loadList();
+                }}
+              >
+                Try again
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="goaml-tracker">

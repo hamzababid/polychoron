@@ -5,6 +5,7 @@ import type { ActivityLogEntry, AgentRecommendation, CaseDetail, DispositionType
 import { LinkedEntityGraph } from '../shared/LinkedEntityGraph';
 import { useAuth } from '../../../auth/AuthContext';
 import { useFeatureBasePath } from '../useFeatureBasePath';
+import { useToast } from '../../../shell/ToastProvider';
 import './case-workspace.css';
 
 const RECOMMENDATION_TO_DISPOSITION: Record<AgentRecommendation, DispositionType> = {
@@ -45,6 +46,7 @@ export function CaseWorkspaceScreen() {
   const navigate = useNavigate();
   const base = useFeatureBasePath();
   const { session } = useAuth();
+  const toast = useToast();
   const [caseDetail, setCaseDetail] = useState<CaseDetail | null>(null);
   const [activityLog, setActivityLog] = useState<ActivityLogEntry[] | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -85,7 +87,6 @@ export function CaseWorkspaceScreen() {
   const handleSubmit = async () => {
     if (!selectedDisposition || !session) return;
     setSubmitting(true);
-    setError(null);
     try {
       await recordDisposition(caseId, {
         officer_id: session.user.userId,
@@ -94,13 +95,17 @@ export function CaseWorkspaceScreen() {
         overrides_agent_recommendation: isOverride,
         override_reason: isOverride ? overrideReason : undefined,
       });
+      toast.success('Disposition recorded.');
       if (selectedDisposition === 'file_str' || selectedDisposition === 'file_ctr') {
         navigate(`${base}/cases/${caseId}/filing`);
       } else {
         load();
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
+      // A failed disposition submit used to feed the same `error`
+      // state the load failure does, replacing the whole evidence +
+      // reasoning panel for what's really a transient action failure.
+      toast.error(err instanceof Error ? err.message : String(err));
     } finally {
       setSubmitting(false);
     }
