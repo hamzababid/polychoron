@@ -11,6 +11,8 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field
 
+from app.platform.regulatory.types import RegulatoryCitation
+
 
 class RiskTier(str, Enum):
     CRITICAL = "critical"
@@ -112,6 +114,11 @@ class TypologyMatch(BaseModel):
     confidence: float = Field(..., ge=0, le=1)
     matched_indicators: list[MatchedIndicator]
     plain_language_rationale: str
+    # ADDITIVE (specs/platform/10-regulatory-knowledge-base-spec.md):
+    # supporting context only, never a suspicion determination in
+    # itself (constitution-addendum A5). Defaults to [] so existing
+    # code constructing this model is unaffected.
+    regulatory_citations: list[RegulatoryCitation] = []
     matched_at: datetime = Field(default_factory=datetime.utcnow)
     agent_version: str
 
@@ -136,6 +143,10 @@ class CaseAssessment(BaseModel):
     recommendation_confidence: float = Field(..., ge=0, le=1)
     draft_narrative: str
     str_fields_draft: STRFieldsDraft | None = None
+    # ADDITIVE (specs/platform/10-regulatory-knowledge-base-spec.md):
+    # same non-decisional supporting-context role as
+    # TypologyMatch.regulatory_citations above.
+    regulatory_context_used: list[RegulatoryCitation] = []
     assessed_at: datetime = Field(default_factory=datetime.utcnow)
     agent_version: str
 

@@ -41,6 +41,7 @@ specs/
     07-adding-a-new-suite-guide.md    Checklist for the platform's second suite
     08-model-inference-routing-spec.md  Tenant-configurable self-hosted vs. foundation-API routing
     09-backend-service-boundary-spec.md  NestJS app API + FastAPI agent service split
+    10-regulatory-knowledge-base-spec.md  Retrieval layer grounding agent reasoning in actual regulatory text (ADDITIVE — see file for in-progress-build migration notes)
     screens/
       admin-access-control.md         Platform-wide user/role management screen
   suites/

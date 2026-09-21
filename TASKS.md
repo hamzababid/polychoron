@@ -183,6 +183,32 @@ looks broken that automated tests wouldn't catch.
 
 ---
 
+## ADDITIVE — Regulatory Knowledge Base (added mid-build; layer in without disrupting whatever is currently in progress)
+See `specs/platform/10-regulatory-knowledge-base-spec.md` and
+`specs/suites/bfsi/features/aml-detection/regulatory-corpus-manifest.md`.
+These fields/tables are additive (new tables, `Optional`/defaulted
+fields) — apply via migration, do not alter existing model shapes or
+break passing tests. If the agent chain is already implemented and
+passing its tests, add the retrieval call as an additive step inside
+the Pattern Matching node rather than a hard dependency.
+- [x] Add `RegulatoryDocument`, `RegulatoryChunk` tables (platform-level,
+      pgvector-backed)
+- [x] Add `regulatory_citations`/`regulatory_context_used` fields to
+      `TypologyMatch`/`CaseAssessment` (default empty list)
+- [x] Implement `retrieve_regulatory_context()` in `agent-service/`
+- [x] Hand-seed the Phase 1 minimal corpus (structuring + high-velocity
+      indicator chunks only — see the manifest's Phase 1 section)
+- [x] Wire the retrieval call into the Pattern Matching Agent node as
+      an additive step
+- [x] Test: re-running both existing seed scenarios still passes their
+      existing assertions, AND now returns non-empty
+      `regulatory_citations` for the structuring case
+- [x] Defer the full ingestion pipeline (document upload UI, chunking
+      service, embedding refresh jobs) to AML Phase 2 — do not build it
+      now
+
+---
+
 ## AML Detection — Phase 2 (Full Feature Set)
 - [x] Write `phase-2-full-aml/api-contracts-phase2.md` — three scope
       decisions made explicitly with the project owner first (demo-stub

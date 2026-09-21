@@ -1,14 +1,16 @@
 """Node 2 — Pattern Matching Agent.
 specs/suites/bfsi/features/aml-detection/agent-implementation.md
 
-Tool allowlist: typology config lookup only — reads the active
-typology catalog from aml_typology_configs (the real Typology & Rules
-Console, Phase 2), via typology_config_repository.py. No external API
-access."""
+Tool allowlist: typology config lookup, plus (ADDITIVE,
+specs/platform/10-regulatory-knowledge-base-spec.md) a read-only
+regulatory knowledge base lookup that grounds — never decides — the
+match rationale (constitution-addendum A5). No external API access
+otherwise."""
 
 from __future__ import annotations
 
 import json
+import logging
 from typing import ClassVar
 from uuid import UUID
 
@@ -16,6 +18,9 @@ from app.features.aml_detection.schemas import EvidenceBundle, TypologyMatch
 from app.features.aml_detection.typology_config_repository import active_catalog_as_prompt_block
 from app.platform.agent_node import PlatformAgentNode
 from app.platform.inference.clients import InferenceClient
+from app.platform.regulatory.repository import retrieve_regulatory_context
+
+logger = logging.getLogger(__name__)
 
 AGENT_VERSION = "v1"
 
@@ -47,7 +52,7 @@ class PatternMatchingNode(PlatformAgentNode[EvidenceBundle, TypologyMatch]):
     feature_code = "aml_detection"
     input_schema = EvidenceBundle
     output_schema = TypologyMatch
-    tool_allowlist: ClassVar[list[str]] = ["aml_typology_configs"]
+    tool_allowlist: ClassVar[list[str]] = ["aml_typology_configs", "regulatory_knowledge_base"]
 
     def _invoke(
         self, input: EvidenceBundle, tenant_id: str, external_case_ref: str | UUID, client: InferenceClient
@@ -64,7 +69,29 @@ class PatternMatchingNode(PlatformAgentNode[EvidenceBundle, TypologyMatch]):
 
         parsed["case_id"] = str(external_case_ref)
         parsed["agent_version"] = AGENT_VERSION
-        return parsed, ["aml_typology_configs"]
+
+        data_sources_queried = ["aml_typology_configs"]
+        parsed["regulatory_citations"] = []
+        typology_label = parsed.get("typology_label")
+        rationale = parsed.get("plain_language_rationale")
+        if typology_label and rationale:
+            # ADDITIVE step — grounds the rationale in retrieved
+            # regulatory text without making this call load-bearing:
+            # a retrieval failure (empty corpus, transient infra issue)
+            # must never break an otherwise-valid typology match.
+            try:
+                citations = retrieve_regulatory_context(
+                    feature_code=self.feature_code,
+                    query=f"{typology_label}: {rationale}",
+                    top_k=5,
+                )
+                parsed["regulatory_citations"] = [c.model_dump(mode="json") for c in citations]
+                if citations:
+                    data_sources_queried.append("regulatory_knowledge_base")
+            except Exception:
+                logger.warning("regulatory knowledge base retrieval failed; proceeding without citations", exc_info=True)
+
+        return parsed, data_sources_queried
 
 
 def _safe_json_parse(raw_text: str) -> dict:
