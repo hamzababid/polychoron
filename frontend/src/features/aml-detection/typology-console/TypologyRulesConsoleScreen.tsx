@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { getBacktestJob, getTypologyHistory, listTypologies, promoteTypology, startTypologyBacktest, updateTypology } from '../api/client';
 import type { BacktestJob, TypologyConfigVersion, TypologyRow } from '../api/types';
 import { useAuth } from '../../../auth/AuthContext';
+import { useToast } from '../../../shell/ToastProvider';
 import './typology-console.css';
 
 const CAN_WRITE_ROLES = ['aml_detection.mlro_compliance_head'];
@@ -12,6 +13,7 @@ const CAN_WRITE_ROLES = ['aml_detection.mlro_compliance_head'];
  * same treatment. */
 export function TypologyRulesConsoleScreen() {
   const { session } = useAuth();
+  const toast = useToast();
   const canWrite = session ? CAN_WRITE_ROLES.some((r) => session.user.roleCodes.includes(r)) : false;
 
   const [rows, setRows] = useState<TypologyRow[] | null>(null);
@@ -53,13 +55,12 @@ export function TypologyRulesConsoleScreen() {
     setChangeReason('');
     getTypologyHistory(code)
       .then(setHistory)
-      .catch((err: unknown) => setError(err instanceof Error ? err.message : String(err)));
+      .catch((err: unknown) => toast.error(err instanceof Error ? err.message : String(err)));
   };
 
   const handleSave = async (activeOverride?: boolean) => {
     if (!selected || !session) return;
     setSaving(true);
-    setError(null);
     try {
       await updateTypology(selected.typologyCode, {
         rule_logic_description: draftDescription !== selected.ruleLogicDescription ? draftDescription : undefined,
@@ -70,8 +71,12 @@ export function TypologyRulesConsoleScreen() {
       setChangeReason('');
       load();
       getTypologyHistory(selected.typologyCode).then(setHistory);
+      toast.success(activeOverride === undefined ? 'Rule logic updated.' : activeOverride ? 'Typology activated.' : 'Typology deactivated.');
     } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
+      // These used to feed the same `error` state the initial load
+      // does, replacing the whole table + detail panel for what's
+      // really a transient action failure on one typology.
+      toast.error(err instanceof Error ? err.message : String(err));
     } finally {
       setSaving(false);
     }
@@ -79,27 +84,27 @@ export function TypologyRulesConsoleScreen() {
 
   const handleBacktest = async () => {
     if (!selected) return;
-    setError(null);
     try {
       const job = await startTypologyBacktest(selected.typologyCode);
       setBacktestJob(job);
+      toast.success('Backtest started.');
       pollRef.current = setInterval(() => {
         void getBacktestJob(job.jobId).then((updated) => {
           setBacktestJob(updated);
           if (updated.status === 'complete' || updated.status === 'failed') {
             if (pollRef.current) clearInterval(pollRef.current);
+            toast[updated.status === 'complete' ? 'success' : 'error'](`Backtest ${updated.status}.`);
           }
         });
       }, 1500);
     } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
+      toast.error(err instanceof Error ? err.message : String(err));
     }
   };
 
   const handlePromote = async () => {
     if (!selected || !session || !promoteReason.trim()) return;
     setPromoting(true);
-    setError(null);
     try {
       await promoteTypology(selected.typologyCode, {
         backtest_job_id: backtestJob?.status === 'complete' ? backtestJob.jobId : undefined,
@@ -108,8 +113,9 @@ export function TypologyRulesConsoleScreen() {
       });
       setPromoteReason('');
       load();
+      toast.success('Promoted to production.');
     } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
+      toast.error(err instanceof Error ? err.message : String(err));
     } finally {
       setPromoting(false);
     }

@@ -4,6 +4,7 @@ import { attestFiling, getFilingDraft, submitFiling } from '../api/client';
 import type { FilingDraftResponse, StrFieldsDraft } from '../api/types';
 import { useAuth } from '../../../auth/AuthContext';
 import { useFeatureBasePath } from '../useFeatureBasePath';
+import { useToast } from '../../../shell/ToastProvider';
 import './filing-console.css';
 
 // Mirrors agent-service/app/features/aml_detection/typology_catalog.py's
@@ -36,6 +37,7 @@ export function FilingConsoleScreen() {
   const navigate = useNavigate();
   const base = useFeatureBasePath();
   const { session } = useAuth();
+  const toast = useToast();
   const [draft, setDraft] = useState<FilingDraftResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -79,12 +81,12 @@ export function FilingConsoleScreen() {
 
   const handleSaveDraft = async () => {
     setSaving(true);
-    setError(null);
     try {
       const updated = await attestFiling(caseId, buildAttestBody());
       setDraft(updated);
+      toast.success('Draft saved.');
     } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
+      toast.error(err instanceof Error ? err.message : String(err));
     } finally {
       setSaving(false);
     }
@@ -92,16 +94,16 @@ export function FilingConsoleScreen() {
 
   const handleSubmit = async () => {
     setSaving(true);
-    setError(null);
     try {
       await attestFiling(caseId, buildAttestBody());
       // submit() re-validates can_submit server-side — never trusts
       // that this button being enabled means the server will agree.
       const submitted = await submitFiling(caseId);
       setDraft(submitted);
+      toast.success('Filing submitted to goAML.');
       navigate(`${base}/filings`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
+      toast.error(err instanceof Error ? err.message : String(err));
     } finally {
       setSaving(false);
     }

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from './AuthContext';
+import { useToast } from '../shell/ToastProvider';
 import './login.css';
 
 // Hardcoded picker options — this is a seeded-user picker, not real
@@ -17,17 +18,16 @@ const DEMO_USERS = [
 export function DemoLoginScreen() {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const toast = useToast();
   const [pending, setPending] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
 
   const handleLogin = async (userId: string) => {
     setPending(userId);
-    setError(null);
     try {
       await login(userId);
       navigate('/', { replace: true });
     } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
+      toast.error(err instanceof Error ? err.message : String(err));
     } finally {
       setPending(null);
     }
@@ -49,7 +49,6 @@ export function DemoLoginScreen() {
             <span className="login__userRole">{u.role}</span>
           </button>
         ))}
-        {error && <p className="login__error">{error}</p>}
       </div>
     </div>
   );

@@ -63,9 +63,3 @@
   font-size: 11px;
   color: var(--color-neutral-700);
 }
-
-.login__error {
-  color: var(--color-alert);
-  font-size: 12px;
-  margin-top: 8px;
-}

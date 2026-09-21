@@ -186,3 +186,22 @@
 .goaml-tracker__addFollowup input {
   flex: 1;
 }
+
+.goaml-tracker__accessState {
+  margin: 40px auto;
+  max-width: 440px;
+  text-align: center;
+}
+
+.goaml-tracker__accessTitle {
+  font-family: var(--font-heading);
+  font-size: 17px;
+  margin-bottom: 8px;
+}
+
+.goaml-tracker__accessBody {
+  font-size: 13px;
+  color: var(--color-neutral-700);
+  line-height: 1.5;
+  margin: 0 0 14px;
+}
