@@ -101,17 +101,49 @@
   margin: 0;
 }
 
-.dashboard__heatmapTable th:not(:first-child),
-.dashboard__heatmapTable td:not(:first-child) {
+.dashboard__heatLegend {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 10.5px;
+  color: var(--color-neutral-700);
+}
+
+.dashboard__heatLegendRamp {
+  display: flex;
+  gap: 1px;
+}
+
+.dashboard__heatLegendRamp span {
+  width: 20px;
+  height: 10px;
+}
+
+.dashboard__heatGrid {
+  display: grid;
+  gap: 3px;
+  align-items: center;
+}
+
+.dashboard__heatColHead {
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-neutral-700);
   text-align: center;
+  padding-bottom: 6px;
+}
+
+.dashboard__heatBranch {
+  font-size: 12.5px;
+  padding-right: 10px;
 }
 
 .dashboard__heatCell {
-  display: inline-grid;
+  display: grid;
   place-items: center;
-  min-width: 26px;
-  height: 22px;
-  padding: 0 4px;
+  height: 34px;
   font-family: var(--font-heading);
-  font-size: 12.5px;
+  font-size: 13.5px;
 }

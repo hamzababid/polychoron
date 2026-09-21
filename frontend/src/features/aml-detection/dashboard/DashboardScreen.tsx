@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getDashboardSummary } from '../api/client';
 import type { DashboardSummary } from '../api/types';
@@ -57,6 +57,79 @@ export function DashboardScreen() {
       ) : (
         <DashboardBody summary={summary} navigate={navigate} base={base} />
       )}
+    </div>
+  );
+}
+
+const HEAT_STEPS = [
+  { max: 0, bg: 'transparent', fg: 'var(--color-neutral-400)' },
+  { max: 0.15, bg: 'var(--color-accent-100)', fg: 'var(--color-text)' },
+  { max: 0.35, bg: 'var(--color-accent-300)', fg: 'var(--color-text)' },
+  { max: 0.6, bg: 'var(--color-accent-500)', fg: 'var(--color-bg)' },
+  { max: 0.8, bg: 'var(--color-accent-700)', fg: 'var(--color-bg)' },
+  { max: Infinity, bg: 'var(--color-accent-900)', fg: 'var(--color-bg)' },
+];
+
+function heatStyle(count: number, maxCount: number): { bg: string; fg: string } {
+  if (count === 0) return HEAT_STEPS[0];
+  const ratio = count / maxCount;
+  return HEAT_STEPS.find((s) => ratio <= s.max) ?? HEAT_STEPS[HEAT_STEPS.length - 1];
+}
+
+/** A single-hue intensity ramp (one accent, five steps) rather than
+ * one hue per risk tier — the tier is already labeled by the column
+ * header, so coloring each cell by its own tier color turned the
+ * table into an unreadable four-color mosaic instead of a heat-map.
+ * Matches design-exports/.../Command Dashboard.dc.html's IRAR
+ * grid treatment (low→high on one ramp, cell fills the full block,
+ * text flips light on the two darkest steps). */
+function BranchRiskHeatmap({ heatmap }: { heatmap: DashboardSummary['branchRiskHeatmap'] }) {
+  const branches = Array.from(new Set(heatmap.map((r) => r.branchCode))).sort();
+  const maxCount = Math.max(1, ...heatmap.map((r) => r.openCaseCount));
+
+  return (
+    <div className="tile dashboard__heatmap">
+      <i className="corner tl" />
+      <i className="corner tr" />
+      <i className="corner bl" />
+      <i className="corner br" />
+      <div className="tile-head">
+        <span className="aml-label">Branch risk heat-map — open cases</span>
+        <span className="dashboard__heatLegend">
+          low
+          <span className="dashboard__heatLegendRamp">
+            {HEAT_STEPS.slice(1).map((s, i) => (
+              <span key={i} style={{ background: s.bg }} />
+            ))}
+          </span>
+          high
+        </span>
+      </div>
+      <div className="tile-body">
+        <div className="dashboard__heatGrid" style={{ gridTemplateColumns: `160px repeat(${TIER_ORDER.length}, 1fr)` }}>
+          <div />
+          {TIER_ORDER.map((t) => (
+            <div key={t.key} className="dashboard__heatColHead">
+              {t.label}
+            </div>
+          ))}
+          {branches.map((branch) => (
+            <Fragment key={branch}>
+              <div className="dashboard__heatBranch">{branch}</div>
+              {TIER_ORDER.map((t) => {
+                const cell = heatmap.find((r) => r.branchCode === branch && r.riskTier === t.key);
+                const count = cell?.openCaseCount ?? 0;
+                const style = heatStyle(count, maxCount);
+                return (
+                  <div key={t.key} className="dashboard__heatCell" style={{ background: style.bg, color: style.fg }}>
+                    {count > 0 ? count : ''}
+                  </div>
+                );
+              })}
+            </Fragment>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
@@ -194,56 +267,7 @@ function DashboardBody({
         </div>
       </div>
 
-      {summary.branchRiskHeatmap.length > 0 && (
-        <div className="tile dashboard__heatmap">
-          <i className="corner tl" />
-          <i className="corner tr" />
-          <i className="corner bl" />
-          <i className="corner br" />
-          <div className="tile-head">
-            <span className="aml-label">Branch risk heat-map — open cases</span>
-          </div>
-          <div className="tile-body">
-            <table className="table dashboard__heatmapTable">
-              <thead>
-                <tr>
-                  <th>Branch</th>
-                  {TIER_ORDER.map((t) => (
-                    <th key={t.key} style={{ textAlign: 'center' }}>
-                      {t.label}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {Array.from(new Set(summary.branchRiskHeatmap.map((r) => r.branchCode))).map((branch) => (
-                  <tr key={branch}>
-                    <td>{branch}</td>
-                    {TIER_ORDER.map((t) => {
-                      const cell = summary.branchRiskHeatmap.find((r) => r.branchCode === branch && r.riskTier === t.key);
-                      const count = cell?.openCaseCount ?? 0;
-                      return (
-                        <td key={t.key} style={{ textAlign: 'center' }}>
-                          {count > 0 ? (
-                            <span
-                              className="dashboard__heatCell"
-                              style={{ background: `color-mix(in srgb, ${t.color} ${Math.min(count * 20 + 15, 85)}%, transparent)` }}
-                            >
-                              {count}
-                            </span>
-                          ) : (
-                            <span style={{ color: 'var(--color-neutral-400)' }}>0</span>
-                          )}
-                        </td>
-                      );
-                    })}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
+      {summary.branchRiskHeatmap.length > 0 && <BranchRiskHeatmap heatmap={summary.branchRiskHeatmap} />}
     </div>
   );
 }
