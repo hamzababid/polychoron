@@ -7,6 +7,7 @@ import { GoamlTrackerScreen } from './goaml-tracker/GoamlTrackerScreen';
 import { TypologyRulesConsoleScreen } from './typology-console/TypologyRulesConsoleScreen';
 import { Customer360Screen } from './customer-360/Customer360Screen';
 import { ModelGovernanceScreen } from './model-governance/ModelGovernanceScreen';
+import { ReportingScreen } from './reporting/ReportingScreen';
 import './aml-theme.css';
 
 /** The AML Detection feature's routed screens. Its own top-level
@@ -15,9 +16,9 @@ import './aml-theme.css';
  * — Case Workspace, Filing Console, and Customer 360 stay
  * drill-down-only routes, reached by clicking through from Alert
  * Queue/Case Workspace rather than a sidebar link. Model Governance
- * has its own sidebar entry (role-gated) since it's not reached by
- * drilling into a case. Screening Hub / Reporting are still Phase 2
- * not-yet-built (constitution rule 9, phase discipline). */
+ * and Reporting have their own sidebar entries (role-gated) since
+ * they're not reached by drilling into a case. Screening Hub is still
+ * Phase 2 not-yet-built (constitution rule 9, phase discipline). */
 export function AmlDetectionRoutes() {
   return (
     <div className="aml-page">
@@ -31,6 +32,7 @@ export function AmlDetectionRoutes() {
         <Route path="filings" element={<GoamlTrackerScreen />} />
         <Route path="typologies" element={<TypologyRulesConsoleScreen />} />
         <Route path="governance" element={<ModelGovernanceScreen />} />
+        <Route path="reports" element={<ReportingScreen />} />
       </Routes>
     </div>
   );

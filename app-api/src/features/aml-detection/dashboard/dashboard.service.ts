@@ -230,13 +230,24 @@ export class DashboardService {
     return points;
   }
 
-  private async getDispositionBreakdown(): Promise<DispositionBreakdown> {
+  /** Public (not just used by getTrends()) so ReportingService can call
+   * this exact same computation for an explicit period — Reporting &
+   * MI's acceptance criteria require its agent-workload figures to
+   * match Dashboard's exactly for the same period, so it must be the
+   * literal same method, not a re-implementation. Defaults to the
+   * existing trailing-6-months window when no period is given, so
+   * Dashboard's own call site is unaffected. */
+  async getDispositionBreakdown(periodStart?: Date, periodEnd?: Date): Promise<DispositionBreakdown> {
+    const start = periodStart ?? null;
+    const end = periodEnd ?? null;
     const rows = (await this.dataSource.query(
       `SELECT d.overrides_agent_recommendation, count(*)::int AS cnt
        FROM aml_dispositions d
        JOIN aml_cases c ON c.case_id = d.case_id
-       WHERE c.created_at >= date_trunc('month', now()) - interval '${TREND_MONTHS - 1} months'
+       WHERE c.created_at >= COALESCE($1::timestamptz, date_trunc('month', now()) - interval '${TREND_MONTHS - 1} months')
+         AND c.created_at < COALESCE($2::timestamptz, now() + interval '1 day')
        GROUP BY d.overrides_agent_recommendation`,
+      [start, end],
     )) as Array<{ overrides_agent_recommendation: boolean; cnt: number }>;
 
     const overrodeAgent = rows.find((r) => r.overrides_agent_recommendation)?.cnt ?? 0;

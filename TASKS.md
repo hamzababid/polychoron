@@ -400,16 +400,40 @@ suspicion, officer cleared it), not "any cleared case."
       data-lineage and on writing a review)
 
 ### Reporting & MI — spec: `screens/10-reporting-mi.md`
-- [ ] `GET .../reports/summary` — same computation `DashboardService`
+**Scope resolution — PDF deferred:** no PDF library existed in app-api;
+adding one (e.g. puppeteer-class headless rendering) was judged not
+worth it for a demo-only need. CSV is fully real and byte-for-byte
+re-downloadable; `format` is `'csv'` only for now (DB CHECK constraint
+and DTO both enforce this) — widen when a real PDF/SBP template
+exists, per the existing decision #3 in api-contracts-phase2.md.
+- [x] `GET .../reports/summary` — same computation `DashboardService`
       already has, at full granularity; test that Dashboard and
       Reporting figures match exactly for the same period
-- [ ] `POST .../reports/generate` (PDF/CSV only, see scope decision
-      above), async job; generated reports persisted and
-      re-downloadable byte-for-byte, never regenerated on request
-- [ ] `GET .../reports/history`, `GET .../reports/{report_id}/download`
-- [ ] Screen: report generation in progress doesn't block the rest of
-      the screen
-- [ ] RBAC: `aml_detection.mlro_compliance_head`
+      (`DashboardService.getDispositionBreakdown()` made public and
+      period-parameterized — `ReportingService` calls that exact
+      method for agent workload, rather than re-implementing it, so
+      the two screens cannot diverge by construction. Avg time-to-file,
+      SLA adherence by tier, and filing-volume breakdowns are new —
+      Dashboard's own screen doesn't need them, so they live in
+      `reporting.service.ts`, not bolted onto `DashboardService`)
+- [x] `POST .../reports/generate` (CSV; PDF deferred, see above);
+      generated reports persisted and re-downloadable byte-for-byte,
+      never regenerated on request (`aml_report_generations` — file
+      bytes stored as `bytea`, sha256 content hash, `file_content`
+      excluded from normal SELECTs via TypeORM `select: false` so
+      listing history never pulls file bytes over the wire)
+- [x] `GET .../reports/history`, `GET .../reports/{report_id}/download`
+      (download streams the stored bytes with a real
+      `Content-Disposition` header — verified byte-for-byte via an
+      e2e test asserting the downloaded CSV's content)
+- [x] Screen: report generation in progress doesn't block the rest of
+      the screen (CSV generation is near-instant — synchronous
+      response, not a fake polling job UI for latency that doesn't
+      exist; satisfies the acceptance criterion by construction)
+- [x] RBAC: `aml_detection.mlro_compliance_head`
+      (whole controller gated, not per-route — every route here is
+      reporting/export, nothing an analyst or senior officer needs;
+      4 e2e tests, `app-api/test/reporting.e2e-spec.ts`)
 
 ### MLOps tracing layer (platform-wide, not a screen)
 - [ ] OpenTelemetry spans for every agent node execution

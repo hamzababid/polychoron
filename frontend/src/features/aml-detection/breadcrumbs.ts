@@ -27,6 +27,9 @@ export function getAmlBreadcrumbs(pathname: string, base: string): Crumb[] {
   if (segments[0] === 'governance') {
     return [{ label: 'Model Governance' }];
   }
+  if (segments[0] === 'reports') {
+    return [{ label: 'Reporting' }];
+  }
   if (segments[0] === 'customers' && segments[1]) {
     return [{ label: 'Customer 360' }];
   }

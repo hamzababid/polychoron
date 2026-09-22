@@ -31,7 +31,7 @@ async function parseErrorMessage(res: Response): Promise<string> {
   return `Request failed: ${res.status}`;
 }
 
-function getSessionId(): string | null {
+export function getSessionId(): string | null {
   const stored = localStorage.getItem(STORAGE_KEY);
   if (!stored) return null;
   try {

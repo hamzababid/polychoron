@@ -1,4 +1,4 @@
-import { apiFetch } from '../../../auth/apiClient';
+import { apiFetch, getSessionId } from '../../../auth/apiClient';
 import type {
   ActivityLogEntry,
   AlertQueueRow,
@@ -16,6 +16,9 @@ import type {
   FilingSummary,
   ModelVersionsResponse,
   Paginated,
+  ReportHistoryEntry,
+  ReportingBreakdownBy,
+  ReportingSummary,
   RiskTier,
   SamplingOverview,
   SamplingReviewRow,
@@ -188,4 +191,55 @@ export function getModelVersions(params: { page?: number; pageSize?: number } = 
 
 export function getDataLineage() {
   return apiFetch<DataLineageResponse>(`${BASE}/governance/data-lineage`);
+}
+
+export function getReportingSummary(params: {
+  periodStart: string;
+  periodEnd: string;
+  comparePrevious?: boolean;
+  breakdownBy?: ReportingBreakdownBy;
+}) {
+  const query = new URLSearchParams();
+  query.set('period_start', params.periodStart);
+  query.set('period_end', params.periodEnd);
+  if (params.comparePrevious) query.set('compare_previous', 'true');
+  if (params.breakdownBy) query.set('breakdown_by', params.breakdownBy);
+  return apiFetch<ReportingSummary>(`${BASE}/reports/summary?${query.toString()}`);
+}
+
+export function generateReport(body: {
+  report_name: string;
+  period_start: string;
+  period_end: string;
+  compare_previous?: boolean;
+  breakdown_by?: ReportingBreakdownBy;
+  format: 'csv';
+  generated_by: string;
+}) {
+  return apiFetch<ReportHistoryEntry>(`${BASE}/reports/generate`, { method: 'POST', body: JSON.stringify(body) });
+}
+
+export function listReportHistory() {
+  return apiFetch<ReportHistoryEntry[]>(`${BASE}/reports/history`);
+}
+
+/** Not apiFetch — this is a binary file response, not JSON. Fetches
+ * the CSV as a blob (still attaching the session header, same as
+ * every other call) and triggers a normal browser download via a
+ * throwaway anchor element. */
+export async function downloadReport(reportId: string, fileName: string): Promise<void> {
+  const sessionId = getSessionId();
+  const headers = new Headers();
+  if (sessionId) headers.set('x-session-id', sessionId);
+  const res = await fetch(`/api/v1${BASE}/reports/${reportId}/download`, { headers });
+  if (!res.ok) throw new Error(`Download failed: ${res.status}`);
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = fileName;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
 }

@@ -10,6 +10,7 @@ import { AmlTypologyConfigVersion } from './entities/aml-typology-config-version
 import { AmlTypologyBacktestJob } from './entities/aml-typology-backtest-job.entity.js';
 import { AmlTypologyPromotion } from './entities/aml-typology-promotion.entity.js';
 import { AmlSamplingReview } from './entities/aml-sampling-review.entity.js';
+import { AmlReportGeneration } from './entities/aml-report-generation.entity.js';
 import { FeatureCaseEnvelope, PlatformSession, PlatformUser } from '../../platform/entities/index.js';
 import { AmlDetectionController } from './aml-detection.controller.js';
 import { AmlDetectionService } from './aml-detection.service.js';
@@ -27,6 +28,8 @@ import { Customer360Controller } from './customer-360/customer-360.controller.js
 import { Customer360Service } from './customer-360/customer-360.service.js';
 import { ModelGovernanceController } from './model-governance/model-governance.controller.js';
 import { ModelGovernanceService } from './model-governance/model-governance.service.js';
+import { ReportingController } from './reporting/reporting.controller.js';
+import { ReportingService } from './reporting/reporting.service.js';
 import { TemporalModule } from '../../common/temporal/temporal.module.js';
 import { CommonAuthModule } from '../../common/auth/common-auth.module.js';
 
@@ -43,6 +46,7 @@ import { CommonAuthModule } from '../../common/auth/common-auth.module.js';
       AmlTypologyBacktestJob,
       AmlTypologyPromotion,
       AmlSamplingReview,
+      AmlReportGeneration,
       FeatureCaseEnvelope,
       PlatformUser,
       PlatformSession,
@@ -58,6 +62,7 @@ import { CommonAuthModule } from '../../common/auth/common-auth.module.js';
     TypologyConsoleController,
     Customer360Controller,
     ModelGovernanceController,
+    ReportingController,
   ],
   providers: [
     AmlDetectionService,
@@ -69,6 +74,7 @@ import { CommonAuthModule } from '../../common/auth/common-auth.module.js';
     TypologyConsoleService,
     Customer360Service,
     ModelGovernanceService,
+    ReportingService,
   ],
 })
 export class AmlDetectionModule {}

@@ -25,5 +25,6 @@ export const FEATURE_NAV_ITEMS: Record<string, FeatureNavItem[]> = {
       path: 'governance',
       roles: ['aml_detection.mlro_compliance_head', 'platform.model_risk_audit', 'platform.external_examiner'],
     },
+    { label: 'Reporting', path: 'reports', roles: ['aml_detection.mlro_compliance_head'] },
   ],
 };

@@ -424,3 +424,60 @@ export interface Customer360Response {
   linkedEntities: LinkedEntity[];
   screeningHistory: Customer360ScreeningEntry[];
 }
+
+export type ReportingBreakdownBy = 'type' | 'typology' | 'branch';
+
+export interface FilingVolumeMonthPoint {
+  month: string;
+  strCount: number;
+  ctrCount: number;
+}
+
+export interface FilingBreakdownRow {
+  code: string;
+  label: string;
+  count: number;
+  percentOfTotal: number;
+}
+
+export interface SlaTierRow {
+  tier: RiskTier;
+  targetHours: number;
+  total: number;
+  breached: number;
+  adherenceRate: number | null;
+  previousAdherenceRate: number | null;
+}
+
+export interface ReportingSummary {
+  asOf: string;
+  periodStart: string;
+  periodEnd: string;
+  comparePrevious: boolean;
+  previousPeriodStart: string | null;
+  previousPeriodEnd: string | null;
+  strFiledCount: number;
+  strFiledPrevCount: number | null;
+  ctrFiledCount: number;
+  ctrFiledPrevCount: number | null;
+  avgTimeToFileHours: number | null;
+  avgTimeToFilePrevHours: number | null;
+  slaAdherenceOverall: number | null;
+  slaAdherenceOverallPrev: number | null;
+  slaByTier: SlaTierRow[];
+  monthlyFilingVolume: FilingVolumeMonthPoint[];
+  breakdownBy: ReportingBreakdownBy;
+  breakdown: FilingBreakdownRow[];
+  agentWorkload: DispositionBreakdown;
+}
+
+export interface ReportHistoryEntry {
+  reportId: string;
+  reportName: string;
+  periodLabel: string;
+  format: string;
+  fileName: string;
+  contentHash: string;
+  generatedBy: string;
+  generatedAt: string;
+}

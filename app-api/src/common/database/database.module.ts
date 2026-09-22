@@ -24,6 +24,7 @@ import { AmlTypologyConfigVersion } from '../../features/aml-detection/entities/
 import { AmlTypologyBacktestJob } from '../../features/aml-detection/entities/aml-typology-backtest-job.entity.js';
 import { AmlTypologyPromotion } from '../../features/aml-detection/entities/aml-typology-promotion.entity.js';
 import { AmlSamplingReview } from '../../features/aml-detection/entities/aml-sampling-review.entity.js';
+import { AmlReportGeneration } from '../../features/aml-detection/entities/aml-report-generation.entity.js';
 
 /**
  * Schema is owned by infra/db/migrations/*.sql, never by TypeORM
@@ -71,6 +72,7 @@ import { AmlSamplingReview } from '../../features/aml-detection/entities/aml-sam
           AmlTypologyBacktestJob,
           AmlTypologyPromotion,
           AmlSamplingReview,
+          AmlReportGeneration,
         ],
       }),
     }),
