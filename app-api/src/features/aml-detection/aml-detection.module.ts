@@ -9,6 +9,7 @@ import { AmlTypologyConfig } from './entities/aml-typology-config.entity.js';
 import { AmlTypologyConfigVersion } from './entities/aml-typology-config-version.entity.js';
 import { AmlTypologyBacktestJob } from './entities/aml-typology-backtest-job.entity.js';
 import { AmlTypologyPromotion } from './entities/aml-typology-promotion.entity.js';
+import { AmlSamplingReview } from './entities/aml-sampling-review.entity.js';
 import { FeatureCaseEnvelope, PlatformSession, PlatformUser } from '../../platform/entities/index.js';
 import { AmlDetectionController } from './aml-detection.controller.js';
 import { AmlDetectionService } from './aml-detection.service.js';
@@ -24,6 +25,8 @@ import { TypologyConsoleController } from './typology-console/typology-console.c
 import { TypologyConsoleService } from './typology-console/typology-console.service.js';
 import { Customer360Controller } from './customer-360/customer-360.controller.js';
 import { Customer360Service } from './customer-360/customer-360.service.js';
+import { ModelGovernanceController } from './model-governance/model-governance.controller.js';
+import { ModelGovernanceService } from './model-governance/model-governance.service.js';
 import { TemporalModule } from '../../common/temporal/temporal.module.js';
 import { CommonAuthModule } from '../../common/auth/common-auth.module.js';
 
@@ -39,6 +42,7 @@ import { CommonAuthModule } from '../../common/auth/common-auth.module.js';
       AmlTypologyConfigVersion,
       AmlTypologyBacktestJob,
       AmlTypologyPromotion,
+      AmlSamplingReview,
       FeatureCaseEnvelope,
       PlatformUser,
       PlatformSession,
@@ -53,6 +57,7 @@ import { CommonAuthModule } from '../../common/auth/common-auth.module.js';
     DashboardController,
     TypologyConsoleController,
     Customer360Controller,
+    ModelGovernanceController,
   ],
   providers: [
     AmlDetectionService,
@@ -63,6 +68,7 @@ import { CommonAuthModule } from '../../common/auth/common-auth.module.js';
     DashboardService,
     TypologyConsoleService,
     Customer360Service,
+    ModelGovernanceService,
   ],
 })
 export class AmlDetectionModule {}

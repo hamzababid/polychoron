@@ -315,6 +315,86 @@ export interface Customer360ScreeningEntry extends ScreeningResult {
   assembledAt: string;
 }
 
+export interface PendingSamplingCase {
+  caseId: string;
+  dispositionType: DispositionType;
+  dispositionedAt: string;
+}
+
+export interface SamplingReviewRow {
+  reviewId: string;
+  caseId: string;
+  originalDisposition: string;
+  reviewerId: string;
+  reviewerAgreed: boolean;
+  reviewerNotes: string | null;
+  reviewedAt: string;
+}
+
+export interface SamplingAgreementTrendPoint {
+  month: string;
+  sampleSize: number;
+  agreementRate: number | null;
+}
+
+export interface SamplingOverview {
+  asOf: string;
+  totalClearedDispositions: number;
+  totalSampled: number;
+  percentOfClearedSampled: number;
+  agreementRateTrend: SamplingAgreementTrendPoint[];
+  pendingReview: PendingSamplingCase[];
+  recentReviews: SamplingReviewRow[];
+}
+
+export interface ConsistencyRow {
+  typologyCode: string;
+  typologyLabel: string;
+  branchCode: string;
+  strConversionRate: number;
+  sampleSize: number;
+}
+
+export interface ConsistencyResponse {
+  asOf: string;
+  rows: ConsistencyRow[];
+}
+
+export interface ModelVersionCurrent {
+  agentName: string;
+  agentVersion: string;
+  modelProvider: string;
+  lastInvokedAt: string;
+}
+
+export interface ModelVersionHistoryEntry {
+  agentName: string;
+  agentVersion: string;
+  firstSeenAt: string;
+  lastSeenAt: string;
+  invocationCount: number;
+}
+
+export interface ModelVersionsResponse {
+  asOf: string;
+  current: ModelVersionCurrent[];
+  history: ModelVersionHistoryEntry[];
+}
+
+export type LineageStatus = 'observed' | 'not_yet_observed' | 'stale';
+
+export interface DataLineageEntry {
+  system: string;
+  label: string;
+  status: LineageStatus;
+  lastRefreshAt: string | null;
+}
+
+export interface DataLineageResponse {
+  asOf: string;
+  entries: DataLineageEntry[];
+}
+
 export interface Customer360Response {
   customerId: string;
   kyc: KYCSnapshot | null;

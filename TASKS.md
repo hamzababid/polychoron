@@ -362,26 +362,42 @@ suspicion, officer cleared it), not "any cleared case."
       by construction
 
 ### Model Governance & Audit — spec: `screens/09-model-governance-audit.md`
-- [ ] `SamplingReview` table (already modeled in `data-models.py`,
+- [x] `SamplingReview` table (already modeled in `data-models.py`,
       table deliberately deferred from Phase 1's migration — add now)
-- [ ] A simple random-sample selection job over newly-CLEARED
+      (`infra/db/migrations/010_aml_sampling_review.sql`)
+- [x] A simple random-sample selection job over newly-CLEARED
       dispositions (no stratification yet)
-- [ ] `GET .../governance/sampling` — real agreement-rate trend from
+      (deterministic hash of `case_id` mod 100 < 20 — stable across
+      repeated GETs without a separate "selected" table, computed in
+      `ModelGovernanceService.getSamplingOverview()`)
+- [x] `GET .../governance/sampling` — real agreement-rate trend from
       actual `SamplingReview` rows, never a placeholder series (this
       number is the reason the screen exists)
-- [ ] `POST .../governance/sampling/{case_id}/review`
-- [ ] `GET .../governance/consistency` — STR conversion rate by
+      (missing months render `agreementRate: null`, not a fabricated 0)
+- [x] `POST .../governance/sampling/{case_id}/review`
+      (one review per case; 400 on a second attempt, 404 if the case
+      has no disposition yet)
+- [x] `GET .../governance/consistency` — STR conversion rate by
       typology, broken out by branch
-- [ ] `GET .../governance/model-versions` — current agent_version per
+- [x] `GET .../governance/model-versions` — current agent_version per
       node, with change history
-- [ ] `GET .../governance/data-lineage` — mock bank / Temporal /
+      (read from `platform_agent_activity_log`, not agent-service's
+      Python node classes directly — app-api can't import those
+      cross-service; the activity log already carries `agent_version`
+      per invocation, so this stays inside app-api's own boundary)
+- [x] `GET .../governance/data-lineage` — mock bank / Temporal /
       inference-provider status + last-refresh, labeled honestly as
       what Phase 1/2 actually has (not fictional real-integration names)
-- [ ] Every figure on screen carries an "as of [timestamp]" label
-- [ ] RBAC: `aml_detection.mlro_compliance_head` full;
+      (derived from real `platform_agent_activity_log` activity, not a
+      live ping — `not_yet_observed` / `stale` (>24h) / `observed`)
+- [x] Every figure on screen carries an "as of [timestamp]" label
+- [x] RBAC: `aml_detection.mlro_compliance_head` full;
       `platform.model_risk_audit` read-only;
       `platform.external_examiner` read-only, sampling data only —
       test that examiner access never leaks full case content
+      (7 e2e tests, `app-api/test/model-governance.e2e-spec.ts` —
+      examiner gets 200 on sampling, 403 on consistency/model-versions/
+      data-lineage and on writing a review)
 
 ### Reporting & MI — spec: `screens/10-reporting-mi.md`
 - [ ] `GET .../reports/summary` — same computation `DashboardService`

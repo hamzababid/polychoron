@@ -5,15 +5,20 @@ import type {
   BacktestJob,
   CaseDetail,
   CaseStatus,
+  ConsistencyResponse,
   Customer360Response,
   DashboardSummary,
   DashboardTrends,
+  DataLineageResponse,
   DispositionType,
   FilingDetail,
   FilingDraftResponse,
   FilingSummary,
+  ModelVersionsResponse,
   Paginated,
   RiskTier,
+  SamplingOverview,
+  SamplingReviewRow,
   StrFieldsDraft,
   TypologyConfigVersion,
   TypologyPromotion,
@@ -148,4 +153,24 @@ export function promoteTypology(code: string, body: { backtest_job_id?: string; 
 
 export function getCustomer360(customerId: string) {
   return apiFetch<Customer360Response>(`${BASE}/customers/${customerId}/360`);
+}
+
+export function getSamplingOverview() {
+  return apiFetch<SamplingOverview>(`${BASE}/governance/sampling`);
+}
+
+export function recordSamplingReview(caseId: string, body: { reviewer_id: string; reviewer_agreed: boolean; reviewer_notes?: string }) {
+  return apiFetch<SamplingReviewRow>(`${BASE}/governance/sampling/${caseId}/review`, { method: 'POST', body: JSON.stringify(body) });
+}
+
+export function getConsistency() {
+  return apiFetch<ConsistencyResponse>(`${BASE}/governance/consistency`);
+}
+
+export function getModelVersions() {
+  return apiFetch<ModelVersionsResponse>(`${BASE}/governance/model-versions`);
+}
+
+export function getDataLineage() {
+  return apiFetch<DataLineageResponse>(`${BASE}/governance/data-lineage`);
 }
