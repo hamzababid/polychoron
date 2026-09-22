@@ -259,6 +259,20 @@ export interface TypologyRow {
   alertVolume30d: number;
   strConversionRate: number;
   falsePositiveRate: number;
+  hasActiveBacktest: boolean;
+}
+
+export interface LastPromotion {
+  typologyCode: string;
+  typologyLabel: string;
+  promotedVersion: number;
+  promotedBy: string;
+  promotedAt: string;
+}
+
+export interface TypologyConsoleOverview {
+  typologies: TypologyRow[];
+  lastPromotion: LastPromotion | null;
 }
 
 export interface TypologyConfigVersion {
@@ -343,8 +357,8 @@ export interface SamplingOverview {
   totalSampled: number;
   percentOfClearedSampled: number;
   agreementRateTrend: SamplingAgreementTrendPoint[];
-  pendingReview: PendingSamplingCase[];
-  recentReviews: SamplingReviewRow[];
+  pendingReview: Paginated<PendingSamplingCase>;
+  recentReviews: Paginated<SamplingReviewRow>;
 }
 
 export interface ConsistencyRow {
@@ -353,11 +367,14 @@ export interface ConsistencyRow {
   branchCode: string;
   strConversionRate: number;
   sampleSize: number;
+  deviationFromTypologyMean: number;
+  withinTolerance: boolean;
 }
 
 export interface ConsistencyResponse {
   asOf: string;
-  rows: ConsistencyRow[];
+  toleranceLabel: string;
+  rows: Paginated<ConsistencyRow>;
 }
 
 export interface ModelVersionCurrent {
@@ -378,7 +395,7 @@ export interface ModelVersionHistoryEntry {
 export interface ModelVersionsResponse {
   asOf: string;
   current: ModelVersionCurrent[];
-  history: ModelVersionHistoryEntry[];
+  history: Paginated<ModelVersionHistoryEntry>;
 }
 
 export type LineageStatus = 'observed' | 'not_yet_observed' | 'stale';
@@ -386,6 +403,8 @@ export type LineageStatus = 'observed' | 'not_yet_observed' | 'stale';
 export interface DataLineageEntry {
   system: string;
   label: string;
+  usedFor: string;
+  cadence: string;
   status: LineageStatus;
   lastRefreshAt: string | null;
 }

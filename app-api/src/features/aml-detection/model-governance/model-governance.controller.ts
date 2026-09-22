@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
 import {
   ModelGovernanceService,
   type ConsistencyResponse,
@@ -8,6 +8,8 @@ import {
   type SamplingReviewRow,
 } from './model-governance.service.js';
 import { RecordSamplingReviewDto } from '../dto/record-sampling-review.dto.js';
+import { SamplingQueryDto } from '../dto/sampling-query.dto.js';
+import { PageQueryDto } from '../dto/page-query.dto.js';
 import { SessionGuard } from '../../../common/auth/session.guard.js';
 import { RolesGuard } from '../../../common/auth/roles.guard.js';
 import { RequireRoles } from '../../../common/auth/roles.decorator.js';
@@ -35,8 +37,13 @@ export class ModelGovernanceController {
 
   @RequireRoles(...SAMPLING_READ_ROLES)
   @Get('sampling')
-  async getSampling(): Promise<SamplingOverview> {
-    return this.modelGovernanceService.getSamplingOverview();
+  async getSampling(@Query() query: SamplingQueryDto): Promise<SamplingOverview> {
+    return this.modelGovernanceService.getSamplingOverview({
+      pendingPage: query.pending_page ?? 1,
+      pendingPageSize: query.pending_page_size ?? 10,
+      reviewedPage: query.reviewed_page ?? 1,
+      reviewedPageSize: query.reviewed_page_size ?? 10,
+    });
   }
 
   @RequireRoles(...WRITE_ROLES)
@@ -47,14 +54,14 @@ export class ModelGovernanceController {
 
   @RequireRoles(...CONSISTENCY_AUDIT_ROLES)
   @Get('consistency')
-  async getConsistency(): Promise<ConsistencyResponse> {
-    return this.modelGovernanceService.getConsistency();
+  async getConsistency(@Query() query: PageQueryDto): Promise<ConsistencyResponse> {
+    return this.modelGovernanceService.getConsistency(query.page ?? 1, query.page_size ?? 10);
   }
 
   @RequireRoles(...CONSISTENCY_AUDIT_ROLES)
   @Get('model-versions')
-  async getModelVersions(): Promise<ModelVersionsResponse> {
-    return this.modelGovernanceService.getModelVersions();
+  async getModelVersions(@Query() query: PageQueryDto): Promise<ModelVersionsResponse> {
+    return this.modelGovernanceService.getModelVersions(query.page ?? 1, query.page_size ?? 10);
   }
 
   @RequireRoles(...CONSISTENCY_AUDIT_ROLES)

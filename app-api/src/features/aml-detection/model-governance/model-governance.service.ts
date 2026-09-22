@@ -37,14 +37,21 @@ export interface SamplingAgreementTrendPoint {
   agreementRate: number | null;
 }
 
+export interface Paginated<T> {
+  items: T[];
+  total: number;
+  page: number;
+  pageSize: number;
+}
+
 export interface SamplingOverview {
   asOf: string;
   totalClearedDispositions: number;
   totalSampled: number;
   percentOfClearedSampled: number;
   agreementRateTrend: SamplingAgreementTrendPoint[];
-  pendingReview: PendingSamplingCase[];
-  recentReviews: SamplingReviewRow[];
+  pendingReview: Paginated<PendingSamplingCase>;
+  recentReviews: Paginated<SamplingReviewRow>;
 }
 
 export interface ConsistencyRow {
@@ -53,11 +60,17 @@ export interface ConsistencyRow {
   branchCode: string;
   strConversionRate: number;
   sampleSize: number;
+  // Deviation from the mean STR conversion rate across branches for
+  // this SAME typology — comparing a branch's rate to a different
+  // typology's mean wouldn't be a like-for-like consistency check.
+  deviationFromTypologyMean: number;
+  withinTolerance: boolean;
 }
 
 export interface ConsistencyResponse {
   asOf: string;
-  rows: ConsistencyRow[];
+  toleranceLabel: string;
+  rows: Paginated<ConsistencyRow>;
 }
 
 export interface ModelVersionCurrent {
@@ -78,7 +91,7 @@ export interface ModelVersionHistoryEntry {
 export interface ModelVersionsResponse {
   asOf: string;
   current: ModelVersionCurrent[];
-  history: ModelVersionHistoryEntry[];
+  history: Paginated<ModelVersionHistoryEntry>;
 }
 
 export type LineageStatus = 'observed' | 'not_yet_observed' | 'stale';
@@ -86,6 +99,8 @@ export type LineageStatus = 'observed' | 'not_yet_observed' | 'stale';
 export interface DataLineageEntry {
   system: string;
   label: string;
+  usedFor: string;
+  cadence: string;
   status: LineageStatus;
   lastRefreshAt: string | null;
 }
@@ -97,6 +112,11 @@ export interface DataLineageResponse {
 
 const FEATURE_CODE = 'aml_detection';
 const MOCK_BANK_SOURCES = ['mock_bank.kyc', 'mock_bank.transactions', 'mock_bank.linked_entities'];
+// Deviation (in percentage points) from a typology's own cross-branch
+// mean beyond which a branch's STR conversion rate is flagged —
+// arbitrary but consistent with the Typology Console's own tolerance
+// conventions elsewhere in this feature.
+const CONSISTENCY_TOLERANCE_POINTS = 10;
 
 /** specs/suites/bfsi/features/aml-detection/screens/09-model-governance-audit.md
  * api-contracts-phase2.md's namespaced contract (the screen spec's own
@@ -111,8 +131,16 @@ export class ModelGovernanceService {
     @InjectRepository(AmlSamplingReview) private readonly samplingReviews: Repository<AmlSamplingReview>,
   ) {}
 
-  async getSamplingOverview(): Promise<SamplingOverview> {
-    const [windowCounts, trendRows, pendingRows, recentRows] = await Promise.all([
+  async getSamplingOverview(params: {
+    pendingPage: number;
+    pendingPageSize: number;
+    reviewedPage: number;
+    reviewedPageSize: number;
+  }): Promise<SamplingOverview> {
+    const pendingOffset = (params.pendingPage - 1) * params.pendingPageSize;
+    const reviewedOffset = (params.reviewedPage - 1) * params.reviewedPageSize;
+
+    const [windowCounts, trendRows, pendingCountRows, pendingRows, recentTotal, recentRows] = await Promise.all([
       this.dataSource.query(
         `SELECT
            count(*) FILTER (WHERE d.disposition_type = 'clear')::int AS total_cleared,
@@ -132,6 +160,16 @@ export class ModelGovernanceService {
          GROUP BY 1 ORDER BY 1`,
       ) as Promise<Array<{ month: string; sample_size: number; agreed_count: number }>>,
       this.dataSource.query(
+        `SELECT count(*)::int AS total
+         FROM aml_cases c
+         JOIN aml_dispositions d ON d.case_id = c.case_id
+         LEFT JOIN aml_sampling_reviews r ON r.case_id = c.case_id
+         WHERE d.disposition_type = 'clear'
+           AND r.review_id IS NULL
+           AND abs(('x' || substr(md5(c.case_id::text), 1, 8))::bit(32)::int) % 100 < $1`,
+        [SAMPLE_RATE_PERCENT],
+      ) as Promise<Array<{ total: number }>>,
+      this.dataSource.query(
         `SELECT c.case_id, d.disposition_type, d.decided_at
          FROM aml_cases c
          JOIN aml_dispositions d ON d.case_id = c.case_id
@@ -140,10 +178,11 @@ export class ModelGovernanceService {
            AND r.review_id IS NULL
            AND abs(('x' || substr(md5(c.case_id::text), 1, 8))::bit(32)::int) % 100 < $1
          ORDER BY d.decided_at DESC
-         LIMIT 50`,
-        [SAMPLE_RATE_PERCENT],
+         LIMIT $2 OFFSET $3`,
+        [SAMPLE_RATE_PERCENT, params.pendingPageSize, pendingOffset],
       ) as Promise<Array<{ case_id: string; disposition_type: string; decided_at: Date }>>,
-      this.samplingReviews.find({ order: { reviewedAt: 'DESC' }, take: 50 }),
+      this.samplingReviews.count(),
+      this.samplingReviews.find({ order: { reviewedAt: 'DESC' }, take: params.reviewedPageSize, skip: reviewedOffset }),
     ]);
 
     const { total_cleared: totalCleared, total_sampled: totalSampled } = windowCounts[0] ?? {
@@ -177,12 +216,22 @@ export class ModelGovernanceService {
       totalSampled,
       percentOfClearedSampled: totalCleared > 0 ? round3(totalSampled / totalCleared) : 0,
       agreementRateTrend,
-      pendingReview: pendingRows.map((r) => ({
-        caseId: r.case_id,
-        dispositionType: r.disposition_type,
-        dispositionedAt: r.decided_at.toISOString(),
-      })),
-      recentReviews: recentRows.map(toSamplingReviewRow),
+      pendingReview: {
+        items: pendingRows.map((r) => ({
+          caseId: r.case_id,
+          dispositionType: r.disposition_type,
+          dispositionedAt: r.decided_at.toISOString(),
+        })),
+        total: pendingCountRows[0]?.total ?? 0,
+        page: params.pendingPage,
+        pageSize: params.pendingPageSize,
+      },
+      recentReviews: {
+        items: recentRows.map(toSamplingReviewRow),
+        total: recentTotal,
+        page: params.reviewedPage,
+        pageSize: params.reviewedPageSize,
+      },
     };
   }
 
@@ -210,7 +259,7 @@ export class ModelGovernanceService {
     return toSamplingReviewRow(saved);
   }
 
-  async getConsistency(): Promise<ConsistencyResponse> {
+  async getConsistency(page: number, pageSize: number): Promise<ConsistencyResponse> {
     const rows = (await this.dataSource.query(
       `SELECT
          t.typology_code,
@@ -226,20 +275,44 @@ export class ModelGovernanceService {
        ORDER BY 1, 3`,
     )) as Array<{ typology_code: string; typology_label: string; branch_code: string; str_count: number; total_count: number }>;
 
+    const withRates = rows.map((r) => ({
+      typologyCode: r.typology_code,
+      typologyLabel: r.typology_label,
+      branchCode: r.branch_code,
+      strConversionRate: r.total_count > 0 ? round3(r.str_count / r.total_count) : 0,
+      sampleSize: r.total_count,
+    }));
+
+    const meanByTypology = new Map<string, number>();
+    for (const code of new Set(withRates.map((r) => r.typologyCode))) {
+      const forTypology = withRates.filter((r) => r.typologyCode === code);
+      meanByTypology.set(code, forTypology.reduce((sum, r) => sum + r.strConversionRate, 0) / forTypology.length);
+    }
+
+    // Deviation/tolerance need the FULL cross-branch set per typology
+    // to compute a meaningful mean — paginate only after that's done,
+    // never paginate the raw query itself here.
+    const enriched = withRates.map((r) => {
+      const mean = meanByTypology.get(r.typologyCode) ?? r.strConversionRate;
+      const deviationPoints = round3((r.strConversionRate - mean) * 100);
+      return {
+        ...r,
+        deviationFromTypologyMean: deviationPoints,
+        withinTolerance: Math.abs(deviationPoints) <= CONSISTENCY_TOLERANCE_POINTS,
+      };
+    });
+
+    const offset = (page - 1) * pageSize;
     return {
       asOf: new Date().toISOString(),
-      rows: rows.map((r) => ({
-        typologyCode: r.typology_code,
-        typologyLabel: r.typology_label,
-        branchCode: r.branch_code,
-        strConversionRate: r.total_count > 0 ? round3(r.str_count / r.total_count) : 0,
-        sampleSize: r.total_count,
-      })),
+      toleranceLabel: `±${CONSISTENCY_TOLERANCE_POINTS} points from each typology's own cross-branch mean`,
+      rows: { items: enriched.slice(offset, offset + pageSize), total: enriched.length, page, pageSize },
     };
   }
 
-  async getModelVersions(): Promise<ModelVersionsResponse> {
-    const [currentRows, historyRows] = await Promise.all([
+  async getModelVersions(historyPage: number, historyPageSize: number): Promise<ModelVersionsResponse> {
+    const historyOffset = (historyPage - 1) * historyPageSize;
+    const [currentRows, historyCountRows, historyRows] = await Promise.all([
       this.dataSource.query(
         `SELECT DISTINCT ON (agent_name) agent_name, agent_version, model_provider, "timestamp"
          FROM platform_agent_activity_log
@@ -248,12 +321,19 @@ export class ModelGovernanceService {
         [FEATURE_CODE],
       ) as Promise<Array<{ agent_name: string; agent_version: string; model_provider: string; timestamp: Date }>>,
       this.dataSource.query(
+        `SELECT count(*)::int AS total FROM (
+           SELECT 1 FROM platform_agent_activity_log WHERE feature_code = $1 GROUP BY agent_name, agent_version
+         ) x`,
+        [FEATURE_CODE],
+      ) as Promise<Array<{ total: number }>>,
+      this.dataSource.query(
         `SELECT agent_name, agent_version, min("timestamp") AS first_seen, max("timestamp") AS last_seen, count(*)::int AS invocation_count
          FROM platform_agent_activity_log
          WHERE feature_code = $1
          GROUP BY agent_name, agent_version
-         ORDER BY agent_name, first_seen`,
-        [FEATURE_CODE],
+         ORDER BY max("timestamp") DESC
+         LIMIT $2 OFFSET $3`,
+        [FEATURE_CODE, historyPageSize, historyOffset],
       ) as Promise<
         Array<{ agent_name: string; agent_version: string; first_seen: Date; last_seen: Date; invocation_count: number }>
       >,
@@ -267,13 +347,18 @@ export class ModelGovernanceService {
         modelProvider: r.model_provider,
         lastInvokedAt: r.timestamp.toISOString(),
       })),
-      history: historyRows.map((r) => ({
-        agentName: r.agent_name,
-        agentVersion: r.agent_version,
-        firstSeenAt: r.first_seen.toISOString(),
-        lastSeenAt: r.last_seen.toISOString(),
-        invocationCount: r.invocation_count,
-      })),
+      history: {
+        items: historyRows.map((r) => ({
+          agentName: r.agent_name,
+          agentVersion: r.agent_version,
+          firstSeenAt: r.first_seen.toISOString(),
+          lastSeenAt: r.last_seen.toISOString(),
+          invocationCount: r.invocation_count,
+        })),
+        total: historyCountRows[0]?.total ?? 0,
+        page: historyPage,
+        pageSize: historyPageSize,
+      },
     };
   }
 
@@ -299,12 +384,37 @@ export class ModelGovernanceService {
     ]);
 
     const entries: DataLineageEntry[] = [
-      { system: 'mock_bank_api', label: 'Mock bank API (core banking + KYC stand-in)', row: mockBankRows[0] },
-      { system: 'temporal', label: 'Temporal workflow orchestration', row: temporalRows[0] },
-      { system: 'foundation_api_openai', label: 'Foundation model API (OpenAI, via FOUNDATION_API)', row: foundationApiRows[0] },
-    ].map(({ system, label, row }) => {
+      {
+        system: 'mock_bank_api',
+        label: 'Mock bank API',
+        usedFor: 'KYC snapshot, transaction timeline, linked entities — Phase 1/2 stand-in for core banking; see mvp-phases.md',
+        cadence: 'on-demand, once per case (Evidence Gathering)',
+        row: mockBankRows[0],
+      },
+      {
+        system: 'temporal',
+        label: 'Temporal workflow orchestration',
+        usedFor: 'Durable execution of every agent node — a row here means the node ran, retried, and audited correctly',
+        cadence: 'continuous, per case',
+        row: temporalRows[0],
+      },
+      {
+        system: 'foundation_api_openai',
+        label: 'Foundation model API (OpenAI, via FOUNDATION_API)',
+        usedFor: 'LLM calls made by nodes that generate/reason (Pattern Matching, Case & Narrative)',
+        cadence: 'on-demand, per LLM call',
+        row: foundationApiRows[0],
+      },
+    ].map(({ system, label, usedFor, cadence, row }) => {
       const lastRefreshAt = row?.last_refresh ?? null;
-      return { system, label, status: lineageStatus(lastRefreshAt), lastRefreshAt: lastRefreshAt ? lastRefreshAt.toISOString() : null };
+      return {
+        system,
+        label,
+        usedFor,
+        cadence,
+        status: lineageStatus(lastRefreshAt),
+        lastRefreshAt: lastRefreshAt ? lastRefreshAt.toISOString() : null,
+      };
     });
 
     return { asOf: new Date().toISOString(), entries };

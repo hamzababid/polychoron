@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { claimAlert, getDashboardSummary, listAlerts } from '../api/client';
 import type { AlertQueueRow, CaseStatus, DashboardSummary, RiskTier } from '../api/types';
+import { Pagination } from '../shared/Pagination';
 import { useFeatureBasePath } from '../useFeatureBasePath';
 import { useToast } from '../../../shell/ToastProvider';
 import './alert-queue.css';
@@ -97,7 +98,6 @@ export function AlertQueueScreen() {
 
   if (error) return <div className="aml-status aml-status--error">Could not load alert queue: {error}</div>;
 
-  const totalPages = Math.max(1, Math.ceil(total / pageSize));
   const openTotal = summary ? Object.values(summary.openAlertsByTier).reduce((a, b) => a + b, 0) : null;
 
   return (
@@ -265,33 +265,14 @@ export function AlertQueueScreen() {
               </div>
             </div>
           ))}
-          <div className="alert-queue__pagination">
-            <span>
-              Rows {(page - 1) * pageSize + 1}–{Math.min(page * pageSize, total)} of {total}
-            </span>
-            <label className="alert-queue__pageSize">
-              Show
-              <select value={pageSize} onChange={(e) => updateParam('page_size', e.target.value)}>
-                {PAGE_SIZE_OPTIONS.map((n) => (
-                  <option key={n} value={n}>
-                    {n}
-                  </option>
-                ))}
-              </select>
-              per page
-            </label>
-            <div className="alert-queue__pageNav">
-              <button className="aml-btn" disabled={page <= 1} onClick={() => updateParam('page', String(page - 1))}>
-                ← Prev
-              </button>
-              <span>
-                Page {page} of {totalPages}
-              </span>
-              <button className="aml-btn" disabled={page >= totalPages} onClick={() => updateParam('page', String(page + 1))}>
-                Next →
-              </button>
-            </div>
-          </div>
+          <Pagination
+            page={page}
+            pageSize={pageSize}
+            total={total}
+            pageSizeOptions={PAGE_SIZE_OPTIONS}
+            onPageChange={(p) => updateParam('page', String(p))}
+            onPageSizeChange={(size) => updateParam('page_size', String(size))}
+          />
         </div>
       )}
     </div>

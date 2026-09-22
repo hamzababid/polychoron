@@ -163,11 +163,11 @@ describe('Model Governance & Audit (e2e)', () => {
 
   it('consistency breaks STR conversion out by typology and branch from real data', async () => {
     const res = await request(app.getHttpServer())
-      .get('/api/v1/features/aml_detection/governance/consistency')
+      .get('/api/v1/features/aml_detection/governance/consistency?page_size=100')
       .set('x-session-id', mlroSessionId)
       .expect(200);
-    const body = res.body as { rows: Array<{ typologyCode: string; branchCode: string; sampleSize: number }> };
-    const row = body.rows.find((r) => r.branchCode === 'BR-GOV-01' && r.typologyCode === 'structuring_subthreshold');
+    const body = res.body as { rows: { items: Array<{ typologyCode: string; branchCode: string; sampleSize: number }> } };
+    const row = body.rows.items.find((r) => r.branchCode === 'BR-GOV-01' && r.typologyCode === 'structuring_subthreshold');
     expect(row).toBeDefined();
     expect(row!.sampleSize).toBeGreaterThanOrEqual(1);
   });
@@ -193,9 +193,12 @@ describe('Model Governance & Audit (e2e)', () => {
       .get('/api/v1/features/aml_detection/governance/sampling')
       .set('x-session-id', mlroSessionId)
       .expect(200);
-    const overview = overviewRes.body as { recentReviews: Array<{ caseId: string }>; pendingReview: Array<{ caseId: string }> };
-    expect(overview.recentReviews.some((r) => r.caseId === caseId)).toBe(true);
-    expect(overview.pendingReview.some((p) => p.caseId === caseId)).toBe(false);
+    const overview = overviewRes.body as {
+      recentReviews: { items: Array<{ caseId: string }>; total: number };
+      pendingReview: { items: Array<{ caseId: string }>; total: number };
+    };
+    expect(overview.recentReviews.items.some((r) => r.caseId === caseId)).toBe(true);
+    expect(overview.pendingReview.items.some((p) => p.caseId === caseId)).toBe(false);
   });
 
   it('404s a review for a case with no disposition', async () => {

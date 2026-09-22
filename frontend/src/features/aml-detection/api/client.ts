@@ -21,6 +21,7 @@ import type {
   SamplingReviewRow,
   StrFieldsDraft,
   TypologyConfigVersion,
+  TypologyConsoleOverview,
   TypologyPromotion,
   TypologyRow,
 } from './types';
@@ -125,7 +126,7 @@ export function getDashboardTrends() {
 }
 
 export function listTypologies() {
-  return apiFetch<TypologyRow[]>(`${BASE}/typologies`);
+  return apiFetch<TypologyConsoleOverview>(`${BASE}/typologies`);
 }
 
 export function getTypologyHistory(code: string) {
@@ -155,20 +156,34 @@ export function getCustomer360(customerId: string) {
   return apiFetch<Customer360Response>(`${BASE}/customers/${customerId}/360`);
 }
 
-export function getSamplingOverview() {
-  return apiFetch<SamplingOverview>(`${BASE}/governance/sampling`);
+export function getSamplingOverview(params: { pendingPage?: number; pendingPageSize?: number; reviewedPage?: number; reviewedPageSize?: number } = {}) {
+  const query = new URLSearchParams();
+  if (params.pendingPage) query.set('pending_page', String(params.pendingPage));
+  if (params.pendingPageSize) query.set('pending_page_size', String(params.pendingPageSize));
+  if (params.reviewedPage) query.set('reviewed_page', String(params.reviewedPage));
+  if (params.reviewedPageSize) query.set('reviewed_page_size', String(params.reviewedPageSize));
+  const qs = query.toString();
+  return apiFetch<SamplingOverview>(`${BASE}/governance/sampling${qs ? `?${qs}` : ''}`);
 }
 
 export function recordSamplingReview(caseId: string, body: { reviewer_id: string; reviewer_agreed: boolean; reviewer_notes?: string }) {
   return apiFetch<SamplingReviewRow>(`${BASE}/governance/sampling/${caseId}/review`, { method: 'POST', body: JSON.stringify(body) });
 }
 
-export function getConsistency() {
-  return apiFetch<ConsistencyResponse>(`${BASE}/governance/consistency`);
+export function getConsistency(params: { page?: number; pageSize?: number } = {}) {
+  const query = new URLSearchParams();
+  if (params.page) query.set('page', String(params.page));
+  if (params.pageSize) query.set('page_size', String(params.pageSize));
+  const qs = query.toString();
+  return apiFetch<ConsistencyResponse>(`${BASE}/governance/consistency${qs ? `?${qs}` : ''}`);
 }
 
-export function getModelVersions() {
-  return apiFetch<ModelVersionsResponse>(`${BASE}/governance/model-versions`);
+export function getModelVersions(params: { page?: number; pageSize?: number } = {}) {
+  const query = new URLSearchParams();
+  if (params.page) query.set('page', String(params.page));
+  if (params.pageSize) query.set('page_size', String(params.pageSize));
+  const qs = query.toString();
+  return apiFetch<ModelVersionsResponse>(`${BASE}/governance/model-versions${qs ? `?${qs}` : ''}`);
 }
 
 export function getDataLineage() {
