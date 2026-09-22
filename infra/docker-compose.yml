@@ -54,5 +54,172 @@ services:
     ports:
       - "8080:8080"
 
+  # ══════════════════════════════════════════════════════════════
+  # One-shot init jobs — run to completion, then exit. Dependents key
+  # off `condition: service_completed_successfully`, not just
+  # "started", so nothing races the schema/seed data it needs.
+  # ══════════════════════════════════════════════════════════════
+
+  migrate:
+    build:
+      context: ../agent-service
+    container_name: polychoron-migrate
+    restart: "no"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://polychoron:polychoron_dev_only@postgres:5432/polychoron
+    volumes:
+      # migrate.py lives at the repo root (infra/db/migrate.py), not
+      # under agent-service/ — the agent-service image just happens to
+      # already have the one dependency it needs (psycopg2). Mount the
+      # whole repo here instead of agent-service/ alone.
+      - ..:/repo
+    working_dir: /repo
+    command: ["python", "infra/db/migrate.py"]
+
+  seed-registry:
+    build:
+      context: ../agent-service
+    container_name: polychoron-seed-registry
+    restart: "no"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    environment:
+      DATABASE_URL: postgresql://polychoron:polychoron_dev_only@postgres:5432/polychoron
+    volumes:
+      - ../agent-service:/app
+    working_dir: /app
+    command: ["python", "scripts/seed_platform_registry.py"]
+
+  app-api-seed:
+    build:
+      context: ../app-api
+    container_name: polychoron-app-api-seed
+    restart: "no"
+    depends_on:
+      seed-registry:
+        condition: service_completed_successfully
+      temporal:
+        condition: service_started
+    environment:
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      DATABASE_USER: polychoron
+      DATABASE_PASSWORD: polychoron_dev_only
+      DATABASE_NAME: polychoron
+      TEMPORAL_ADDRESS: temporal:7233
+      TEMPORAL_NAMESPACE: default
+      TEMPORAL_TASK_QUEUE: aml_detection-task-queue
+      DEMO_TENANT_ID: demo-northbridge-bank
+    volumes:
+      - ../app-api:/app
+      - app_api_node_modules:/app/node_modules
+    working_dir: /app
+    # deleteOutDir (nest-cli.json) means a fresh build every run —
+    # fine here, this container only runs once per `docker compose up`.
+    command: ["sh", "-c", "npm run build && npm run seed:demo-users && npm run seed:typology-configs"]
+
+  # ══════════════════════════════════════════════════════════════
+  # Long-running application services — one container each, hot
+  # reload via bind mount, node_modules/.venv isolated per-container.
+  # ══════════════════════════════════════════════════════════════
+
+  agent-service-api:
+    build:
+      context: ../agent-service
+    container_name: polychoron-agent-service-api
+    restart: unless-stopped
+    depends_on:
+      seed-registry:
+        condition: service_completed_successfully
+    environment:
+      DATABASE_URL: postgresql://polychoron:polychoron_dev_only@postgres:5432/polychoron
+    volumes:
+      - ../agent-service:/app
+    working_dir: /app
+    ports:
+      - "8001:8001"
+    command: ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8001", "--reload"]
+
+  agent-service-worker:
+    build:
+      context: ../agent-service
+    container_name: polychoron-agent-service-worker
+    restart: unless-stopped
+    depends_on:
+      seed-registry:
+        condition: service_completed_successfully
+      temporal:
+        condition: service_started
+      agent-service-api:
+        condition: service_started
+    environment:
+      DATABASE_URL: postgresql://polychoron:polychoron_dev_only@postgres:5432/polychoron
+      TEMPORAL_ADDRESS: temporal:7233
+      MOCK_BANK_BASE_URL: http://agent-service-api:8001
+      # OPENAI_API_KEY/OPENAI_MODEL come from the bind-mounted
+      # agent-service/.env (pydantic-settings' env_file) — not
+      # duplicated here, so there's exactly one place that secret
+      # lives locally.
+    volumes:
+      - ../agent-service:/app
+    working_dir: /app
+    command: ["python", "-m", "app.features.aml_detection.worker"]
+
+  app-api:
+    build:
+      context: ../app-api
+    container_name: polychoron-app-api
+    restart: unless-stopped
+    depends_on:
+      app-api-seed:
+        condition: service_completed_successfully
+      temporal:
+        condition: service_started
+    environment:
+      PORT: 3000
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      DATABASE_USER: polychoron
+      DATABASE_PASSWORD: polychoron_dev_only
+      DATABASE_NAME: polychoron
+      TEMPORAL_ADDRESS: temporal:7233
+      TEMPORAL_NAMESPACE: default
+      TEMPORAL_TASK_QUEUE: aml_detection-task-queue
+      DEMO_TENANT_ID: demo-northbridge-bank
+    volumes:
+      - ../app-api:/app
+      - app_api_node_modules:/app/node_modules
+    working_dir: /app
+    ports:
+      - "3000:3000"
+    command: ["npm", "run", "start:dev"]
+
+  frontend:
+    build:
+      context: ../frontend
+    container_name: polychoron-frontend
+    restart: unless-stopped
+    depends_on:
+      app-api:
+        condition: service_started
+    environment:
+      # Server-to-server target for Vite's own dev-server proxy (see
+      # frontend/vite.config.ts) — the browser still talks to
+      # localhost:5173, this is container-to-container only.
+      VITE_API_PROXY_TARGET: http://app-api:3000
+    volumes:
+      - ../frontend:/app
+      - frontend_node_modules:/app/node_modules
+    working_dir: /app
+    ports:
+      - "5173:5173"
+    command: ["npm", "run", "dev"]
+
 volumes:
   polychoron_pgdata:
+  app_api_node_modules:
+  frontend_node_modules:

@@ -13,9 +13,13 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Start Postgres + Temporal
-        run: docker compose -f infra/docker-compose.yml up -d
+        run: docker compose -f infra/docker-compose.yml up -d postgres temporal
         # Same compose file used for local dev — CI runs against the
-        # identical stack, not a hand-duplicated CI-only config.
+        # identical stack, not a hand-duplicated CI-only config. Named
+        # explicitly (not the full `up -d`): that file now also
+        # defines the app-api/agent-service/frontend containers for
+        # local dev, which CI doesn't want — it installs and runs
+        # each service's code natively, per job, against this infra.
 
       - name: Wait for Postgres
         run: |
@@ -59,7 +63,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Start Postgres + Temporal
-        run: docker compose -f infra/docker-compose.yml up -d
+        run: docker compose -f infra/docker-compose.yml up -d postgres temporal
 
       - name: Wait for Postgres
         run: |
