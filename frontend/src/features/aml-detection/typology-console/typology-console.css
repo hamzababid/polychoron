@@ -1,62 +1,134 @@
 .typology-console {
+  display: flex;
+  flex-direction: column;
   flex: 1;
   min-height: 0;
-  overflow-y: auto;
-  padding: 18px;
 }
 
-.typology-console__table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 13px;
-  margin-bottom: 16px;
+.typology-console__strip {
+  display: flex;
+  align-items: stretch;
+  flex: none;
+  border-bottom: 1px solid var(--color-divider);
+  background: var(--color-neutral-100);
 }
 
-.typology-console__table th {
-  text-align: left;
-  font-size: 10px;
-  text-transform: uppercase;
-  color: var(--aml-neutral-700);
-  padding: 6px 10px;
-  border-bottom: 1px solid var(--aml-text);
+.typology-console__stripCell {
+  padding: 9px 18px;
+  border-right: 1px solid var(--color-divider);
 }
 
-.typology-console__row td {
-  padding: 8px 10px;
-  border-bottom: 1px solid var(--aml-divider);
-  border-left: 4px solid transparent;
+.typology-console__stripTitle {
+  min-width: 230px;
+}
+
+.typology-console__filterBar {
+  flex: none;
+  padding: 8px 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid var(--color-divider);
+  background: var(--color-bg);
+  flex-wrap: wrap;
+}
+
+.typology-console__tuneToggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
   cursor: pointer;
 }
 
-.typology-console__row--live td:first-child {
-  border-left-color: var(--aml-accent-800);
+.typology-console__scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-bottom: 24px;
 }
 
-.typology-console__row--draft td:first-child {
-  border-left-color: var(--aml-neutral-500);
-  background-image: repeating-linear-gradient(135deg, color-mix(in srgb, var(--aml-neutral-500) 12%, transparent) 0 2px, transparent 2px 7px);
+.typology-console__tableHead {
+  display: grid;
+  grid-template-columns: 1fr 110px 100px 1fr 120px;
+  background: var(--color-neutral-100);
+  border-bottom: 1px solid var(--color-text);
+}
+
+.typology-console__ahd {
+  padding: 7px 10px;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-neutral-700);
+}
+
+.typology-console__row {
+  display: grid;
+  grid-template-columns: 1fr 110px 100px 1fr 120px;
+  align-items: center;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-text) 9%, transparent);
+  cursor: pointer;
+}
+
+.typology-console__row:hover {
+  background: color-mix(in srgb, var(--color-accent) 6%, transparent);
+}
+
+.typology-console__row--live {
+  border-left: 4px solid var(--color-accent-800);
+}
+
+.typology-console__row--draft {
+  border-left: 4px solid var(--color-neutral-500);
 }
 
 .typology-console__row--selected {
-  background: var(--aml-accent-100);
+  background: var(--color-accent-100);
+}
+
+.typology-console__cell {
+  padding: 9px 10px;
+  min-width: 0;
 }
 
 .typology-console__liveBadge {
-  font-size: 9px;
+  font-size: 9.5px;
   font-weight: 700;
-  color: var(--aml-accent-800);
+  letter-spacing: 0.06em;
+  color: var(--color-accent-800);
+}
+
+.typology-console__retiredBadge {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--color-neutral-600);
 }
 
 .typology-console__draftBadge {
-  font-size: 9px;
-  font-weight: 700;
-  color: var(--aml-neutral-600);
+  flex: none;
+  display: inline-grid;
+  place-items: center;
+  height: 18px;
+  padding: 0 6px;
+  border: 1px solid var(--color-accent-700);
+  background: var(--color-accent-100);
+  color: var(--color-accent-800);
+  font-family: var(--font-heading);
+  font-size: 9.5px;
+  letter-spacing: 0.06em;
+}
+
+.typology-console__muted {
+  font-size: 12.5px;
+  color: var(--color-neutral-600);
 }
 
 .typology-console__detail {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  border-top: 2px solid var(--color-neutral-400);
+  background: var(--color-neutral-100);
+  padding: 14px 18px 18px;
 }
 
 .typology-console__field {
@@ -64,65 +136,105 @@
   flex-direction: column;
   gap: 4px;
   font-size: 11px;
-  color: var(--aml-neutral-700);
+  color: var(--color-neutral-700);
 }
 
-.typology-console__field textarea,
 .typology-console__field input {
   font-family: inherit;
   font-size: 13px;
   padding: 6px 8px;
-  border: 1px solid var(--aml-divider);
+  border: 1px solid var(--color-divider);
 }
 
 .typology-console__actions {
   display: flex;
   gap: 8px;
+  margin-top: 10px;
 }
 
-.typology-console__historySection {
-  border-top: 1px solid var(--aml-divider);
-  padding-top: 8px;
+/* — backtest sandbox: deliberately louder than the rest of the screen
+   (accent border/background), same "draft, not live" framing as the
+   mockup's own draft-hatch treatment. — */
+.typology-console__backtestPanel {
+  margin-top: 14px;
+  border-top: 2px solid var(--color-accent-700);
+  background: var(--color-accent-100);
+  padding: 14px 18px 20px;
 }
 
-.typology-console__historyRow {
-  font-size: 12px;
-  padding: 3px 0;
-  color: var(--aml-neutral-700);
-}
-
-.typology-console__backtestSection {
-  border-top: 1px solid var(--aml-divider);
-  padding-top: 8px;
+.typology-console__draftPill {
+  display: inline-grid;
+  place-items: center;
+  height: 20px;
+  padding: 0 8px;
+  border: 1px solid var(--color-accent-700);
+  background: var(--color-accent-700);
+  color: var(--color-bg);
+  font-family: var(--font-heading);
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
 }
 
 .typology-console__jobStatus {
-  margin-top: 6px;
+  margin-top: 10px;
   font-size: 12.5px;
 }
 
 .typology-console__report {
   margin-top: 6px;
-  background: var(--aml-neutral-100);
+  background: var(--color-bg);
+  border: 1px solid var(--color-divider);
   padding: 8px 10px;
   font-size: 12px;
 }
 
 .typology-console__reportMethod {
   margin-top: 4px;
-  color: var(--aml-neutral-600);
+  color: var(--color-neutral-600);
   font-style: italic;
 }
 
+.typology-console__ackRow {
+  margin-top: 10px;
+  max-width: 560px;
+}
+
+.typology-console__ackBox {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: pointer;
+  border: 1px solid var(--color-accent-300);
+  background: var(--color-bg);
+  padding: 9px 11px;
+}
+
+.typology-console__ackBox:hover {
+  border-color: var(--color-accent-700);
+}
+
+.typology-console__ackCheck {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 17px;
+  height: 17px;
+  border: 1.5px solid var(--color-accent-700);
+  font-size: 11px;
+  color: var(--color-accent-800);
+  background: var(--color-bg);
+  margin-top: 1px;
+}
+
 .typology-console__promoteSection {
-  margin-top: 12px;
-  padding-top: 8px;
-  border-top: 1px dashed var(--aml-divider);
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--color-accent-300);
 }
 
 .typology-console__promoteWarning {
   font-size: 11.5px;
-  color: var(--aml-alert);
+  color: var(--color-alert);
   margin-bottom: 6px;
 }
 
@@ -130,4 +242,18 @@
   width: 100%;
   box-sizing: border-box;
   margin-bottom: 8px;
+}
+
+.typology-console__dialogBackdrop {
+  position: fixed;
+  inset: 0;
+  background: color-mix(in srgb, var(--color-text) 40%, transparent);
+  display: grid;
+  place-items: center;
+  z-index: 20;
+}
+
+.typology-console__dialog {
+  width: min(520px, 92vw);
+  background: var(--color-bg);
 }

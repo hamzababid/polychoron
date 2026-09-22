@@ -15,6 +15,23 @@ export interface TypologyRow {
   alertVolume30d: number;
   strConversionRate: number;
   falsePositiveRate: number;
+  // A real, currently-running/queued backtest job — not "this typology
+  // has ever been backtested". Drives the "DRAFT IN BACKTEST" badge
+  // (design-exports/.../Typology Rules Console.dc.html).
+  hasActiveBacktest: boolean;
+}
+
+export interface LastPromotion {
+  typologyCode: string;
+  typologyLabel: string;
+  promotedVersion: number;
+  promotedBy: string;
+  promotedAt: string;
+}
+
+export interface TypologyConsoleOverview {
+  typologies: TypologyRow[];
+  lastPromotion: LastPromotion | null;
 }
 
 @Injectable()
@@ -27,36 +44,55 @@ export class TypologyConsoleService {
     @InjectRepository(AmlTypologyPromotion) private readonly promotions: Repository<AmlTypologyPromotion>,
   ) {}
 
-  async list(): Promise<TypologyRow[]> {
-    const configRows = await this.configs.find({ order: { typologyCode: 'ASC' } });
-
-    const metricRows = (await this.dataSource.query(`
-      SELECT
-        t.typology_code,
-        count(*) FILTER (WHERE c.created_at >= now() - interval '30 days')::int AS alert_volume_30d,
-        count(d.case_id) FILTER (WHERE d.disposition_type IN ('file_str', 'file_ctr'))::int AS str_count,
-        count(d.case_id) FILTER (
-          WHERE d.disposition_type = 'clear' AND a.recommendation IN ('escalate', 'recommend_str', 'recommend_ctr')
-        )::int AS false_positive_count,
-        count(d.case_id)::int AS total_dispositioned
-      FROM aml_typology_matches t
-      JOIN aml_cases c ON c.case_id = t.case_id
-      LEFT JOIN aml_dispositions d ON d.case_id = t.case_id
-      LEFT JOIN aml_case_assessments a ON a.case_id = t.case_id
-      GROUP BY t.typology_code
-    `)) as Array<{
-      typology_code: string;
-      alert_volume_30d: number;
-      str_count: number;
-      false_positive_count: number;
-      total_dispositioned: number;
-    }>;
+  async list(): Promise<TypologyConsoleOverview> {
+    const [configRows, metricRows, activeBacktestRows, lastPromotionRows] = await Promise.all([
+      this.configs.find({ order: { typologyCode: 'ASC' } }),
+      this.dataSource.query(`
+        SELECT
+          t.typology_code,
+          count(*) FILTER (WHERE c.created_at >= now() - interval '30 days')::int AS alert_volume_30d,
+          count(d.case_id) FILTER (WHERE d.disposition_type IN ('file_str', 'file_ctr'))::int AS str_count,
+          count(d.case_id) FILTER (
+            WHERE d.disposition_type = 'clear' AND a.recommendation IN ('escalate', 'recommend_str', 'recommend_ctr')
+          )::int AS false_positive_count,
+          count(d.case_id)::int AS total_dispositioned
+        FROM aml_typology_matches t
+        JOIN aml_cases c ON c.case_id = t.case_id
+        LEFT JOIN aml_dispositions d ON d.case_id = t.case_id
+        LEFT JOIN aml_case_assessments a ON a.case_id = t.case_id
+        GROUP BY t.typology_code
+      `) as Promise<
+        Array<{
+          typology_code: string;
+          alert_volume_30d: number;
+          str_count: number;
+          false_positive_count: number;
+          total_dispositioned: number;
+        }>
+      >,
+      this.dataSource.query(`
+        SELECT DISTINCT ON (typology_code) typology_code, status
+        FROM aml_typology_backtest_jobs
+        ORDER BY typology_code, started_at DESC
+      `) as Promise<Array<{ typology_code: string; status: string }>>,
+      this.dataSource.query(`
+        SELECT p.typology_code, c.typology_label, p.promoted_version, p.promoted_by, p.promoted_at
+        FROM aml_typology_promotions p
+        JOIN aml_typology_configs c ON c.typology_code = p.typology_code
+        ORDER BY p.promoted_at DESC
+        LIMIT 1
+      `) as Promise<
+        Array<{ typology_code: string; typology_label: string; promoted_version: number; promoted_by: string; promoted_at: Date }>
+      >,
+    ]);
 
     const metricsByCode = new Map(metricRows.map((m) => [m.typology_code, m]));
+    const activeBacktestByCode = new Map(activeBacktestRows.map((r) => [r.typology_code, r.status]));
 
-    return configRows.map((c) => {
+    const typologies = configRows.map((c) => {
       const m = metricsByCode.get(c.typologyCode);
       const total = m?.total_dispositioned ?? 0;
+      const backtestStatus = activeBacktestByCode.get(c.typologyCode);
       return {
         typologyCode: c.typologyCode,
         typologyLabel: c.typologyLabel,
@@ -64,10 +100,25 @@ export class TypologyConsoleService {
         active: c.active,
         productionVersion: c.productionVersion,
         alertVolume30d: m?.alert_volume_30d ?? 0,
-        strConversionRate: total > 0 ? (m!.str_count / total) : 0,
-        falsePositiveRate: total > 0 ? (m!.false_positive_count / total) : 0,
+        strConversionRate: total > 0 ? m!.str_count / total : 0,
+        falsePositiveRate: total > 0 ? m!.false_positive_count / total : 0,
+        hasActiveBacktest: backtestStatus === 'queued' || backtestStatus === 'running',
       };
     });
+
+    const lp = lastPromotionRows[0];
+    return {
+      typologies,
+      lastPromotion: lp
+        ? {
+            typologyCode: lp.typology_code,
+            typologyLabel: lp.typology_label,
+            promotedVersion: lp.promoted_version,
+            promotedBy: lp.promoted_by,
+            promotedAt: lp.promoted_at.toISOString(),
+          }
+        : null,
+    };
   }
 
   async getHistory(typologyCode: string): Promise<AmlTypologyConfigVersion[]> {

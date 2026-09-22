@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
-import { TypologyConsoleService, type TypologyRow } from './typology-console.service.js';
+import { TypologyConsoleService, type TypologyConsoleOverview } from './typology-console.service.js';
 import { UpdateTypologyDto } from '../dto/update-typology.dto.js';
 import { PromoteTypologyDto } from '../dto/promote-typology.dto.js';
 import { AmlTypologyConfig } from '../entities/aml-typology-config.entity.js';
@@ -24,7 +24,7 @@ export class TypologyConsoleController {
 
   @RequireRoles(...READ_ROLES)
   @Get()
-  async list(): Promise<TypologyRow[]> {
+  async list(): Promise<TypologyConsoleOverview> {
     return this.typologyConsoleService.list();
   }
 

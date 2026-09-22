@@ -67,8 +67,8 @@ describe('Typology & Rules Console (e2e)', () => {
       .get('/api/v1/features/aml_detection/typologies')
       .set('x-session-id', auditSessionId)
       .expect(200);
-    const body = res.body as Array<{ typologyCode: string }>;
-    expect(body.some((t) => t.typologyCode === typologyCode)).toBe(true);
+    const body = res.body as { typologies: Array<{ typologyCode: string }> };
+    expect(body.typologies.some((t) => t.typologyCode === typologyCode)).toBe(true);
 
     await request(app.getHttpServer())
       .post(`/api/v1/features/aml_detection/typologies/${typologyCode}/promote`)
@@ -130,10 +130,18 @@ describe('Typology & Rules Console (e2e)', () => {
       .get('/api/v1/features/aml_detection/typologies')
       .set('x-session-id', mlroSessionId)
       .expect(200);
-    const updated = (listRes.body as Array<{ typologyCode: string; productionVersion: number }>).find(
-      (t) => t.typologyCode === typologyCode,
-    );
+    const listBody = listRes.body as {
+      typologies: Array<{ typologyCode: string; productionVersion: number; hasActiveBacktest: boolean }>;
+      lastPromotion: { typologyCode: string; promotedVersion: number } | null;
+    };
+    const updated = listBody.typologies.find((t) => t.typologyCode === typologyCode);
     expect(updated?.productionVersion).toBe(3);
+    // The backtest job is already complete by this point, not
+    // queued/running — hasActiveBacktest is about a backtest actually
+    // in flight, not "has ever been backtested".
+    expect(updated?.hasActiveBacktest).toBe(false);
+    expect(listBody.lastPromotion?.typologyCode).toBe(typologyCode);
+    expect(listBody.lastPromotion?.promotedVersion).toBe(3);
   }, 15_000);
 
   it('allows a promotion with no linked backtest (flagged client-side, not blocked server-side)', async () => {
