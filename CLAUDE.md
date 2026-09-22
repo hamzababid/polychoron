@@ -59,6 +59,10 @@ specs/
           phase-2-full-aml/
           screens/                     11 screen specs
 TASKS.md                               Ordered, checkable task list — work through top to bottom
+docs/
+  architecture/blueprint.html            As-built architecture drawing set (C4, ERDs, flows,
+                                          sequences) — update alongside any change that makes a
+                                          sheet inaccurate; not auto-generated
 design-exports/
   bfsi/aml-detection/                  Drop your Claude Design exports here
   platform/                            Platform-level screen exports (e.g. Admin)
