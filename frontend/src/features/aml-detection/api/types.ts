@@ -296,3 +296,32 @@ export interface TypologyPromotion {
   promotedBy: string;
   promotedAt: string;
 }
+
+export interface Customer360Account {
+  accountId: string;
+  caseIds: string[];
+}
+
+export interface Customer360PriorCase {
+  caseId: string;
+  typologyLabel: string | null;
+  openedAt: string;
+  closedAt: string | null;
+  finalDisposition: DispositionType | null;
+}
+
+export interface Customer360ScreeningEntry extends ScreeningResult {
+  caseId: string;
+  assembledAt: string;
+}
+
+export interface Customer360Response {
+  customerId: string;
+  kyc: KYCSnapshot | null;
+  currentRiskScore: number | null;
+  filingsCount: number;
+  accounts: Customer360Account[];
+  priorCases: Customer360PriorCase[];
+  linkedEntities: LinkedEntity[];
+  screeningHistory: Customer360ScreeningEntry[];
+}

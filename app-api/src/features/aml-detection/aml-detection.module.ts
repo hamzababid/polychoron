@@ -22,6 +22,8 @@ import { DashboardController } from './dashboard/dashboard.controller.js';
 import { DashboardService } from './dashboard/dashboard.service.js';
 import { TypologyConsoleController } from './typology-console/typology-console.controller.js';
 import { TypologyConsoleService } from './typology-console/typology-console.service.js';
+import { Customer360Controller } from './customer-360/customer-360.controller.js';
+import { Customer360Service } from './customer-360/customer-360.service.js';
 import { TemporalModule } from '../../common/temporal/temporal.module.js';
 import { CommonAuthModule } from '../../common/auth/common-auth.module.js';
 
@@ -50,6 +52,7 @@ import { CommonAuthModule } from '../../common/auth/common-auth.module.js';
     GoamlTrackerController,
     DashboardController,
     TypologyConsoleController,
+    Customer360Controller,
   ],
   providers: [
     AmlDetectionService,
@@ -59,6 +62,7 @@ import { CommonAuthModule } from '../../common/auth/common-auth.module.js';
     GoamlTrackerService,
     DashboardService,
     TypologyConsoleService,
+    Customer360Service,
   ],
 })
 export class AmlDetectionModule {}

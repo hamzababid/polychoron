@@ -191,7 +191,16 @@ export function AlertQueueScreen() {
               </div>
               <div className="qcell">{r.typologyLabel ? <span className="aml-tag">{r.typologyLabel}</span> : '—'}</div>
               <div className="qcell">
-                <div className="alert-queue__customer">{r.customerName ?? r.customerId}</div>
+                <div
+                  className="alert-queue__customer"
+                  style={{ cursor: 'pointer' }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate(`${base}/customers/${r.customerId}`);
+                  }}
+                >
+                  {r.customerName ?? r.customerId}
+                </div>
                 <div className="alert-queue__account">
                   A/C {r.accountIds.join(', ')}
                   {r.customerName && ` · ${r.customerId}`}

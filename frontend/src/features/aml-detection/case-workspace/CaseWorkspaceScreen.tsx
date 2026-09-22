@@ -123,7 +123,13 @@ export function CaseWorkspaceScreen() {
           </div>
           {caseDetail.evidence && (
             <div style={{ fontSize: 12, color: 'var(--color-neutral-700)' }}>
-              {caseDetail.evidence.kyc.customer_name} · A/C {alert?.account_ids?.join(', ') ?? '—'}
+              <span
+                style={{ cursor: 'pointer', textDecoration: 'underline' }}
+                onClick={() => navigate(`${base}/customers/${alert?.customer_id}`)}
+              >
+                {caseDetail.evidence.kyc.customer_name}
+              </span>{' '}
+              · A/C {alert?.account_ids?.join(', ') ?? '—'}
             </div>
           )}
         </div>

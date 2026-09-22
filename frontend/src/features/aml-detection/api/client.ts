@@ -5,6 +5,7 @@ import type {
   BacktestJob,
   CaseDetail,
   CaseStatus,
+  Customer360Response,
   DashboardSummary,
   DashboardTrends,
   DispositionType,
@@ -143,4 +144,8 @@ export function getBacktestJob(jobId: string) {
 
 export function promoteTypology(code: string, body: { backtest_job_id?: string; reason: string; promoted_by: string }) {
   return apiFetch<TypologyPromotion>(`${BASE}/typologies/${code}/promote`, { method: 'POST', body: JSON.stringify(body) });
+}
+
+export function getCustomer360(customerId: string) {
+  return apiFetch<Customer360Response>(`${BASE}/customers/${customerId}/360`);
 }

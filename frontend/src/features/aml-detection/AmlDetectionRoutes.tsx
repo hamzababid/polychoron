@@ -5,15 +5,17 @@ import { CaseWorkspaceScreen } from './case-workspace/CaseWorkspaceScreen';
 import { FilingConsoleScreen } from './filing-console/FilingConsoleScreen';
 import { GoamlTrackerScreen } from './goaml-tracker/GoamlTrackerScreen';
 import { TypologyRulesConsoleScreen } from './typology-console/TypologyRulesConsoleScreen';
+import { Customer360Screen } from './customer-360/Customer360Screen';
 import './aml-theme.css';
 
 /** The AML Detection feature's routed screens. Its own top-level
  * screen nav lives in the platform shell's sidebar now (see
  * ../../shell/featureNav.ts's "aml_detection" entry + NavigationShell)
- * — Case Workspace and Filing Console stay drill-down-only routes,
- * reached by clicking a case rather than a sidebar link. Customer 360
- * / Screening Hub / Model Governance / Reporting are still Phase 2
- * not-yet-built (constitution rule 9, phase discipline). */
+ * — Case Workspace, Filing Console, and Customer 360 stay
+ * drill-down-only routes, reached by clicking through from Alert
+ * Queue/Case Workspace rather than a sidebar link. Screening Hub /
+ * Model Governance / Reporting are still Phase 2 not-yet-built
+ * (constitution rule 9, phase discipline). */
 export function AmlDetectionRoutes() {
   return (
     <div className="aml-page">
@@ -23,6 +25,7 @@ export function AmlDetectionRoutes() {
         <Route path="alerts" element={<AlertQueueScreen />} />
         <Route path="cases/:caseId" element={<CaseWorkspaceScreen />} />
         <Route path="cases/:caseId/filing" element={<FilingConsoleScreen />} />
+        <Route path="customers/:customerId" element={<Customer360Screen />} />
         <Route path="filings" element={<GoamlTrackerScreen />} />
         <Route path="typologies" element={<TypologyRulesConsoleScreen />} />
       </Routes>
