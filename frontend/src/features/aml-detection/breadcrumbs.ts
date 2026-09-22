@@ -24,6 +24,12 @@ export function getAmlBreadcrumbs(pathname: string, base: string): Crumb[] {
   if (segments[0] === 'typologies') {
     return [{ label: 'Typology Console' }];
   }
+  if (segments[0] === 'governance') {
+    return [{ label: 'Model Governance' }];
+  }
+  if (segments[0] === 'customers' && segments[1]) {
+    return [{ label: 'Customer 360' }];
+  }
   if (segments[0] === 'cases' && segments[1]) {
     const caseId = segments[1];
     const shortId = caseId.slice(0, 8);
