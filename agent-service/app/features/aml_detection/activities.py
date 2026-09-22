@@ -1,11 +1,13 @@
-"""Temporal activities wrapping each PlatformAgentNode. Node code
-itself does I/O and DB writes (HTTP calls to mock-bank, SQL reads/
-writes) which must never run directly inside workflow code — Temporal
-activities are the sanctioned place for that per the SDK's determinism
-model. Each activity also persists its node's domain output to the
-table agent-service owns (see persistence.py) — the audit-log write
+"""Temporal activities, one per node of the AML agent chain — each
+calls run_graph_step() to advance the case's langgraph.StateGraph
+(see graph.py) exactly one node. Node code itself does I/O and DB
+writes (HTTP calls to mock-bank, SQL reads/writes) which must never
+run directly inside workflow code — Temporal activities are the
+sanctioned place for that per the SDK's determinism model. Domain
+output persistence (save_evidence_bundle etc.) happens inside the
+graph's node functions; the audit-log write
 (platform_agent_activity_log) happens automatically inside
-PlatformAgentNode.run() itself, so it is not duplicated here.
+PlatformAgentNode.run() itself, so neither is duplicated here.
 
 Known Phase 1 simplification: Node 1's "On failure" partial-evidence
 fallback (agent-implementation.md — produce a partial EvidenceBundle
@@ -22,52 +24,33 @@ from __future__ import annotations
 
 from temporalio import activity
 
-from app.features.aml_detection.nodes.case_narrative import CaseNarrativeNode
-from app.features.aml_detection.nodes.evidence_gathering import EvidenceGatheringNode
-from app.features.aml_detection.nodes.pattern_matching import PatternMatchingNode
-from app.features.aml_detection.persistence import (
-    save_case_assessment,
-    save_evidence_bundle,
-    save_typology_match,
-)
-from app.features.aml_detection.schemas import (
-    CaseNarrativeInput,
-    EvidenceBundle,
-    InboundAlert,
-)
+from app.features.aml_detection.graph import run_graph_step
 
 
 @activity.defn
 def evidence_gathering_activity(payload: dict) -> dict:
-    alert = InboundAlert.model_validate(payload["alert"])
-    node = EvidenceGatheringNode()
-    bundle = node.run(alert, payload["tenant_id"], payload["case_id"])
-    save_evidence_bundle(bundle)
-    return bundle.model_dump(mode="json")
+    result = run_graph_step(
+        payload["case_id"],
+        initial_state={
+            "alert": payload["alert"],
+            "tenant_id": payload["tenant_id"],
+            "case_id": payload["case_id"],
+            "account_ids": payload["alert"].get("account_ids", []),
+        },
+    )
+    return result["evidence"]
 
 
 @activity.defn
 def pattern_matching_activity(payload: dict) -> dict:
-    evidence = EvidenceBundle.model_validate(payload["evidence"])
-    node = PatternMatchingNode()
-    match = node.run(evidence, payload["tenant_id"], payload["case_id"])
-    save_typology_match(match)
-    return match.model_dump(mode="json")
+    result = run_graph_step(payload["case_id"])
+    return result["typology_match"]
 
 
 @activity.defn
 def case_narrative_activity(payload: dict) -> dict:
-    node_input = CaseNarrativeInput.model_validate(
-        {
-            "evidence": payload["evidence"],
-            "typology_match": payload["typology_match"],
-            "account_ids": payload["account_ids"],
-        }
-    )
-    node = CaseNarrativeNode()
-    assessment = node.run(node_input, payload["tenant_id"], payload["case_id"])
-    save_case_assessment(assessment)
-    return assessment.model_dump(mode="json")
+    result = run_graph_step(payload["case_id"])
+    return result["assessment"]
 
 
 ALL_ACTIVITIES = [evidence_gathering_activity, pattern_matching_activity, case_narrative_activity]

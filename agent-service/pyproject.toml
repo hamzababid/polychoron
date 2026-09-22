@@ -14,6 +14,15 @@ dependencies = [
     "httpx>=0.27",
     "python-dotenv>=1.0",
     "openai>=1.40",
+    "langgraph>=0.2",
+    "langgraph-checkpoint-postgres>=2.0",
+    # psycopg (v3) has no pure-Python pq wrapper bundled by default —
+    # langgraph-checkpoint-postgres pulls in bare "psycopg" only, which
+    # fails at import with "no pq wrapper available" unless the binary
+    # extra is also installed.
+    "psycopg[binary,pool]>=3.1",
+    "langchain-core>=0.3",
+    "langchain-openai>=0.2",
 ]
 
 [project.optional-dependencies]

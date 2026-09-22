@@ -20,11 +20,15 @@ class InferenceClient(Protocol):
 
 class FoundationAPIInferenceClient:
     """A foundation model API — currently OpenAI, per this deployment's
-    choice. Phase 1's only real implementation; see
-    specs/platform/08-model-inference-routing-spec.md, "What this means
-    for Phase 1". The router and every PlatformAgentNode only ever see
-    the InferenceClient interface, so which vendor sits behind
-    FOUNDATION_API is a swap contained entirely to this class."""
+    choice, called via LangChain's ChatOpenAI (specs/platform/
+    03-agent-framework-spec.md's "LangGraph nodes ... inside a Temporal
+    workflow" pattern uses LangChain for the LLM call itself, not just
+    LangGraph for orchestration). Phase 1's only real implementation;
+    see specs/platform/08-model-inference-routing-spec.md, "What this
+    means for Phase 1". The router and every PlatformAgentNode only
+    ever see the InferenceClient interface (complete(prompt, system=)),
+    so which vendor sits behind FOUNDATION_API — and which SDK/library
+    is used to call it — is a swap contained entirely to this class."""
 
     provider = InferenceProvider.FOUNDATION_API
 
@@ -38,18 +42,11 @@ class FoundationAPIInferenceClient:
             )
         # Imported lazily so the module can be imported (e.g. for tests
         # exercising the router's resolution logic) without requiring
-        # the openai package's client to touch the network.
-        from openai import OpenAI
+        # langchain_openai's client to touch the network.
+        from langchain_openai import ChatOpenAI
 
-        self._client = OpenAI(api_key=settings.openai_api_key)
-
-    def complete(self, prompt: str, *, system: str | None = None) -> str:
-        messages: list[dict[str, str]] = []
-        if system:
-            messages.append({"role": "system", "content": system})
-        messages.append({"role": "user", "content": prompt})
-
-        response = self._client.chat.completions.create(
+        self._client = ChatOpenAI(
+            api_key=settings.openai_api_key,
             model=settings.openai_model,
             # Low, not zero: this is a compliance-adjacent workflow where
             # run-to-run consistency matters (demo reliability, audit-log
@@ -57,9 +54,19 @@ class FoundationAPIInferenceClient:
             # isn't meaningfully more deterministic for most providers
             # and forecloses provider-side sampling improvements.
             temperature=0.2,
-            messages=messages,  # type: ignore[arg-type]
         )
-        return response.choices[0].message.content or ""
+
+    def complete(self, prompt: str, *, system: str | None = None) -> str:
+        from langchain_core.messages import HumanMessage, SystemMessage
+
+        messages: list[SystemMessage | HumanMessage] = []
+        if system:
+            messages.append(SystemMessage(content=system))
+        messages.append(HumanMessage(content=prompt))
+
+        response = self._client.invoke(messages)
+        content = response.content
+        return content if isinstance(content, str) else str(content)
 
 
 class SelfHostedInferenceClient:

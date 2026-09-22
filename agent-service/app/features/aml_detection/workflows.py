@@ -7,7 +7,13 @@ human-checkpoint signal wait -> resume on Disposition.
 Workflow code stays free of non-workflow-safe imports (no DB/HTTP
 clients here, only activity calls) per Temporal's determinism
 requirements — see activities.py for where the actual node execution
-happens."""
+happens. Only the second and third activities' *inputs* got simpler
+here: since each activity now advances the same case's
+langgraph.StateGraph checkpoint (see graph.py) rather than each node
+being called directly, evidence/typology_match no longer need to be
+threaded through this workflow's activity payloads — the checkpoint
+carries that state between activities. This workflow still captures
+each activity's own return value for its own final result, unchanged."""
 
 from __future__ import annotations
 
@@ -53,20 +59,14 @@ class AmlDetectionWorkflow:
 
         typology_match = await workflow.execute_activity(
             pattern_matching_activity,
-            {"evidence": evidence, "tenant_id": tenant_id, "case_id": case_id},
+            {"case_id": case_id},
             start_to_close_timeout=_LLM_ACTIVITY_TIMEOUT,
             retry_policy=RetryPolicy(maximum_attempts=2),
         )
 
         assessment = await workflow.execute_activity(
             case_narrative_activity,
-            {
-                "evidence": evidence,
-                "typology_match": typology_match,
-                "account_ids": alert.get("account_ids", []),
-                "tenant_id": tenant_id,
-                "case_id": case_id,
-            },
+            {"case_id": case_id},
             start_to_close_timeout=_LLM_ACTIVITY_TIMEOUT,
             retry_policy=RetryPolicy(maximum_attempts=2),
         )
