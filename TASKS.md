@@ -510,6 +510,46 @@ exists, per the existing decision #3 in api-contracts-phase2.md.
       reporting/export, nothing an analyst or senior officer needs;
       4 e2e tests, `app-api/test/reporting.e2e-spec.ts`)
 
+### Regulatory Knowledge Base — management screen
+**Tracking gap, closed 2026-09-23:** `specs/platform/10-regulatory-knowledge-base-spec.md`'s
+"Migration note" says the full ingestion pipeline is "Phase 2 scope,
+tracked in `TASKS.md`" — it never actually was, in this file or in any
+prior export of it. Phase 1 shipped only a hand-seeded corpus
+(`agent-service/scripts/seed_regulatory_corpus.py`) with no UI; this is
+that promised follow-up. No dedicated `screens/*.md` spec exists for
+this (unlike the other Phase 2 screens below) — scope it directly from
+`10-regulatory-knowledge-base-spec.md` and
+`regulatory-corpus-manifest.md`'s "Phase 2 (full corpus)" /
+"Ownership and update process" sections.
+- [ ] Document list view — `RegulatoryDocument` rows for this feature's
+      corpus (title, source_type, issuing_authority, version_label,
+      effective_date, source_url, ingested_by/at, superseded_by status)
+- [ ] Upload/ingest a new document — title, source_type,
+      issuing_authority, version_label, source_url (required — every
+      citation must trace back to the authoritative publication, per
+      the manifest), and the source text/PDF
+- [ ] Chunking service — split the ingested text into sections with a
+      `section_reference` label, embed each via the same
+      `get_embedding()`/`ingest_chunk()` path `seed_regulatory_corpus.py`
+      already uses, don't reimplement
+- [ ] Supersede workflow, not delete — ingesting a replacement sets the
+      old document's `superseded_by`; retired documents stay queryable
+      (constitution rule 8 — a case decided under an older version must
+      stay explainable against the text in force at the time)
+- [ ] Embedding refresh job — re-embed a document's chunks on demand
+      (e.g. after an embedding-model change), without needing to
+      re-upload the source text
+- [ ] Chunk preview/search within a document — so
+      `aml_detection.mlro_compliance_head` can sanity-check what a
+      citation would actually retrieve before relying on it
+- [ ] RBAC: `aml_detection.mlro_compliance_head` only, both read and
+      write (manifest: "same accountability level as typology
+      promotion") — no read-only role for this one, unlike the other
+      Phase 2 consoles
+- [ ] Test: uploading a document produces queryable chunks with real
+      embeddings; superseding retains the old document and both remain
+      independently citable; non-mlro roles get 403 on every route
+
 ### MLOps tracing layer (platform-wide, not a screen)
 - [ ] OpenTelemetry spans for every agent node execution
       (`agent-service`)
