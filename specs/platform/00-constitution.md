@@ -83,3 +83,38 @@ explicit, validated `TenantInferenceProfile` — and fails closed (refuses
 to run) rather than guessing when that profile is missing or
 inconsistent. Which provider served a call is an audited fact on every
 log entry, not an assumption.
+
+## 12. Untrusted evidence text is always data, never instructions
+Any free-text field that reaches an agent's prompt from an external
+system (transaction narration, counterparty names, memo fields) must be
+wrapped in explicit data delimiters and scanned for injection patterns
+before use. A match is flagged for human review, never silently
+executed as an instruction. See
+`platform/11-evals-and-guardrails-framework.md`, guardrail G1.
+
+## 13. Regulatory citations are verified before they're trusted
+An agent may never persist or display a regulatory citation whose
+source chunk wasn't actually present in that call's retrieval result.
+Fabricated citations are stripped and logged as a guardrail violation —
+never silently accepted because they look plausible. See guardrail G3.
+
+## 14. A kill switch must exist, scoped to typology and to feature
+Every feature must provide a senior-role-only control to disable a
+specific detection typology, or the feature's entire agent chain, per
+tenant — checked before any typology-specific reasoning runs. A
+disabled case is routed to full manual review and marked as such in its
+own record, never silently processed as if nothing had changed. See
+guardrail G6.
+
+## 15. No agent version proceeds to shadow mode without passing golden-dataset regression
+Every feature must maintain a golden-dataset regression suite. A
+proposed agent/prompt/rule version that fails this suite must not enter
+shadow-mode comparison, let alone be promoted to production. See
+`platform/11-evals-and-guardrails-framework.md`, eval E1.
+
+## 16. Fairness monitoring is continuous, not a one-time check
+Any feature whose output affects how individuals or entities are
+treated must run continuous, segment-level fairness monitoring, with
+defined dimensions and a human-reviewed alert path when deviation
+exceeds threshold. Monitoring may only flag for human review — it must
+never trigger an automatic corrective action on its own. See eval E5.

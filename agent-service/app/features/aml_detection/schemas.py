@@ -55,6 +55,12 @@ class TransactionRecord(BaseModel):
     timestamp: datetime
     counterparty_account: str | None = None
     branch_code: str | None = None
+    # ADDITIVE (specs/platform/11-evals-and-guardrails-framework.md,
+    # guardrail G1): the bank's free-text memo/narration field on a
+    # transaction — attacker-controllable, so it is exactly the field
+    # guardrail G1's prompt-injection scan targets. Optional/defaulted
+    # so existing rows/tests that never set it are unaffected.
+    narration: str | None = None
 
 
 class LinkedEntity(BaseModel):
@@ -99,6 +105,11 @@ class EvidenceBundle(BaseModel):
     screening_results: list[ScreeningResult]
     assembled_at: datetime = Field(default_factory=datetime.utcnow)
     agent_version: str
+    # ADDITIVE (specs/platform/11-evals-and-guardrails-framework.md,
+    # guardrail G2): non-empty only when an Evidence Gathering API call
+    # failed after retry — see evidence_gathering.py. Defaults to []
+    # so existing code constructing this model is unaffected.
+    data_gaps: list[str] = []
 
 
 class MatchedIndicator(BaseModel):

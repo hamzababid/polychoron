@@ -36,8 +36,10 @@ class PlatformAgentNode(Protocol):
 ```
 
 ## Non-negotiable behaviors every feature's implementation must have
-(These restate constitution rules 3–6 at the framework level — see
-`platform/00-constitution.md` for the source of truth.)
+(These restate constitution rules 3–6 and 11–14 at the framework level
+— see `platform/00-constitution.md` for the source of truth, and
+`platform/11-evals-and-guardrails-framework.md` for the full guardrail
+mechanisms referenced below.)
 
 1. Every node invocation writes a `PlatformAgentActivityLogEntry`
    (platform data model) — tagged with `suite_code`/`feature_code` so
@@ -45,13 +47,22 @@ class PlatformAgentNode(Protocol):
 2. A human checkpoint is a **workflow pause on a Temporal signal**, not
    a completed-then-restarted execution.
 3. Confidence scores drive **routing** (which queue/reviewer pool a
-   case lands in), never the agent's own conclusion.
+   case lands in, per a `ConfidenceRoutingPolicy`), never the agent's
+   own conclusion.
 4. Every node's prompt/config is versioned in the same repo as the
    workflow code; case records permanently store which version handled
    them.
-5. Promotion of a new node version to production requires a shadow-mode
-   comparison period and an explicit human promotion action — never
-   automatic.
+5. Promotion of a new node version to production requires **passing
+   golden-dataset regression, then** a shadow-mode comparison period,
+   then an explicit human promotion action — never automatic, and never
+   skipping the golden-dataset gate.
+6. Before any typology-specific reasoning runs, the Pattern Matching
+   node checks `is_typology_active()` (the kill switch, guardrail G6) —
+   a disabled typology or feature routes straight to manual review.
+7. Any free-text evidence field entering a prompt is sanitized and
+   scanned per guardrail G1 before use.
+8. Any regulatory citation an agent produces is validated against the
+   actual retrieval result per guardrail G3 before being persisted.
 
 ## How a feature registers its agent chain
 A feature (e.g. AML Detection) defines:

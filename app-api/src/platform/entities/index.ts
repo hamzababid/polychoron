@@ -6,3 +6,7 @@ export { PlatformRole } from './platform-role.entity.js';
 export { PlatformUser } from './platform-user.entity.js';
 export { PlatformSession } from './platform-session.entity.js';
 export { PlatformAgentActivityLog } from './platform-agent-activity-log.entity.js';
+export { PlatformKillSwitchScope } from './platform-kill-switch-scope.entity.js';
+export { PlatformGuardrailViolation } from './platform-guardrail-violation.entity.js';
+export { PlatformEvalRun } from './platform-eval-run.entity.js';
+export { PlatformFairnessMonitoringSnapshot } from './platform-fairness-monitoring-snapshot.entity.js';

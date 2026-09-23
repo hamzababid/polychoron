@@ -3,6 +3,9 @@ import { Link } from 'react-router-dom';
 import {
   getConsistency,
   getDataLineage,
+  getEvalRuns,
+  getFairnessFlags,
+  getGuardrailViolations,
   getModelVersions,
   getSamplingOverview,
   recordSamplingReview,
@@ -10,6 +13,9 @@ import {
 import type {
   ConsistencyResponse,
   DataLineageResponse,
+  EvalRunsResponse,
+  FairnessFlagsResponse,
+  GuardrailViolationsResponse,
   ModelVersionsResponse,
   SamplingAgreementTrendPoint,
   SamplingOverview,
@@ -61,6 +67,9 @@ export function ModelGovernanceScreen() {
   const [consistency, setConsistency] = useState<ConsistencyResponse | null>(null);
   const [modelVersions, setModelVersions] = useState<ModelVersionsResponse | null>(null);
   const [lineage, setLineage] = useState<DataLineageResponse | null>(null);
+  const [evalRuns, setEvalRuns] = useState<EvalRunsResponse | null>(null);
+  const [fairnessFlags, setFairnessFlags] = useState<FairnessFlagsResponse | null>(null);
+  const [guardrailViolations, setGuardrailViolations] = useState<GuardrailViolationsResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const [pendingPage, setPendingPage] = useState(1);
@@ -71,6 +80,10 @@ export function ModelGovernanceScreen() {
   const [consistencyPageSize, setConsistencyPageSize] = useState(REVIEW_PAGE_SIZE);
   const [versionHistoryPage, setVersionHistoryPage] = useState(1);
   const [versionHistoryPageSize, setVersionHistoryPageSize] = useState(REVIEW_PAGE_SIZE);
+  const [evalRunsPage, setEvalRunsPage] = useState(1);
+  const [evalRunsPageSize, setEvalRunsPageSize] = useState(REVIEW_PAGE_SIZE);
+  const [violationsPage, setViolationsPage] = useState(1);
+  const [violationsPageSize, setViolationsPageSize] = useState(REVIEW_PAGE_SIZE);
 
   const [reviewingCaseId, setReviewingCaseId] = useState<string | null>(null);
   const [reviewerAgreed, setReviewerAgreed] = useState<'agree' | 'disagree' | ''>('');
@@ -111,6 +124,25 @@ export function ModelGovernanceScreen() {
     // within a mounted screen — fetched once, not on every render.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (canSeeFullAudit) {
+      getEvalRuns({ page: evalRunsPage, pageSize: evalRunsPageSize }).then(setEvalRuns).catch(() => undefined);
+    }
+  }, [canSeeFullAudit, evalRunsPage, evalRunsPageSize]);
+
+  useEffect(() => {
+    if (canSeeFullAudit) {
+      getFairnessFlags({ pageSize: 20 }).then(setFairnessFlags).catch(() => undefined);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [canSeeFullAudit]);
+
+  useEffect(() => {
+    if (canSeeFullAudit) {
+      getGuardrailViolations({ page: violationsPage, pageSize: violationsPageSize }).then(setGuardrailViolations).catch(() => undefined);
+    }
+  }, [canSeeFullAudit, violationsPage, violationsPageSize]);
 
   if (error) return <div className="aml-status aml-status--error">Could not load governance data: {error}</div>;
   if (!sampling) return <div className="aml-status">Loading model governance…</div>;
@@ -540,6 +572,145 @@ export function ModelGovernanceScreen() {
                 }}
               >
                 One or more feeds are past their expected cadence — see STALE rows above.
+              </div>
+            )}
+          </div>
+        )}
+
+        {canSeeFullAudit && (evalRuns || fairnessFlags || guardrailViolations) && (
+          <div className="tile model-governance__panel">
+            <i className="corner tl" />
+            <i className="corner tr" />
+            <i className="corner bl" />
+            <i className="corner br" />
+            <div className="tile-head model-governance__phead">
+              <span className="model-governance__num">05</span>
+              <h4 style={{ margin: 0 }}>Evals &amp; guardrails</h4>
+            </div>
+
+            {evalRuns && (
+              <div style={{ borderBottom: '1px solid var(--color-divider)' }}>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: 9, padding: '9px 14px' }}>
+                  <h6 style={{ margin: 0 }}>Golden-dataset regression history</h6>
+                  {evalRuns.latestStatus && (
+                    <span
+                      className="tag tag-solid"
+                      style={{
+                        fontSize: 10,
+                        background: evalRuns.latestStatus === 'passed' ? 'var(--color-accent-700)' : 'var(--color-alert)',
+                      }}
+                    >
+                      LATEST: {evalRuns.latestStatus.toUpperCase()}
+                    </span>
+                  )}
+                </div>
+                {evalRuns.rows.items.length === 0 ? (
+                  <div className="tile-body model-governance__muted">No regression runs yet.</div>
+                ) : (
+                  <>
+                    {evalRuns.rows.items.map((r) => (
+                      <div
+                        key={r.runId}
+                        style={{
+                          display: 'grid',
+                          gridTemplateColumns: '130px 1fr 120px 150px',
+                          alignItems: 'center',
+                          padding: '7px 14px',
+                          borderTop: '1px solid color-mix(in srgb, var(--color-text) 8%, transparent)',
+                          fontSize: 12.5,
+                        }}
+                      >
+                        <div>{r.agentVersionUnderTest}</div>
+                        <div style={{ color: 'var(--color-neutral-700)' }}>{new Date(r.startedAt).toLocaleString()}</div>
+                        <div>
+                          {r.passed}/{r.totalCases} passed
+                        </div>
+                        <div style={{ color: r.status === 'passed' ? 'var(--color-accent-800)' : 'var(--color-alert)' }}>{r.status}</div>
+                      </div>
+                    ))}
+                    <Pagination
+                      page={evalRuns.rows.page}
+                      pageSize={evalRuns.rows.pageSize}
+                      total={evalRuns.rows.total}
+                      onPageChange={setEvalRunsPage}
+                      onPageSizeChange={(size) => {
+                        setEvalRunsPageSize(size);
+                        setEvalRunsPage(1);
+                      }}
+                    />
+                  </>
+                )}
+              </div>
+            )}
+
+            {fairnessFlags && (
+              <div style={{ borderBottom: '1px solid var(--color-divider)' }}>
+                <div style={{ padding: '9px 14px' }}>
+                  <h6 style={{ margin: 0 }}>Fairness flags — for human review only, never an automatic action</h6>
+                </div>
+                {fairnessFlags.rows.items.length === 0 ? (
+                  <div className="tile-body model-governance__muted">No flagged segments in the most recent computation.</div>
+                ) : (
+                  fairnessFlags.rows.items.map((f) => (
+                    <div
+                      key={f.snapshotId}
+                      style={{
+                        padding: '7px 14px',
+                        borderTop: '1px solid color-mix(in srgb, var(--color-text) 8%, transparent)',
+                        fontSize: 12.5,
+                        color: 'var(--color-alert)',
+                      }}
+                    >
+                      {f.segmentDimension} = {f.segmentValue}: {(f.strRecommendationRate * 100).toFixed(1)}% STR rate (
+                      {f.baselineDeviation.toFixed(2)}× baseline)
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
+
+            {guardrailViolations && (
+              <div>
+                <div style={{ padding: '9px 14px' }}>
+                  <h6 style={{ margin: 0 }}>Guardrail violations (G1 prompt-injection, G3 citation-fabrication)</h6>
+                </div>
+                {guardrailViolations.rows.items.length === 0 ? (
+                  <div className="tile-body model-governance__muted">No guardrail violations recorded.</div>
+                ) : (
+                  <>
+                    {guardrailViolations.rows.items.map((v) => (
+                      <div
+                        key={v.violationId}
+                        style={{
+                          padding: '7px 14px',
+                          borderTop: '1px solid color-mix(in srgb, var(--color-text) 8%, transparent)',
+                          fontSize: 12,
+                        }}
+                      >
+                        <span
+                          className="tag tag-neutral"
+                          style={{ fontSize: 9.5, marginRight: 6, color: v.severity === 'blocked' || v.severity === 'escalated' ? 'var(--color-alert)' : undefined }}
+                        >
+                          {v.severity.toUpperCase()}
+                        </span>
+                        <Link to={`${base}/cases/${v.externalCaseRef}`}>{v.externalCaseRef.slice(0, 8)}</Link>
+                        {' · '}
+                        {v.guardrailType} ({v.nodeName}) · {new Date(v.detectedAt).toLocaleString()}
+                        <div style={{ color: 'var(--color-neutral-700)', marginTop: 2 }}>{v.details}</div>
+                      </div>
+                    ))}
+                    <Pagination
+                      page={guardrailViolations.rows.page}
+                      pageSize={guardrailViolations.rows.pageSize}
+                      total={guardrailViolations.rows.total}
+                      onPageChange={setViolationsPage}
+                      onPageSizeChange={(size) => {
+                        setViolationsPageSize(size);
+                        setViolationsPage(1);
+                      }}
+                    />
+                  </>
+                )}
               </div>
             )}
           </div>

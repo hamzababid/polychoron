@@ -11,7 +11,15 @@ import { AmlTypologyBacktestJob } from './entities/aml-typology-backtest-job.ent
 import { AmlTypologyPromotion } from './entities/aml-typology-promotion.entity.js';
 import { AmlSamplingReview } from './entities/aml-sampling-review.entity.js';
 import { AmlReportGeneration } from './entities/aml-report-generation.entity.js';
-import { FeatureCaseEnvelope, PlatformSession, PlatformUser } from '../../platform/entities/index.js';
+import {
+  FeatureCaseEnvelope,
+  PlatformEvalRun,
+  PlatformFairnessMonitoringSnapshot,
+  PlatformGuardrailViolation,
+  PlatformKillSwitchScope,
+  PlatformSession,
+  PlatformUser,
+} from '../../platform/entities/index.js';
 import { AmlDetectionController } from './aml-detection.controller.js';
 import { AmlDetectionService } from './aml-detection.service.js';
 import { AlertQueueService } from './alert-queue/alert-queue.service.js';
@@ -30,6 +38,8 @@ import { ModelGovernanceController } from './model-governance/model-governance.c
 import { ModelGovernanceService } from './model-governance/model-governance.service.js';
 import { ReportingController } from './reporting/reporting.controller.js';
 import { ReportingService } from './reporting/reporting.service.js';
+import { KillSwitchController } from './kill-switch/kill-switch.controller.js';
+import { KillSwitchService } from './kill-switch/kill-switch.service.js';
 import { TemporalModule } from '../../common/temporal/temporal.module.js';
 import { CommonAuthModule } from '../../common/auth/common-auth.module.js';
 
@@ -50,6 +60,10 @@ import { CommonAuthModule } from '../../common/auth/common-auth.module.js';
       FeatureCaseEnvelope,
       PlatformUser,
       PlatformSession,
+      PlatformKillSwitchScope,
+      PlatformGuardrailViolation,
+      PlatformEvalRun,
+      PlatformFairnessMonitoringSnapshot,
     ]),
     TemporalModule,
     CommonAuthModule,
@@ -63,6 +77,7 @@ import { CommonAuthModule } from '../../common/auth/common-auth.module.js';
     Customer360Controller,
     ModelGovernanceController,
     ReportingController,
+    KillSwitchController,
   ],
   providers: [
     AmlDetectionService,
@@ -75,6 +90,7 @@ import { CommonAuthModule } from '../../common/auth/common-auth.module.js';
     Customer360Service,
     ModelGovernanceService,
     ReportingService,
+    KillSwitchService,
   ],
 })
 export class AmlDetectionModule {}
