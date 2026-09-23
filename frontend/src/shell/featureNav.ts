@@ -20,6 +20,7 @@ export const FEATURE_NAV_ITEMS: Record<string, FeatureNavItem[]> = {
     { label: 'Alert Queue', path: 'alerts' },
     { label: 'goAML Tracker', path: 'filings', roles: ['aml_detection.senior_officer_l2', 'aml_detection.mlro_compliance_head'] },
     { label: 'Typology Console', path: 'typologies', roles: ['aml_detection.mlro_compliance_head', 'platform.model_risk_audit'] },
+    { label: 'Regulatory KB', path: 'regulatory-kb', roles: ['aml_detection.mlro_compliance_head'] },
     {
       label: 'Model Governance',
       path: 'governance',

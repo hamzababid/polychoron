@@ -8,6 +8,8 @@ import {
   PlatformRole,
   PlatformSession,
   PlatformUser,
+  RegulatoryChunk,
+  RegulatoryDocument,
   Suite,
   Tenant,
 } from '../../platform/entities/index.js';
@@ -59,6 +61,8 @@ import { AmlReportGeneration } from '../../features/aml-detection/entities/aml-r
           PlatformUser,
           PlatformSession,
           PlatformAgentActivityLog,
+          RegulatoryDocument,
+          RegulatoryChunk,
           AmlCase,
           AmlDisposition,
           AmlStrFiling,

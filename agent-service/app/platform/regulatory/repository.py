@@ -111,3 +111,63 @@ def ingest_chunk(*, document_id: UUID, section_reference: str, chunk_text: str) 
         chunk_id = result.scalar_one()
         conn.commit()
         return chunk_id
+
+
+def supersede_document(*, old_document_id: UUID, new_document_id: UUID) -> None:
+    """Points the old document forward to its replacement — retained,
+    never deleted (constitution rule 8 / spec non-negotiable #3): a case
+    decided under an older version must stay explainable against the
+    text that was actually in force at the time."""
+    with get_connection() as conn:
+        conn.execute(
+            text("UPDATE regulatory_documents SET superseded_by = :new_id WHERE document_id = :old_id"),
+            {"new_id": str(new_document_id), "old_id": str(old_document_id)},
+        )
+        conn.commit()
+
+
+def reembed_chunk(*, chunk_id: UUID, chunk_text: str) -> None:
+    """Re-runs get_embedding() for an existing chunk's already-stored
+    text and updates its embedding in place — e.g. after an embedding-
+    model change. Never re-derives the text itself; that would be a
+    content edit, not a re-embed."""
+    embedding = get_embedding(chunk_text)
+    with get_connection() as conn:
+        conn.execute(
+            text("UPDATE regulatory_chunks SET embedding = cast(:embedding as vector) WHERE chunk_id = :chunk_id"),
+            {"embedding": json.dumps(embedding), "chunk_id": str(chunk_id)},
+        )
+        conn.commit()
+
+
+def list_documents(feature_code: str) -> list[dict]:
+    with get_connection() as conn:
+        rows = conn.execute(
+            text(
+                """
+                SELECT d.document_id, d.title, d.source_type, d.issuing_authority,
+                       d.version_label, d.effective_date, d.superseded_by, d.source_url,
+                       d.ingested_at, d.ingested_by,
+                       count(c.chunk_id)::int AS chunk_count
+                FROM regulatory_documents d
+                LEFT JOIN regulatory_chunks c ON c.document_id = d.document_id
+                WHERE d.feature_code = :feature_code
+                GROUP BY d.document_id
+                ORDER BY d.ingested_at DESC
+                """
+            ),
+            {"feature_code": feature_code},
+        ).mappings().all()
+    return [dict(row) for row in rows]
+
+
+def list_chunks(document_id: UUID) -> list[dict]:
+    with get_connection() as conn:
+        rows = conn.execute(
+            text(
+                "SELECT chunk_id, document_id, section_reference, text FROM regulatory_chunks "
+                "WHERE document_id = :document_id ORDER BY section_reference"
+            ),
+            {"document_id": str(document_id)},
+        ).mappings().all()
+    return [dict(row) for row in rows]

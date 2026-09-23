@@ -1,0 +1,108 @@
+.regulatory-kb {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.regulatory-kb__strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: none;
+  padding: 9px 18px;
+  border-bottom: 1px solid var(--color-divider);
+  background: var(--color-neutral-100);
+}
+
+.regulatory-kb__scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 14px 18px 24px;
+}
+
+.regulatory-kb__tableHead {
+  display: grid;
+  grid-template-columns: 1.4fr 110px 1fr 90px 90px 130px;
+  background: var(--color-neutral-100);
+  border-bottom: 1px solid var(--color-text);
+}
+
+.regulatory-kb__ahd {
+  padding: 7px 10px;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-neutral-700);
+}
+
+.regulatory-kb__row {
+  display: grid;
+  grid-template-columns: 1.4fr 110px 1fr 90px 90px 130px;
+  align-items: center;
+  border-bottom: 1px solid color-mix(in srgb, var(--color-text) 9%, transparent);
+  cursor: pointer;
+}
+
+.regulatory-kb__row:hover {
+  background: color-mix(in srgb, var(--color-accent) 6%, transparent);
+}
+
+.regulatory-kb__row--selected {
+  background: var(--color-accent-100);
+}
+
+.regulatory-kb__row--superseded {
+  opacity: 0.6;
+}
+
+.regulatory-kb__cell {
+  padding: 8px 10px;
+  min-width: 0;
+  font-size: 12.5px;
+}
+
+.regulatory-kb__supersededBadge {
+  display: inline-grid;
+  place-items: center;
+  height: 18px;
+  padding: 0 6px;
+  border: 1px solid var(--color-neutral-500);
+  color: var(--color-neutral-600);
+  font-family: var(--font-heading);
+  font-size: 9px;
+  letter-spacing: 0.06em;
+}
+
+.regulatory-kb__field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 11px;
+  color: var(--color-neutral-700);
+}
+
+.regulatory-kb__field input,
+.regulatory-kb__field select,
+.regulatory-kb__field textarea {
+  font-family: inherit;
+  font-size: 13px;
+  padding: 6px 8px;
+  border: 1px solid var(--color-divider);
+}
+
+.regulatory-kb__chunkRow {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  margin-bottom: 8px;
+  padding: 8px;
+  background: var(--color-neutral-100);
+  border: 1px solid var(--color-divider);
+}
+
+.regulatory-kb__jobStatus {
+  margin-top: 10px;
+  font-size: 12.5px;
+}
