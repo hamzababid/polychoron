@@ -137,8 +137,10 @@ services:
         condition: service_completed_successfully
     environment:
       DATABASE_URL: postgresql://polychoron:polychoron_dev_only@postgres:5432/polychoron
+      LOG_FILE_NAME: agent-service-api.log
     volumes:
       - ../agent-service:/app
+      - ../logs/agent-service:/app/logs
     working_dir: /app
     ports:
       - "8001:8001"
@@ -160,12 +162,14 @@ services:
       DATABASE_URL: postgresql://polychoron:polychoron_dev_only@postgres:5432/polychoron
       TEMPORAL_ADDRESS: temporal:7233
       MOCK_BANK_BASE_URL: http://agent-service-api:8001
+      LOG_FILE_NAME: agent-service-worker.log
       # OPENAI_API_KEY/OPENAI_MODEL come from the bind-mounted
       # agent-service/.env (pydantic-settings' env_file) — not
       # duplicated here, so there's exactly one place that secret
       # lives locally.
     volumes:
       - ../agent-service:/app
+      - ../logs/agent-service:/app/logs
     working_dir: /app
     command: ["python", "-m", "app.features.aml_detection.worker"]
 
@@ -193,6 +197,7 @@ services:
     volumes:
       - ../app-api:/app
       - app_api_node_modules:/app/node_modules
+      - ../logs/app-api:/app/logs
     working_dir: /app
     ports:
       - "3000:3000"

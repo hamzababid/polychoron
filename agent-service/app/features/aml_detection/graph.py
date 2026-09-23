@@ -26,6 +26,7 @@ into this graph's state.
 from __future__ import annotations
 
 import threading
+import time
 from typing import TypedDict
 
 from langgraph.checkpoint.postgres import PostgresSaver
@@ -46,6 +47,9 @@ from app.features.aml_detection.schemas import (
     EvidenceBundle,
     InboundAlert,
 )
+from app.platform.logging import get_logger, set_case_id, set_correlation_id
+
+logger = get_logger("agent-service.graph")
 
 
 class AmlGraphState(TypedDict, total=False):
@@ -53,26 +57,53 @@ class AmlGraphState(TypedDict, total=False):
     tenant_id: str
     case_id: str
     account_ids: list[str]
+    # Set once, in the first call's initial_state (see activities.py) —
+    # LangGraph carries the full accumulated state across every
+    # checkpointed resumption, so this is still present in `state` on
+    # the pattern_matching/case_narrative calls even though nothing
+    # returns it again.
+    correlation_id: str | None
     evidence: dict
     typology_match: dict
     assessment: dict
 
 
+def _enter_node(name: str, state: AmlGraphState) -> float:
+    """Every node function calls this first — it's the one place a
+    Temporal activity's execution reliably has both IDs in hand
+    (they're read back out of the checkpointed state, not re-derived),
+    so it's where the logging context gets set for everything that
+    node does, including PlatformAgentNode.run()'s own log lines."""
+    set_case_id(state.get("case_id"))
+    set_correlation_id(state.get("correlation_id"))
+    logger.info("node %s starting", name)
+    return time.monotonic()
+
+
+def _exit_node(name: str, started_at: float) -> None:
+    logger.info("node %s completed in %.1fms", name, (time.monotonic() - started_at) * 1000)
+
+
 def _evidence_gathering_node(state: AmlGraphState) -> dict:
+    started_at = _enter_node("evidence_gathering", state)
     alert = InboundAlert.model_validate(state["alert"])
     bundle = EvidenceGatheringNode().run(alert, state["tenant_id"], state["case_id"])
     save_evidence_bundle(bundle)
+    _exit_node("evidence_gathering", started_at)
     return {"evidence": bundle.model_dump(mode="json")}
 
 
 def _pattern_matching_node(state: AmlGraphState) -> dict:
+    started_at = _enter_node("pattern_matching", state)
     evidence = EvidenceBundle.model_validate(state["evidence"])
     match = PatternMatchingNode().run(evidence, state["tenant_id"], state["case_id"])
     save_typology_match(match)
+    _exit_node("pattern_matching", started_at)
     return {"typology_match": match.model_dump(mode="json")}
 
 
 def _case_narrative_node(state: AmlGraphState) -> dict:
+    started_at = _enter_node("case_narrative", state)
     node_input = CaseNarrativeInput.model_validate(
         {
             "evidence": state["evidence"],
@@ -82,6 +113,7 @@ def _case_narrative_node(state: AmlGraphState) -> dict:
     )
     assessment = CaseNarrativeNode().run(node_input, state["tenant_id"], state["case_id"])
     save_case_assessment(assessment)
+    _exit_node("case_narrative", started_at)
     return {"assessment": assessment.model_dump(mode="json")}
 
 

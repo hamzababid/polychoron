@@ -1,4 +1,5 @@
 import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsInt, IsOptional, Max, Min } from 'class-validator';
 import { GoamlTrackerService, type FilingDetail, type FilingSummary } from './goaml-tracker.service.js';
@@ -26,6 +27,7 @@ class ListFilingsQueryDto {
  * "This screen and every API it calls is unreachable by any role
  * outside senior_officer_l2/mlro_compliance_head — confidential by
  * nature." Enforced identically to Filing Console. */
+@ApiTags('goAML Tracker')
 @Controller('features/aml_detection/filings')
 @UseGuards(SessionGuard, RolesGuard)
 @RequireRoles('aml_detection.senior_officer_l2', 'aml_detection.mlro_compliance_head')

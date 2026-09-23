@@ -1,4 +1,5 @@
 import { Controller, Get } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { PlatformService, type SuiteWithFeatures } from './platform.service.js';
 
 /**
@@ -8,6 +9,7 @@ import { PlatformService, type SuiteWithFeatures } from './platform.service.js';
  * (see api-contracts-phase1.md's note that platform routes aren't
  * namespaced under a feature).
  */
+@ApiTags('Platform')
 @Controller('platform')
 export class PlatformController {
   constructor(private readonly platformService: PlatformService) {}

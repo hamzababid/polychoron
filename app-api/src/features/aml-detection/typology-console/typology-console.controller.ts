@@ -1,4 +1,5 @@
 import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { TypologyConsoleService, type TypologyConsoleOverview } from './typology-console.service.js';
 import { UpdateTypologyDto } from '../dto/update-typology.dto.js';
 import { PromoteTypologyDto } from '../dto/promote-typology.dto.js';
@@ -17,6 +18,7 @@ const WRITE_ROLES = ['aml_detection.mlro_compliance_head'];
  * RBAC: mlro_compliance_head (full, including promote),
  * model_risk_audit (read-only) — enforced per-route below, not just
  * at the class level, so promote stays exclusive to mlro_compliance_head. */
+@ApiTags('Typology Console')
 @Controller('features/aml_detection/typologies')
 @UseGuards(SessionGuard, RolesGuard)
 export class TypologyConsoleController {

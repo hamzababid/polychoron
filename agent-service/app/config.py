@@ -21,5 +21,12 @@ class Settings(BaseSettings):
 
     mock_bank_base_url: str = "http://localhost:8001"
 
+    log_dir: str = "logs"
+    # Differs per container (agent-service-api vs agent-service-worker
+    # both run this same image) so their file logs don't collide —
+    # set via docker-compose's LOG_FILE_NAME env var.
+    log_file_name: str = "agent-service.log"
+    log_level: str = "INFO"
+
 
 settings = Settings()

@@ -25,6 +25,9 @@ from pydantic import BaseModel, ValidationError
 from app.platform.activity_log import write_activity_log
 from app.platform.inference.clients import InferenceClient
 from app.platform.inference.router import get_inference_client
+from app.platform.logging import get_logger
+
+logger = get_logger("agent-service.agent_node")
 
 TInput = TypeVar("TInput", bound=BaseModel)
 TOutput = TypeVar("TOutput", bound=BaseModel)
@@ -68,6 +71,13 @@ class PlatformAgentNode(ABC, Generic[TInput, TOutput]):
 
     def run(self, input: TInput, tenant_id: str, external_case_ref: str | UUID) -> TOutput:
         client = get_inference_client(tenant_id, self.feature_code, self.agent_name)
+        logger.info(
+            "%s v%s invoking via %s for case_id=%s",
+            self.agent_name,
+            self.agent_version,
+            client.provider.value,
+            external_case_ref,
+        )
 
         start = time.monotonic()
         raw_output, data_sources_queried = self._invoke(input, tenant_id, external_case_ref, client)
@@ -76,6 +86,7 @@ class PlatformAgentNode(ABC, Generic[TInput, TOutput]):
         if validated is None:
             # Retry once with the same input before escalating — see
             # agent-implementation.md's per-node "On failure" sections.
+            logger.warning("%s output failed schema validation, retrying once: %s", self.agent_name, validation_error)
             raw_output, more_sources = self._invoke(input, tenant_id, external_case_ref, client)
             data_sources_queried = list({*data_sources_queried, *more_sources})
             validated, validation_error = self._try_validate(raw_output)
@@ -84,6 +95,7 @@ class PlatformAgentNode(ABC, Generic[TInput, TOutput]):
         confidence = _extract_confidence(raw_output)
 
         if validated is None:
+            logger.error("%s escalating after 2 failed validation attempts: %s", self.agent_name, validation_error)
             # The log entry is still written for the failed attempt —
             # every invocation is audited, successful or not.
             write_activity_log(
@@ -115,6 +127,13 @@ class PlatformAgentNode(ABC, Generic[TInput, TOutput]):
             confidence=confidence,
             latency_ms=latency_ms,
             data_sources_queried=data_sources_queried,
+        )
+        logger.info(
+            "%s completed in %dms confidence=%s sources=%s",
+            self.agent_name,
+            latency_ms,
+            confidence,
+            ",".join(data_sources_queried) or "none",
         )
         return validated  # type: ignore[return-value]
 

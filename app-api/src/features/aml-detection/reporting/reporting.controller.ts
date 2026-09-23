@@ -1,4 +1,5 @@
 import { Body, Controller, Get, Param, Post, Query, Res, UseGuards } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import type { Response } from 'express';
 import { ReportingService, type ReportHistoryEntry, type ReportingSummary } from './reporting.service.js';
 import { ReportingSummaryQueryDto } from '../dto/reporting-summary-query.dto.js';
@@ -13,6 +14,7 @@ const MLRO = 'aml_detection.mlro_compliance_head';
  * RBAC: mlro_compliance_head only, per the screen spec — the whole
  * controller is gated, not per-route, since every route here is
  * reporting/export, nothing an analyst or senior officer needs. */
+@ApiTags('Reporting & MI')
 @Controller('features/aml_detection/reports')
 @UseGuards(SessionGuard, RolesGuard)
 @RequireRoles(MLRO)

@@ -36,6 +36,11 @@ def evidence_gathering_activity(payload: dict) -> dict:
             "tenant_id": payload["tenant_id"],
             "case_id": payload["case_id"],
             "account_ids": payload["alert"].get("account_ids", []),
+            # Minted by app-api per HTTP request (see
+            # aml-detection.service.ts) — this is the only bridge from
+            # that request's trace into every log line this case's
+            # agent chain produces, across all 3 activities.
+            "correlation_id": payload["alert"].get("correlation_id"),
         },
     )
     return result["evidence"]

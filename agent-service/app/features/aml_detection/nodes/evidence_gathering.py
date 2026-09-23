@@ -24,6 +24,7 @@ from app.features.aml_detection.prior_cases import get_prior_cases
 from app.features.aml_detection.schemas import EvidenceBundle, InboundAlert
 from app.platform.agent_node import PlatformAgentNode
 from app.platform.inference.clients import InferenceClient
+from app.platform.logging import get_correlation_id
 
 AGENT_VERSION = "v1"
 
@@ -47,8 +48,10 @@ class EvidenceGatheringNode(PlatformAgentNode[InboundAlert, EvidenceBundle]):
     ) -> tuple[dict, list[str]]:
         data_sources_queried: list[str] = []
         base_url = settings.mock_bank_base_url
+        correlation_id = get_correlation_id()
+        headers = {"x-correlation-id": correlation_id} if correlation_id else {}
 
-        with httpx.Client(base_url=base_url, timeout=10.0) as http:
+        with httpx.Client(base_url=base_url, timeout=10.0, headers=headers) as http:
             kyc_resp = http.get(f"/mock-bank/kyc/{input.customer_id}")
             kyc_resp.raise_for_status()
             data_sources_queried.append("mock_bank.kyc")

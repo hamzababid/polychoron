@@ -9,6 +9,7 @@ import { FeatureCaseEnvelope, type PlatformUser } from '../../platform/entities/
 import { InboundAlertDto } from './dto/inbound-alert.dto.js';
 import { DispositionDto } from './dto/disposition.dto.js';
 import { TEMPORAL_CLIENT } from '../../common/temporal/temporal.module.js';
+import { correlationIdStore } from '../../common/logging/correlation-id.store.js';
 
 // specs/suites/bfsi/features/aml-detection/screens/03-case-workspace.md:
 // "DemoRole.ANALYST can investigate/disposition up to escalate;
@@ -92,10 +93,16 @@ export class AmlDetectionService {
     const taskQueue = this.config.get<string>('TEMPORAL_TASK_QUEUE', 'aml_detection-task-queue');
     const workflowId = `aml-case-${caseId}`;
 
+    // correlation_id rides along in the workflow's own input — this is
+    // the only bridge from an app-api HTTP request's trace to
+    // agent-service's activity/node logs, since the two services never
+    // call each other directly (boundary spec) and Temporal carries no
+    // header concept of its own to piggyback on.
+    const correlationId = correlationIdStore.getCorrelationId();
     await this.temporalClient.workflow.start('AmlDetectionWorkflow', {
       taskQueue,
       workflowId,
-      args: [{ ...alertPayload, case_ref: caseId, tenant_id: tenantId }],
+      args: [{ ...alertPayload, case_ref: caseId, tenant_id: tenantId, correlation_id: correlationId }],
     });
 
     return { caseId, status: CaseStatus.OPEN, workflowId };

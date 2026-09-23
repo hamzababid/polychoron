@@ -12,7 +12,6 @@ Usage:
 from __future__ import annotations
 
 import asyncio
-import logging
 from concurrent.futures import ThreadPoolExecutor
 
 from temporalio.client import Client
@@ -21,9 +20,10 @@ from temporalio.worker import Worker
 from app.config import settings
 from app.features.aml_detection.activities import ALL_ACTIVITIES
 from app.features.aml_detection.workflows import AmlDetectionWorkflow
+from app.platform.logging import configure_logging, get_logger
 
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+configure_logging()
+logger = get_logger(__name__)
 
 
 async def run_worker() -> None:

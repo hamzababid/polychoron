@@ -1,4 +1,5 @@
 import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { FilingConsoleService, type FilingDraftResponse } from './filing-console.service.js';
 import { AttestFilingDto } from '../dto/attest-filing.dto.js';
 import { SessionGuard } from '../../../common/auth/session.guard.js';
@@ -10,6 +11,7 @@ import { RequireRoles } from '../../../common/auth/roles.decorator.js';
  * this route (enforce server-side even in the demo stub)." — every
  * endpoint here is guarded identically; a hidden UI element on the
  * frontend is not access control (constitution rule 7). */
+@ApiTags('Filing Console')
 @Controller('features/aml_detection/cases')
 @UseGuards(SessionGuard, RolesGuard)
 @RequireRoles('aml_detection.senior_officer_l2', 'aml_detection.mlro_compliance_head')

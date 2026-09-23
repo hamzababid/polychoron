@@ -1,4 +1,5 @@
 import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { AmlDetectionService, type IngestResult } from './aml-detection.service.js';
 import { InboundAlertDto } from './dto/inbound-alert.dto.js';
 import { DispositionDto } from './dto/disposition.dto.js';
@@ -15,6 +16,7 @@ import type { PlatformUser } from '../../platform/entities/index.js';
  * Namespaced under /features/aml_detection per
  * specs/platform/01-platform-architecture.md, so a future second
  * feature's ingestion endpoint doesn't collide. */
+@ApiTags('AML Detection — Alerts & Cases')
 @Controller('features/aml_detection')
 export class AmlDetectionController {
   constructor(

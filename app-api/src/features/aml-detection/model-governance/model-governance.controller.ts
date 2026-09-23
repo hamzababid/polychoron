@@ -1,4 +1,5 @@
 import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import {
   ModelGovernanceService,
   type ConsistencyResponse,
@@ -30,6 +31,7 @@ const CONSISTENCY_AUDIT_ROLES = [MLRO, MODEL_RISK_AUDIT];
 const WRITE_ROLES = [MLRO];
 
 /** specs/suites/bfsi/features/aml-detection/screens/09-model-governance-audit.md */
+@ApiTags('Model Governance')
 @Controller('features/aml_detection/governance')
 @UseGuards(SessionGuard, RolesGuard)
 export class ModelGovernanceController {
