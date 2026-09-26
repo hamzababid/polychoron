@@ -515,40 +515,66 @@ exists, per the existing decision #3 in api-contracts-phase2.md.
 "Migration note" says the full ingestion pipeline is "Phase 2 scope,
 tracked in `TASKS.md`" — it never actually was, in this file or in any
 prior export of it. Phase 1 shipped only a hand-seeded corpus
-(`agent-service/scripts/seed_regulatory_corpus.py`) with no UI; this is
-that promised follow-up. No dedicated `screens/*.md` spec exists for
-this (unlike the other Phase 2 screens below) — scope it directly from
+(`agent-service/scripts/seed_regulatory_corpus.py`) with no UI. No
+dedicated `screens/*.md` spec exists for this one (unlike the other
+Phase 2 screens above) — scoped directly from
 `10-regulatory-knowledge-base-spec.md` and
 `regulatory-corpus-manifest.md`'s "Phase 2 (full corpus)" /
 "Ownership and update process" sections.
-- [ ] Document list view — `RegulatoryDocument` rows for this feature's
+
+**Scope decisions made explicitly before building:** (1) chunking is
+manual, not an automated text-splitter — the officer defines each
+(section_reference, text) pair directly, same granularity
+`seed_regulatory_corpus.py` already hand-authors ("plain text paste"
+scope, not a PDF-extraction pipeline — no PDF-parsing dependency
+added to either service); (2) app-api never calls agent-service
+directly for chunking/embedding — per
+`specs/platform/09-backend-service-boundary-spec.md` ("NestJS never
+calls an LLM directly"), the actual embedding work runs inside a new
+Temporal workflow on the agent-service worker
+(`RegulatoryDocumentIngestionWorkflow`/`RegulatoryReembedWorkflow`),
+same cross-language mechanism alert ingestion already uses — app-api
+starts the workflow and polls `handle.describe()`/`.result()` for
+status, never a direct HTTP call.
+- [x] Document list view — `RegulatoryDocument` rows for this feature's
       corpus (title, source_type, issuing_authority, version_label,
       effective_date, source_url, ingested_by/at, superseded_by status)
-- [ ] Upload/ingest a new document — title, source_type,
+      (`GET .../regulatory-kb/documents`)
+- [x] Upload/ingest a new document — title, source_type,
       issuing_authority, version_label, source_url (required — every
       citation must trace back to the authoritative publication, per
-      the manifest), and the source text/PDF
-- [ ] Chunking service — split the ingested text into sections with a
-      `section_reference` label, embed each via the same
+      the manifest), and one or more (section_reference, text) chunks
+      (`POST .../regulatory-kb/documents`, starts the ingestion
+      workflow, returns a `jobId`)
+- [x] Chunking service — each submitted chunk is embedded via the same
       `get_embedding()`/`ingest_chunk()` path `seed_regulatory_corpus.py`
-      already uses, don't reimplement
-- [ ] Supersede workflow, not delete — ingesting a replacement sets the
+      already uses, not reimplemented
+      (`agent-service/app/platform/regulatory/activities.py`/`workflows.py`)
+- [x] Supersede workflow, not delete — ingesting a replacement sets the
       old document's `superseded_by`; retired documents stay queryable
-      (constitution rule 8 — a case decided under an older version must
-      stay explainable against the text in force at the time)
-- [ ] Embedding refresh job — re-embed a document's chunks on demand
-      (e.g. after an embedding-model change), without needing to
-      re-upload the source text
-- [ ] Chunk preview/search within a document — so
+      (constitution rule 8) (`supersede_document()`, wired as the
+      ingestion workflow's final step when `supersedes_document_id` is set)
+- [x] Embedding refresh job — re-embed a document's existing chunks on
+      demand (`RegulatoryReembedWorkflow`,
+      `POST .../regulatory-kb/documents/:id/reembed`)
+- [x] Chunk preview within a document — so
       `aml_detection.mlro_compliance_head` can sanity-check what a
-      citation would actually retrieve before relying on it
-- [ ] RBAC: `aml_detection.mlro_compliance_head` only, both read and
+      citation would actually retrieve
+      (`GET .../regulatory-kb/documents/:id/chunks`)
+- [x] RBAC: `aml_detection.mlro_compliance_head` only, both read and
       write (manifest: "same accountability level as typology
       promotion") — no read-only role for this one, unlike the other
-      Phase 2 consoles
-- [ ] Test: uploading a document produces queryable chunks with real
-      embeddings; superseding retains the old document and both remain
-      independently citable; non-mlro roles get 403 on every route
+      Phase 2 consoles (tested: `model_risk_audit` gets 403 on every
+      route, not just writes)
+- [x] Test: uploading a document produces queryable chunks with real
+      embeddings (verified live against a real OpenAI embeddings call,
+      both at the repository/workflow level —
+      `agent-service/tests/test_regulatory_ingestion.py` — and through
+      the actual HTTP API end to end —
+      `app-api/test/regulatory-kb.e2e-spec.ts`, both gated behind
+      `RUN_LIVE_LLM_TESTS=1`); superseding retains the old document and
+      both remain independently listed; non-mlro roles get 403 on
+      every route
 
 ### MLOps tracing layer (platform-wide, not a screen)
 - [ ] OpenTelemetry spans for every agent node execution

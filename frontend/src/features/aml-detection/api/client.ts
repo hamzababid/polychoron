@@ -18,8 +18,11 @@ import type {
   FilingSummary,
   GuardrailViolationsResponse,
   KillSwitchScope,
+  IngestionJobStatus,
   ModelVersionsResponse,
   Paginated,
+  RegulatoryChunkRow,
+  RegulatoryDocumentRow,
   ReportHistoryEntry,
   ReportingBreakdownBy,
   ReportingSummary,
@@ -236,6 +239,38 @@ export function reactivateKillSwitch(scopeId: string, reactivatedBy: string) {
     method: 'POST',
     body: JSON.stringify({ reactivated_by: reactivatedBy }),
   });
+}
+
+// ADDITIVE (specs/platform/10-regulatory-knowledge-base-spec.md's
+// deferred management screen)
+
+export function listRegulatoryDocuments() {
+  return apiFetch<RegulatoryDocumentRow[]>(`${BASE}/regulatory-kb/documents`);
+}
+
+export function listRegulatoryChunks(documentId: string) {
+  return apiFetch<RegulatoryChunkRow[]>(`${BASE}/regulatory-kb/documents/${documentId}/chunks`);
+}
+
+export function ingestRegulatoryDocument(body: {
+  title: string;
+  source_type: string;
+  issuing_authority: string;
+  version_label: string;
+  source_url?: string;
+  ingested_by: string;
+  chunks: { section_reference: string; text: string }[];
+  supersedes_document_id?: string;
+}) {
+  return apiFetch<{ jobId: string }>(`${BASE}/regulatory-kb/documents`, { method: 'POST', body: JSON.stringify(body) });
+}
+
+export function reembedRegulatoryDocument(documentId: string) {
+  return apiFetch<{ jobId: string }>(`${BASE}/regulatory-kb/documents/${documentId}/reembed`, { method: 'POST' });
+}
+
+export function getIngestionJobStatus(jobId: string) {
+  return apiFetch<IngestionJobStatus>(`${BASE}/regulatory-kb/ingestion-jobs/${jobId}`);
 }
 
 export function getReportingSummary(params: {

@@ -478,6 +478,39 @@ export interface KillSwitchScope {
   reactivatedBy: string | null;
 }
 
+// ADDITIVE (specs/platform/10-regulatory-knowledge-base-spec.md's
+// deferred management screen)
+
+export type RegulatorySourceType = 'statute' | 'regulation' | 'circular' | 'guidance' | 'international';
+
+export interface RegulatoryDocumentRow {
+  documentId: string;
+  title: string;
+  sourceType: RegulatorySourceType;
+  issuingAuthority: string;
+  versionLabel: string;
+  effectiveDate: string | null;
+  supersededBy: string | null;
+  sourceUrl: string | null;
+  ingestedAt: string;
+  ingestedBy: string;
+  chunkCount: number;
+}
+
+export interface RegulatoryChunkRow {
+  chunkId: string;
+  sectionReference: string;
+  text: string;
+}
+
+export interface IngestionJobStatus {
+  jobId: string;
+  status: 'running' | 'completed' | 'failed';
+  documentId?: string;
+  chunkCount?: number;
+  error?: string;
+}
+
 export interface Customer360Response {
   customerId: string;
   kyc: KYCSnapshot | null;

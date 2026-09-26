@@ -10,3 +10,5 @@ export { PlatformKillSwitchScope } from './platform-kill-switch-scope.entity.js'
 export { PlatformGuardrailViolation } from './platform-guardrail-violation.entity.js';
 export { PlatformEvalRun } from './platform-eval-run.entity.js';
 export { PlatformFairnessMonitoringSnapshot } from './platform-fairness-monitoring-snapshot.entity.js';
+export { RegulatoryDocument } from './regulatory-document.entity.js';
+export { RegulatoryChunk } from './regulatory-chunk.entity.js';
