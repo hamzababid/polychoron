@@ -85,8 +85,10 @@ was actually in force when it was decided. Therefore:
 
 ## Screen 2 — Add wizard (`regulatory-kb/new`)
 A full-page, six-step wizard with a persistent step rail on the left.
-Progress is held as a server-side **draft** from step 3 onward, so
-leaving and returning (or a browser refresh) never loses work — the
+Progress is held as a server-side **draft** from the first action in
+step 1 onward (an "Untitled draft" until step 2 names it), and the
+draft id + step live in the URL (`regulatory-kb/new?draft=…&step=…`),
+so leaving and returning (or a browser refresh) never loses work — the
 draft appears in the Library with status `DRAFT`.
 
 ### Step 1 — Source
@@ -246,25 +248,25 @@ section reference, word-level highlights within changed chunks).
 ## Acceptance criteria
 - [ ] Clicking a Library row navigates to the Document view route; the
       route is bookmarkable and survives refresh
-- [ ] No API endpoint can change the `text` of a chunk belonging to a
+- [x] No API endpoint can change the `text` of a chunk belonging to a
       `current`, `superseded`, or `withdrawn` document — tested
-- [ ] Publishing a new version supersedes the old one atomically; both
+- [x] Publishing a new version supersedes the old one atomically; both
       stay viewable; a historical case's citation still resolves to the
       exact text it cited
-- [ ] `draft`, `superseded`, and `withdrawn` documents are never
+- [x] `draft`, `superseded`, and `withdrawn` documents are never
       returned by `retrieve_regulatory_context()` — tested
-- [ ] `retrieval_enabled = false` and typology restriction are honoured
+- [x] `retrieval_enabled = false` and typology restriction are honoured
       by retrieval — tested
-- [ ] Metadata correction without a reason is rejected at the API and
+- [x] Metadata correction without a reason is rejected at the API and
       DB layer; every correction produces a change-log row
 - [ ] All four sources work end-to-end: PDF, DOCX, TXT upload; pasted
       text; URL fetch; manual chunks
-- [ ] Each chunking strategy produces a correct preview on a fixture
+- [x] Each chunking strategy produces a correct preview on a fixture
       document; preview never calls the embeddings API
-- [ ] Injection-pattern hits in chunk text are flagged and require
+- [x] Injection-pattern hits in chunk text are flagged and require
       acknowledgement before publish
-- [ ] Wizard progress survives a browser refresh from step 3 onward
-- [ ] Non-MLRO roles get 403 on every route, read and write
-- [ ] Existing Phase 1 seeded corpus migrates to `current` status with
+- [ ] Wizard progress survives a browser refresh from step 1 onward
+- [x] Non-MLRO roles get 403 on every route, read and write
+- [x] Existing Phase 1 seeded corpus migrates to `current` status with
       document-order ordinals — no regression in the two demo scenarios'
       citations

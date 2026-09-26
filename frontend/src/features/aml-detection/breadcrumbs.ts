@@ -30,6 +30,16 @@ export function getAmlBreadcrumbs(pathname: string, base: string): Crumb[] {
   if (segments[0] === 'reports') {
     return [{ label: 'Reporting' }];
   }
+  if (segments[0] === 'regulatory-kb') {
+    // screens/11-regulatory-knowledge-base.md — routed screens, not modals.
+    const library: Crumb = { label: 'Regulatory KB', to: `${base}/regulatory-kb` };
+    if (!segments[1]) return [{ label: 'Regulatory KB' }];
+    if (segments[1] === 'new') return [library, { label: 'Add document' }];
+    const doc: Crumb = { label: 'Document', to: `${base}/regulatory-kb/${segments[1]}` };
+    if (segments[2] === 'edit') return [library, doc, { label: 'Edit' }];
+    if (segments[2] === 'compare') return [library, doc, { label: 'Compare versions' }];
+    return [library, { label: 'Document' }];
+  }
   if (segments[0] === 'customers' && segments[1]) {
     return [{ label: 'Customer 360' }];
   }

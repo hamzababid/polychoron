@@ -135,6 +135,10 @@ pipeline section of `platform/10-regulatory-knowledge-base-spec.md`).
 `GET .../jobs/{jobId}` → `{jobId, kind: embed|reembed, status: running|completed|failed, progress: {done, total}, error?}`
 (replaces `.../ingestion-jobs/{jobId}`, which stays as an alias until
 the old screen is removed).
+The acting user (`created_by`, `published_by`, `changed_by`,
+`withdrawn_by`, `acknowledged_by`) is always taken from the session —
+the `{..._by}` fields shown in bodies below are **not** accepted from
+the client.
 
 **Library & read**
 `GET .../documents?status=&source_type=&issuing_authority=&tag=&q=&page=&page_size=` → paginated `{items, total, page, pageSize, statusCounts}` (**shape change**: was a bare array — only the KB screen consumes it, updated in the same change)
