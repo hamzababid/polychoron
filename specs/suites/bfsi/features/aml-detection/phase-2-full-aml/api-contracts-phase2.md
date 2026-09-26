@@ -126,10 +126,13 @@ RBAC: `aml_detection.mlro_compliance_head`
 
 ## Regulatory Knowledge Base
 Prefix: `/api/v1/features/aml_detection/regulatory-kb`. RBAC on every
-route, read and write: `aml_detection.mlro_compliance_head`. Anything
-that extracts, chunks, embeds, or publishes runs as a Temporal workflow
-on the agent-service worker and returns a `jobId` —
-`GET .../jobs/{jobId}` → `{jobId, kind, status: running|completed|failed, progress?: {done, total}, result?, error?}`
+route, read and write: `aml_detection.mlro_compliance_head`.
+**Only embedding is a background job** (`embed`, `reembed` return a
+`jobId`). Every other write is an *awaited command*: app-api runs a
+short Temporal workflow on the agent-service worker and returns its
+result in the same HTTP response — no job id, no polling (see the
+pipeline section of `platform/10-regulatory-knowledge-base-spec.md`).
+`GET .../jobs/{jobId}` → `{jobId, kind: embed|reembed, status: running|completed|failed, progress: {done, total}, error?}`
 (replaces `.../ingestion-jobs/{jobId}`, which stays as an alias until
 the old screen is removed).
 
@@ -146,22 +149,22 @@ the old screen is removed).
 
 **Draft creation & source**
 `POST .../drafts` → `{source_method: upload|paste|url|manual, supersedes_document_id?, copy_chunks?}` → creates a `draft`, returns `documentId`. With `supersedes_document_id` it's the next version in that family, pre-filled with its metadata — and with `copy_chunks: true` (Edit → "Edit content") its chunks too, copied with their existing embeddings (only chunks whose text changes, or new chunks, need re-embedding) (409 if that family already has an open draft — response carries the existing draft's id)
-`POST .../drafts/{id}/source-file` → multipart upload (pdf/docx/txt, ≤ 20 MB) → starts extraction, returns `jobId`
-`POST .../drafts/{id}/source-text` → `{text}` (paste) → normalises, no job needed
-`POST .../drafts/{id}/source-url` → `{url}` → starts fetch + extraction, returns `jobId`
+`POST .../drafts/{id}/source-file` → multipart upload (pdf/docx/txt, ≤ 20 MB) → app-api stores the bytes, runs extraction (awaited) → `{charCount, pageCount?, excerpt}`
+`POST .../drafts/{id}/source-text` → `{text}` (paste) → normalised (awaited) → `{charCount, excerpt}`
+`POST .../drafts/{id}/source-url` → `{url}` → app-api fetches once (10 MB, 20 s, http(s) only, private-address guard), stores the bytes, runs extraction (awaited) → `{charCount, pageCount?, excerpt}`
 `PATCH .../drafts/{id}` → any metadata + retrieval settings (drafts need no change reason — they're not live)
-`POST .../drafts/{id}/chunk-preview` → `{chunking_config}` → returns `jobId`; replaces the draft's chunks with unembedded previews
+`POST .../drafts/{id}/chunk-preview` → `{chunking_config}` → (awaited, no LLM) replaces the draft's chunks with unembedded previews → `{chunks, warnings}`
 `PUT .../drafts/{id}/chunks` → full ordered chunk list `[{section_reference, text}]` (manual entry and all preview adjustments — merge/split/edit/reorder are client-side, saved as the whole list); returns warnings + injection flags
 `POST .../drafts/{id}/chunks/{chunkId}/acknowledge-injection` → `{acknowledged_by}`
-`POST .../drafts/{id}/embed` → returns `jobId`
-`POST .../drafts/{id}/publish` → `{published_by}` → 409 unless every chunk is embedded and every injection flag acknowledged; returns `jobId`
+`POST .../drafts/{id}/embed` → **background job**, returns `jobId` (embeds only chunks that don't already have an embedding)
+`POST .../drafts/{id}/publish` → `{published_by}` → 409 unless every chunk is embedded and every injection flag acknowledged; awaited → the published document
 `DELETE .../drafts/{id}` → discard (drafts only — 409 for any other status)
 
 **Live document actions**
 `PATCH .../documents/{id}/metadata` → `{changes: {field: value}, reason, changed_by}` → 400 without a non-empty reason; 409 for `superseded`; writes one change-log row per changed field. Chunk text/section reference are **not** accepted here — there is no endpoint that mutates published chunk content
 `POST .../documents/{id}/withdraw` → `{reason, withdrawn_by}` → `current` → `withdrawn`
-`POST .../documents/{id}/reembed` → *(exists)* returns `jobId`
-`POST .../retrieval-preview` → `{query, top_k?, include_draft_document_id?}` → starts `RegulatoryRetrievalPreviewWorkflow` and awaits it (≤ 10 s) → ranked `[{chunkId, documentId, documentTitle, sectionReference, text, score}]`
+`POST .../documents/{id}/reembed` → *(exists)* **background job**, returns `jobId`
+`POST .../retrieval-preview` → `{query, top_k?, include_draft_document_id?}` → awaited `RegulatoryRetrievalPreviewCommand` (≤ 10 s) → ranked `[{chunkId, documentId, documentTitle, sectionReference, text, score}]`
 
 **Kept for compatibility:** `POST .../documents` (one-shot ingest) stays for
 scripts/tests; the new screen doesn't use it.

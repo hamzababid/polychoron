@@ -590,6 +590,8 @@ Additive discipline as before — re-run all existing tests after each
 group; the two demo scenarios' citations must not regress.
 
 **Data layer**
+- [ ] Update spec 09's table-ownership table (done in the spec
+      change) — confirm implementation matches it
 - [ ] Migration `013_regulatory_kb_lifecycle.sql`: lifecycle/retrieval
       columns on `regulatory_documents`; `ordinal`, `char_count`,
       `injection_flags`, nullable `embedding` (drafts only) on
@@ -611,8 +613,9 @@ group; the two demo scenarios' citations must not regress.
       list, a no-heading wall of text; property: concatenated chunks
       (minus overlap, stripping off) reproduce the input text
 - [ ] `extraction.py`: PDF (`pypdf`, text layer only, clear failure on
-      no text), DOCX (`python-docx`), TXT, HTML-from-URL (`httpx`, 10 MB
-      cap, 20 s timeout, http(s) only, private-range redirect guard)
+      no text), DOCX (`python-docx`), TXT, HTML-to-text — reads bytes
+      from `regulatory_source_files` by `file_id` (the URL fetch itself
+      is in app-api)
 - [ ] Wire `detect_injection_patterns()` over preview chunks
 - [ ] `retrieve_regulatory_context()`: filter `current` +
       `retrieval_enabled`, optional `typology_code` restriction,
@@ -621,15 +624,25 @@ group; the two demo scenarios' citations must not regress.
 - [ ] `preview.py` `preview_regulatory_retrieval()` (draft-inclusive)
       + test asserting nothing under `app/features/` imports it
 - [ ] Pass `typology_code` from the Pattern Matching node
-- [ ] Temporal workflows + activities: Extraction, ChunkPreview,
-      EmbedDraft (progress query), Publish (single transaction),
-      RetrievalPreview — registered on the worker
+- [ ] One background job: `RegulatoryEmbedDraftWorkflow` (embeds only
+      chunks lacking an embedding; progress via workflow query)
+- [ ] Awaited commands (`commands.py`, one short workflow + activity
+      each, single DB transaction): Extract, ChunkPreview, Draft
+      (create incl. copy-with-embeddings / save chunks / acknowledge /
+      discard), Publish, Metadata (correct / withdraw), RetrievalPreview
+      — all registered on the worker
 - [ ] Re-run `pytest` + golden dataset's two seed scenarios: citations
       unchanged
 
 **app-api**
 - [ ] Entities for new columns/tables; list endpoint → paginated +
       filters + `statusCounts`
+- [ ] Shared helper for awaited commands (`workflow.execute()`, 30 s
+      timeout, activity error → HTTP error) — used by every KB write
+      except embed/reembed
+- [ ] `regulatory_source_files` writes (app-api-owned): multipart
+      upload ≤ 20 MB; one-off URL fetch (10 MB, 20 s, http(s) only,
+      private-address guard) stored the same way
 - [ ] Read endpoints: document detail, ordered chunks with
       `citedByCaseCount`, versions, changes, citations, compare,
       source-file download, chunking profiles
@@ -638,8 +651,8 @@ group; the two demo scenarios' citations must not regress.
       chunks, acknowledge injection, embed, publish, discard
 - [ ] Live endpoints: metadata correction (reason required, per-field
       change log, rejects chunk fields), withdraw, retrieval preview
-- [ ] Unified `GET .../jobs/{jobId}` with progress; keep
-      `ingestion-jobs` alias
+- [ ] `GET .../jobs/{jobId}` for embed/reembed with `{done, total}`
+      progress; keep `ingestion-jobs` alias
 - [ ] e2e: full lifecycle (draft → embed → publish → new version →
       publish supersedes → old still viewable); publish blocked with
       unembedded chunks or unacknowledged injection flags; metadata
@@ -655,14 +668,14 @@ group; the two demo scenarios' citations must not regress.
       badges, row click navigates (no inline expansion)
 - [ ] Add wizard shell: step rail, server-backed draft from step 3,
       survives refresh, resumable from Library
-- [ ] Step 1 Source (upload / paste / URL / manual) with extraction job
-      progress + excerpt
+- [ ] Step 1 Source (upload / paste / URL / manual) — immediate
+      extraction with spinner, then counts + excerpt
 - [ ] Step 2 Metadata (issuer suggestions, typology multi-select, tags)
 - [ ] Step 3 Chunking config + saved profiles + live regex match count
 - [ ] Step 4 Preview & adjust: edit, merge, split at cursor, add,
       delete, warnings, injection acknowledgement
 - [ ] Step 5 Retrieval settings; Step 6 Review → Save draft / Publish
-      with confirmation + embedding progress
+      with confirmation + embedding progress bar (the only job UI)
 - [ ] Document view: header actions by status, metadata panel, ordered
       searchable chunks with cited-by counts, version timeline, change
       log, cited-by cases, test retrieval

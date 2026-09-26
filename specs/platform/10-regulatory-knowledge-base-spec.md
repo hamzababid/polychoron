@@ -280,22 +280,58 @@ DB-level guarantees (migration `013`):
   `source_method='seed'`; chunks get `ordinal` by current
   `section_reference` order and `char_count`.
 
-### Pipeline (agent-service, Temporal — app-api never calls agent-service directly)
-| Workflow | Input | Output | LLM/embedding? |
+### Pipeline — one background job, everything else awaited
+Two constraints from `09-backend-service-boundary-spec.md` shape this:
+NestJS never calls an LLM (so embedding runs on the agent-service
+worker), and table writes are exclusive per service (agent-service
+owns `regulatory_documents` / `regulatory_chunks`, so NestJS can't
+write them directly). Temporal is the only channel between the two.
+
+That does **not** mean every step is a user-visible job. Only one step
+is genuinely slow:
+
+| Kind | Steps | How app-api calls it | What the user sees |
 |---|---|---|---|
-| `RegulatoryExtractionWorkflow` | `source_file_id` or `url` or pasted text | normalized plain text (+ page map) stored on the draft | no |
-| `RegulatoryChunkPreviewWorkflow` | draft `document_id` + `ChunkingConfig` | draft chunks (unembedded) with warnings + injection flags | no |
-| `RegulatoryEmbedDraftWorkflow` | draft `document_id` | embeddings for every draft chunk, progress via workflow query | yes — `get_embedding()` |
-| `RegulatoryPublishWorkflow` | draft `document_id`, `published_by` | draft → `current`, previous `current` in family → `superseded`, single DB transaction | no |
-| `RegulatoryReembedWorkflow` | *(exists)* | unchanged | yes |
-| `RegulatoryRetrievalPreviewWorkflow` | `query`, `top_k`, optional draft `document_id` | ranked chunks via `preview_regulatory_retrieval()` — Document view's "Test retrieval"; app-api awaits the result (short-lived) | yes — query embedding |
-| `RegulatoryDocumentIngestionWorkflow` | *(exists)* | kept for `seed_regulatory_corpus.py`; new UI no longer uses it | yes |
+| **Background job** | Embed a draft's chunks (one embeddings call per chunk — minutes for a large regulation); the existing Re-embed | `workflow.start()` → `jobId`, polled; progress via a workflow **query** | Progress bar (`embedded n / N`), navigable away |
+| **Awaited command** | Create draft (incl. new version with copied chunks + embeddings), extract text (upload / paste / URL), chunk preview, save chunk list, acknowledge injection flag, publish, discard draft, correct metadata, withdraw, retrieval preview | `workflow.execute()` — starts and awaits the result inside the HTTP request (timeout 30 s; URL fetch and large-PDF extraction are the only ones expected to take more than ~1 s) | A normal button click / spinner — no job id, no polling |
+
+Awaited commands are short Temporal workflows, one per command, defined
+in `app/platform/regulatory/commands.py`, each wrapping one activity
+that does its DB work in a single transaction. Failures surface as a
+normal HTTP error with the activity's message.
+
+**Table ownership additions** (extends spec 09's table):
+
+| Owned by NestJS (writes) | Owned by Python service (writes) |
+|---|---|
+| `regulatory_source_files` (raw upload / fetched bytes) | `regulatory_documents`, `regulatory_chunks` (as today) |
+| | `regulatory_document_changes`, `regulatory_chunking_profiles` |
+
+`regulatory_source_files` belongs to NestJS because an upload can be
+20 MB and Temporal payloads are capped around 2 MB. NestJS stores the
+bytes, then passes only the `file_id` to the extraction command, which
+reads them from Postgres. **URL fetch uses the same path**: fetching a
+URL is not an LLM call, so NestJS performs the one-off fetch itself
+(10 MB cap, 20 s timeout, http(s) only, private-address guard), stores
+the bytes in `regulatory_source_files` with `fetched_from_url` set, and
+calls the same extraction command. One extraction path for both.
+
+| Workflow | Kind | LLM? |
+|---|---|---|
+| `RegulatoryEmbedDraftWorkflow` | background job | yes — `get_embedding()` per chunk |
+| `RegulatoryReembedWorkflow` *(exists)* | background job | yes |
+| `RegulatoryExtractCommand` | awaited | no |
+| `RegulatoryChunkPreviewCommand` | awaited | no |
+| `RegulatoryDraftCommand` (create / save chunks / acknowledge / discard) | awaited | no |
+| `RegulatoryPublishCommand` (draft → `current`, prior `current` → `superseded`, one transaction) | awaited | no |
+| `RegulatoryMetadataCommand` (correct with reason / withdraw) | awaited | no |
+| `RegulatoryRetrievalPreviewCommand` | awaited | yes — one query embedding |
+| `RegulatoryDocumentIngestionWorkflow` *(exists)* | background job | yes — kept for `seed_regulatory_corpus.py`; new UI doesn't use it |
 
 Extraction libraries (agent-service only): `pypdf` (PDF text layer —
 no OCR; a PDF with no extractable text fails with a clear reason),
-`python-docx`, and `httpx` (already a dependency) for URL fetch with a
-10 MB cap, 20 s timeout, `http(s)` only, no redirects to private
-address ranges.
+`python-docx`, and an HTML-to-text step for fetched pages. The URL
+fetch itself happens in NestJS (above), not here.
 
 Chunking lives in `app/platform/regulatory/chunking.py` as pure
 functions (text + `ChunkingConfig` → chunks), unit-tested with

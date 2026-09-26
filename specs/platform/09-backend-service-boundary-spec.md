@@ -59,6 +59,7 @@ split, which would add real complexity with no benefit at this stage.
 | `STRFiling` | `CaseAssessment` |
 | `PlatformUser`, `PlatformRole`, `Tenant` | `PlatformAgentActivityLogEntry` |
 | | `TenantInferenceProfile` |
+| `regulatory_source_files` (raw bytes — too large for a Temporal payload) | `regulatory_documents`, `regulatory_chunks`, `regulatory_document_changes`, `regulatory_chunking_profiles` (NestJS changes them only via awaited Temporal commands — see spec 10's pipeline section) |
 
 Both services read freely across this line (e.g. NestJS's Alert Queue
 endpoint reads `CaseAssessment` rows the Python service wrote). Only

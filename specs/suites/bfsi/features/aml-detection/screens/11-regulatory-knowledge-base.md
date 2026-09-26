@@ -99,9 +99,10 @@ Pick one input method:
 | **Fetch from URL** | Human-triggered one-off fetch of an HTML/PDF URL; the URL is also pre-filled as `source_url`. Never scheduled, never recursive (spec 10 non-negotiable #2 — no scraping). |
 | **Manual chunks** | Skip extraction/chunking; author (section reference, text) pairs directly — the previous screen's only mode, kept. |
 
-Extraction runs as a Temporal job (`RegulatoryExtractionWorkflow`); the
-step shows progress and, on completion, the extracted character/page
-count plus the first ~1,000 characters for a sanity check. Extraction
+Extraction is an immediate request (a spinner, no job — a URL fetch
+or a large PDF may take a few seconds); the step then shows the
+extracted character/page count plus the first ~1,000 characters for a
+sanity check. Extraction
 failure (scanned PDF with no text layer, fetch 4xx/5xx, unsupported
 type) is shown with the concrete reason — OCR is out of scope.
 
@@ -174,9 +175,15 @@ Summary of every previous step. Two actions:
   same transaction. Confirmation dialog states exactly what becomes
   retrievable and what gets superseded.
 
-Embedding runs as a Temporal job with a visible progress bar
-(`embedded n / N`). Publish is blocked until every chunk has an
-embedding.
+Embedding is the **only background job** on these screens — one
+embeddings call per chunk, so it can take minutes for a large
+regulation. It shows a progress bar (`embedded n / N`), and the officer
+can leave the page; the draft shows its embedding state when revisited.
+Chunks copied unchanged from a previous version keep their embeddings,
+so only new/edited chunks are embedded. Publish is blocked until every
+chunk has an embedding. Everything else on these screens (extraction,
+preview, save, publish, corrections, test retrieval) responds
+immediately.
 
 ## Screen 3 — Document view (`regulatory-kb/:documentId`)
 **Data:** `GET .../documents/:id`, `GET .../documents/:id/chunks`,
@@ -231,9 +238,8 @@ section reference, word-level highlights within changed chunks).
 ## States
 - Loading, empty ("No documents yet — add the first one"), and error
   states on every screen; errors via the app-wide toast, never raw JSON.
-- Background jobs (extraction, preview, embedding) never block
-  navigation; leaving the page doesn't cancel them, and the draft shows
-  the job state when revisited.
+- The embedding job never blocks navigation; leaving the page doesn't
+  cancel it, and the draft shows its progress/failure when revisited.
 - Every timestamp on the Document view is labelled with who/when — this
   is an audit record.
 
