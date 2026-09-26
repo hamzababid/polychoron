@@ -79,8 +79,10 @@ now — Phase 1's migration comment explicitly deferred it.)
   active/inactive is itself a change requiring the same version-history
   logging as a rule-logic edit"). **v2:** adds `typology_label`,
   `status` (`draft`/`promoted`/`superseded`/`discarded`),
-  `content_hash`, `updated_at`; one `draft` and one `promoted` per
-  typology; content immutable outside `draft` (trigger).
+  `content_hash` (generated column), `discarded_by`/`discarded_at`/
+  `discard_reason`; a draft's `changed_by`/`changed_at` track its last
+  save; one `draft` and one `promoted` per typology; content immutable
+  outside `draft` (trigger).
 - **`TypologyBacktestJob`**: `job_id`, `typology_code`, `status`
   (`queued`/`running`/`complete`/`failed`), `started_at`,
   `completed_at`, `comparison_report` (jsonb — agreement rate vs.
@@ -124,21 +126,24 @@ codes are feature-namespaced, same as every other endpoint). The acting
 user is always the session user — no `*_by` field is accepted in a body.
 
 **Reads**
-- `GET /` → `TypologyRow[]`: live version content, `status`
-  (`live`/`retired`/`not_live`), `killSwitched`, `draft: {version,
-  updatedAt} | null`, computed metrics (`alert_volume_30d`,
+- `GET /` → `{typologies: TypologyRow[], lastPromotion}` — each row: live
+  version content, `status` (`live`/`retired`/`not_live`),
+  `killSwitched`, `draft: {version, typologyLabel, changedBy,
+  changedAt} | null`, computed metrics (`alert_volume_30d`,
   `str_conversion_rate`, `false_positive_rate`) joined from
   `Case`/`Disposition`, not hand-maintained columns; plus
   `lastPromotion`
 - `GET /{code}` → config, promoted version, draft, the draft's latest
   regression run (with `stale: boolean` if its hash ≠ the draft's),
   latest backtest, golden-dataset coverage count for the code
-- `GET /{code}/history` → `TypologyConfigVersion[]` (all statuses) +
-  `TypologyPromotion[]`
+- `GET /{code}/history` → `{versions: TypologyConfigVersion[] (all
+  statuses), promotions: TypologyPromotion[]}`
 - `GET /backtest-jobs/{job_id}` → unchanged
 - `GET /regression-runs/{run_id}` → `{status, done, total, passed,
-  failed, results?}` — progress via Temporal workflow query while
-  running, from `platform_eval_runs`/`platform_eval_case_results` after
+  failed, results}` — read from `platform_eval_runs` /
+  `platform_eval_case_results` (`done` = result rows so far); before
+  the workflow's first activity has created the run row, Temporal's
+  workflow status answers (`queued`, or `failed` if it died first)
 
 **Writes**
 - `POST /` → `{typology_code, typology_label, rule_logic_description,
@@ -152,7 +157,8 @@ user is always the session user — no `*_by` field is accepted in a body.
 - `DELETE /{code}/draft` → `{reason}` → status `discarded`
 - `POST /{code}/draft/regression` → 400 if the draft's `change_reason`
   is empty; starts `TypologyRegressionWorkflow` on the agent-service
-  worker (background job, same pattern as the KB embed job) → `{run_id}`
+  worker (background job, same pattern as the KB embed job) → 202
+  `{runId, candidateKey}`
 - `POST /{code}/backtest` → unchanged
 - `POST /{code}/promote` → `{backtest_job_id?, reason}` → 409 unless a
   draft exists and the latest regression run for

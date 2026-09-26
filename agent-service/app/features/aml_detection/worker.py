@@ -19,6 +19,10 @@ from temporalio.worker import Worker
 
 from app.config import settings
 from app.features.aml_detection.activities import ALL_ACTIVITIES
+from app.features.aml_detection.typology_regression import (
+    ALL_TYPOLOGY_REGRESSION_ACTIVITIES,
+    TypologyRegressionWorkflow,
+)
 from app.features.aml_detection.workflows import AmlDetectionWorkflow
 from app.platform.logging import configure_logging, get_logger
 from app.platform.regulatory.activities import ALL_REGULATORY_ACTIVITIES
@@ -48,8 +52,12 @@ async def run_worker() -> None:
                 RegulatoryReembedWorkflow,
                 RegulatoryEmbedDraftWorkflow,
                 *ALL_KB_COMMAND_WORKFLOWS,
+                TypologyRegressionWorkflow,
             ],
-            activities=ALL_ACTIVITIES + ALL_REGULATORY_ACTIVITIES + ALL_KB_COMMAND_ACTIVITIES,
+            activities=ALL_ACTIVITIES
+            + ALL_REGULATORY_ACTIVITIES
+            + ALL_KB_COMMAND_ACTIVITIES
+            + ALL_TYPOLOGY_REGRESSION_ACTIVITIES,
             activity_executor=activity_executor,
         )
         logger.info(

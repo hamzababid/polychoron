@@ -58,7 +58,7 @@ def run_golden_dataset_regression(
     passed = 0
     failed = 0
     for case in cases:
-        matched, actual_typology, actual_recommendation, actual_confidence, notes = _run_one_case(case, tenant_id)
+        matched, actual_typology, actual_recommendation, actual_confidence, notes = run_one_case(case, tenant_id)
         write_eval_case_result(
             run_id=run_id,
             golden_case_id=case.case_id,
@@ -79,7 +79,12 @@ def run_golden_dataset_regression(
     return {"run_id": run_id, "total_cases": len(cases), "passed": passed, "failed": failed, "status": status}
 
 
-def _run_one_case(case: GoldenDatasetCase, tenant_id: str) -> tuple[bool, str | None, str | None, float | None, str | None]:
+def run_one_case(
+    case: GoldenDatasetCase, tenant_id: str, *, catalog_override: list[dict] | None = None
+) -> tuple[bool, str | None, str | None, float | None, str | None]:
+    """catalog_override is the Typology Console's candidate catalog
+    (production catalog with one draft substituted) — None evaluates
+    the promoted catalog, as every other caller does."""
     fixture_case_id = uuid4()
     try:
         evidence = EvidenceBundle.model_validate(
@@ -89,7 +94,7 @@ def _run_one_case(case: GoldenDatasetCase, tenant_id: str) -> tuple[bool, str | 
         return False, None, None, None, f"fixture failed to validate as EvidenceBundle: {exc}"
 
     try:
-        typology_match = PatternMatchingNode().run(evidence, tenant_id, fixture_case_id)
+        typology_match = PatternMatchingNode(catalog_override=catalog_override).run(evidence, tenant_id, fixture_case_id)
     except AgentNodeEscalation as exc:
         return False, None, None, None, f"pattern_matching escalated: {exc}"
 

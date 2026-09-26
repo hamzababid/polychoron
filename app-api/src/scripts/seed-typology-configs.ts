@@ -44,24 +44,34 @@ async function main() {
   try {
     const dataSource = app.get<DataSource>(getConnectionToken());
 
-    for (const t of CATALOG) {
-      await dataSource.query(
-        `INSERT INTO aml_typology_configs (typology_code, typology_label, rule_logic_description, active, production_version)
-         VALUES ($1, $2, $3, true, 1)
-         ON CONFLICT (typology_code) DO UPDATE SET
-           typology_label = EXCLUDED.typology_label,
-           rule_logic_description = EXCLUDED.rule_logic_description`,
-        [t.typologyCode, t.typologyLabel, t.ruleLogicDescription],
-      );
-      await dataSource.query(
-        `INSERT INTO aml_typology_config_versions (typology_code, version, rule_logic_description, active, changed_by, change_reason)
-         VALUES ($1, 1, $2, true, $3, 'Initial migration from Phase 1 hardcoded catalog')
-         ON CONFLICT (typology_code, version) DO NOTHING`,
-        [t.typologyCode, t.ruleLogicDescription, SEEDED_BY_USER_ID],
-      );
-    }
+    // The baseline catalog predates the governed lifecycle (migration
+    // 014): it is written straight in as promoted v1 under the explicit
+    // maintenance override, the same way the migration's backfill
+    // treats it. Idempotent, and never overwrites a typology that
+    // already exists — once seeded, content only changes through a
+    // regression-gated promotion in the console.
+    let seeded = 0;
+    await dataSource.transaction(async (tx) => {
+      await tx.query(`SET LOCAL polychoron.typology_maintenance = 'on'`);
+      for (const t of CATALOG) {
+        const inserted = (await tx.query(
+          `INSERT INTO aml_typology_configs (typology_code, created_by) VALUES ($1, $2)
+           ON CONFLICT (typology_code) DO NOTHING RETURNING typology_code`,
+          [t.typologyCode, SEEDED_BY_USER_ID],
+        )) as unknown[];
+        if (inserted.length === 0) continue;
+        await tx.query(
+          `INSERT INTO aml_typology_config_versions
+             (typology_code, version, typology_label, rule_logic_description, active, status, changed_by, change_reason)
+           VALUES ($1, 1, $2, $3, true, 'promoted', $4, 'Initial migration from Phase 1 hardcoded catalog')`,
+          [t.typologyCode, t.typologyLabel, t.ruleLogicDescription, SEEDED_BY_USER_ID],
+        );
+        await tx.query(`UPDATE aml_typology_configs SET production_version = 1 WHERE typology_code = $1`, [t.typologyCode]);
+        seeded++;
+      }
+    });
 
-    console.log(`Seeded ${CATALOG.length} typology configs (v1, active).`);
+    console.log(`Seeded ${seeded} of ${CATALOG.length} typology configs (promoted v1); existing ones left untouched.`);
   } finally {
     await app.close();
   }

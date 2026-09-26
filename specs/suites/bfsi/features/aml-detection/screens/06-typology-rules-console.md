@@ -48,8 +48,8 @@ no typology could be created without a developer running a seed script.
   null) plus version 1 as a `draft`. It is not live until promoted.
 - **Editing** a live typology opens a new draft (copy of the promoted
   version's content) or edits the one already open. Drafts are editable
-  in place; every save records who and when on the draft row but does
-  not create a version.
+  in place; every save updates the draft's `changed_by`/`changed_at`
+  but does not create a version.
 - **Retiring** a typology = promoting a draft whose `active` is false.
   Typologies are never deleted — historic `TypologyMatch` rows and KB
   documents reference their codes. Re-activating is the same flow in
