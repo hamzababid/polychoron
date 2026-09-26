@@ -6,7 +6,8 @@ before expanding Phase 2 into task-level detail.**
 
 Written after reading all five Phase 2 screen specs in full. Three
 scope decisions were made explicitly with the project owner before
-writing this (recorded here so they're not re-litigated per screen):
+writing this (recorded here so they're not re-litigated per screen) —
+#4 was added later, same discipline:
 
 1. **RBAC for Typology Console / Model Governance**: `mvp-phases.md`
    scopes the full platform RBAC/SSO system to Phase 3, but these two
@@ -27,6 +28,19 @@ writing this (recorded here so they're not re-litigated per screen):
    submission format available. Decision: generic PDF/CSV period
    export only for Phase 2; the SBP-specific template is added later
    once compliance provides it.
+
+4. **Regulatory Knowledge Base management** (added 2026-09-26, after
+   the first single-page KB screen shipped): proper routed screens
+   (Library / Add wizard / Document view / Edit / Compare) replace the
+   inline-expansion page. Content edits are **versioned drafts** —
+   published chunk text is never mutated (constitution rule 8);
+   metadata corrections are in place with a required reason. All four
+   ingestion sources are in scope (PDF/DOCX/TXT upload, pasted text,
+   single human-triggered URL fetch, manual chunks). Any
+   `mlro_compliance_head` may publish — no maker-checker until Phase 3
+   RBAC. Built from the existing AML design system, no Claude Design
+   export. Full detail: `screens/11-regulatory-knowledge-base.md` and
+   the Phase 2 addendum in `platform/10-regulatory-knowledge-base-spec.md`.
 
 ## New data models this phase adds
 (Extends `specs/suites/bfsi/features/aml-detection/data-models.py`.
@@ -109,6 +123,48 @@ RBAC: `aml_detection.mlro_compliance_head`, `platform.model_risk_audit`, `platfo
 `GET /api/v1/features/aml_detection/reports/history` → previously generated reports, each re-downloadable byte-for-byte (persisted file, not regenerated on request)
 `GET /api/v1/features/aml_detection/reports/{report_id}/download`
 RBAC: `aml_detection.mlro_compliance_head`
+
+## Regulatory Knowledge Base
+Prefix: `/api/v1/features/aml_detection/regulatory-kb`. RBAC on every
+route, read and write: `aml_detection.mlro_compliance_head`. Anything
+that extracts, chunks, embeds, or publishes runs as a Temporal workflow
+on the agent-service worker and returns a `jobId` —
+`GET .../jobs/{jobId}` → `{jobId, kind, status: running|completed|failed, progress?: {done, total}, result?, error?}`
+(replaces `.../ingestion-jobs/{jobId}`, which stays as an alias until
+the old screen is removed).
+
+**Library & read**
+`GET .../documents?status=&source_type=&issuing_authority=&tag=&q=&page=&page_size=` → paginated `{items, total, page, pageSize, statusCounts}` (**shape change**: was a bare array — only the KB screen consumes it, updated in the same change)
+`GET .../documents/{id}` → full metadata incl. lifecycle fields, source file info, chunking config, family summary
+`GET .../documents/{id}/chunks?q=` → ordered by `ordinal`, each with `citedByCaseCount`
+`GET .../documents/{id}/versions` → every document in the family, newest first
+`GET .../documents/{id}/changes` → metadata change log
+`GET .../documents/{id}/citations?page=` → cases citing any chunk of this document
+`GET .../documents/{id}/compare/{otherId}` → metadata diff + chunk diff (409 if not the same family)
+`GET .../documents/{id}/source-file` → original bytes, `Content-Disposition` download
+`GET .../chunking-profiles`, `POST .../chunking-profiles` → `{name, config}`
+
+**Draft creation & source**
+`POST .../drafts` → `{source_method: upload|paste|url|manual, supersedes_document_id?, copy_chunks?}` → creates a `draft`, returns `documentId`. With `supersedes_document_id` it's the next version in that family, pre-filled with its metadata — and with `copy_chunks: true` (Edit → "Edit content") its chunks too, copied with their existing embeddings (only chunks whose text changes, or new chunks, need re-embedding) (409 if that family already has an open draft — response carries the existing draft's id)
+`POST .../drafts/{id}/source-file` → multipart upload (pdf/docx/txt, ≤ 20 MB) → starts extraction, returns `jobId`
+`POST .../drafts/{id}/source-text` → `{text}` (paste) → normalises, no job needed
+`POST .../drafts/{id}/source-url` → `{url}` → starts fetch + extraction, returns `jobId`
+`PATCH .../drafts/{id}` → any metadata + retrieval settings (drafts need no change reason — they're not live)
+`POST .../drafts/{id}/chunk-preview` → `{chunking_config}` → returns `jobId`; replaces the draft's chunks with unembedded previews
+`PUT .../drafts/{id}/chunks` → full ordered chunk list `[{section_reference, text}]` (manual entry and all preview adjustments — merge/split/edit/reorder are client-side, saved as the whole list); returns warnings + injection flags
+`POST .../drafts/{id}/chunks/{chunkId}/acknowledge-injection` → `{acknowledged_by}`
+`POST .../drafts/{id}/embed` → returns `jobId`
+`POST .../drafts/{id}/publish` → `{published_by}` → 409 unless every chunk is embedded and every injection flag acknowledged; returns `jobId`
+`DELETE .../drafts/{id}` → discard (drafts only — 409 for any other status)
+
+**Live document actions**
+`PATCH .../documents/{id}/metadata` → `{changes: {field: value}, reason, changed_by}` → 400 without a non-empty reason; 409 for `superseded`; writes one change-log row per changed field. Chunk text/section reference are **not** accepted here — there is no endpoint that mutates published chunk content
+`POST .../documents/{id}/withdraw` → `{reason, withdrawn_by}` → `current` → `withdrawn`
+`POST .../documents/{id}/reembed` → *(exists)* returns `jobId`
+`POST .../retrieval-preview` → `{query, top_k?, include_draft_document_id?}` → starts `RegulatoryRetrievalPreviewWorkflow` and awaits it (≤ 10 s) → ranked `[{chunkId, documentId, documentTitle, sectionReference, text, score}]`
+
+**Kept for compatibility:** `POST .../documents` (one-shot ingest) stays for
+scripts/tests; the new screen doesn't use it.
 
 ## MLOps tracing (platform-wide, not a screen)
 `platform_agent_activity_log` (Phase 1) remains the constitution rule

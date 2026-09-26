@@ -147,3 +147,174 @@ This is designed to be added without disrupting work already underway:
   ingestion pipeline (document upload UI, chunking service, embedding
   refresh jobs) for Phase 1 — that's Phase 2 scope, tracked in
   `TASKS.md`.
+
+---
+
+## Phase 2 addendum — document lifecycle & configurable ingestion
+*Added 2026-09-26, decided with the project owner. Screen-level detail
+lives in `suites/bfsi/features/aml-detection/screens/11-regulatory-knowledge-base.md`;
+this section is the platform mechanism only. Still ADDITIVE: new
+columns are nullable/defaulted, new tables only, and the Phase 1 seeded
+corpus is migrated forward, not re-ingested.*
+
+### Decisions
+1. **Edit = versioned drafts.** Published chunk text is immutable
+   (constitution rule 8 — a case's stored `chunk_id` must keep
+   resolving to the exact text it cited). Content changes create a new
+   `draft` document in the same *family*; publishing supersedes the
+   previous version. Metadata corrections are in place, reason
+   required, change-logged.
+2. **Ingestion sources:** file upload (PDF/DOCX/TXT), pasted full text,
+   human-triggered single-URL fetch, manual chunks. No scheduled or
+   recursive fetching — non-negotiable #2 still stands.
+3. **Approval:** any `aml_detection.mlro_compliance_head` may publish;
+   no maker-checker (revisit with Phase 3 real RBAC).
+4. **Chunking is deterministic and configurable** (heading regex /
+   paragraph / fixed size + overlap), previewed and hand-adjustable
+   before any embedding call. No LLM-based chunking.
+
+### Data model additions
+
+```python
+class RegulatoryDocumentStatus(str, Enum):
+    DRAFT = "draft"            # never retrievable; the only deletable state
+    CURRENT = "current"        # retrievable if retrieval_enabled
+    SUPERSEDED = "superseded"  # retained forever, not retrievable
+    WITHDRAWN = "withdrawn"    # repealed with no replacement; retained, not retrievable
+
+
+class ChunkingStrategy(str, Enum):
+    HEADING_PATTERN = "heading_pattern"
+    PARAGRAPH = "paragraph"
+    FIXED_SIZE = "fixed_size"
+    MANUAL = "manual"
+
+
+class ChunkingConfig(BaseModel):
+    strategy: ChunkingStrategy
+    heading_pattern: Optional[str] = None      # regex, HEADING_PATTERN only
+    target_chunk_chars: int = 1200
+    max_chunk_chars: int = 2000
+    overlap_chars: int = 150
+    min_chunk_chars: int = 120
+    section_reference_mode: Literal["from_heading", "template"] = "from_heading"
+    section_reference_template: Optional[str] = None  # e.g. "{title} ¶{n}"
+    strip_headers_footers: bool = True
+
+
+class ChunkingProfile(BaseModel):
+    """Named, reusable ChunkingConfig — feature-scoped."""
+    profile_id: UUID = Field(default_factory=uuid4)
+    feature_code: str
+    name: str                  # e.g. "SBP Regulations — by Regulation number"
+    config: ChunkingConfig
+    created_by: str
+    created_at: datetime
+
+
+# RegulatoryDocument — new fields (all defaulted/nullable)
+    document_family_id: UUID          # shared by every version of one regulation; defaults to own document_id
+    version_number: int = 1           # monotonic within a family
+    status: RegulatoryDocumentStatus = RegulatoryDocumentStatus.CURRENT
+    jurisdiction: str = "PK"
+    language: str = "en"
+    tags: list[str] = []
+    related_typology_codes: list[str] = []   # empty = applies to all typologies
+    retrieval_enabled: bool = True
+    retrieval_priority: float = Field(1.0, ge=0.5, le=2.0)
+    notes: Optional[str] = None               # internal; never sent to an agent
+    source_method: Literal["upload", "paste", "url", "manual", "seed"] = "seed"
+    source_file_id: Optional[UUID] = None     # -> RegulatorySourceFile
+    chunking_config: Optional[ChunkingConfig] = None
+    published_by: Optional[str] = None
+    published_at: Optional[datetime] = None
+    withdrawn_by: Optional[str] = None
+    withdrawn_at: Optional[datetime] = None
+    withdrawal_reason: Optional[str] = None
+
+
+# RegulatoryChunk — new fields
+    ordinal: int                       # document order; list/preview order by this, not section_reference
+    char_count: int
+    embedding: nullable while status == draft and embedding job pending
+    injection_flags: list[str] = []    # detect_injection_patterns() hits
+    injection_acknowledged_by: Optional[str] = None
+
+
+class RegulatorySourceFile(BaseModel):
+    """Original uploaded/fetched bytes, retained for traceability."""
+    file_id: UUID
+    filename: str
+    content_type: str                  # application/pdf | ...docx | text/plain | text/html
+    size_bytes: int
+    sha256: str
+    fetched_from_url: Optional[str] = None
+    uploaded_by: str
+    uploaded_at: datetime
+    # bytes stored in a bytea column excluded from default SELECTs
+    # (same pattern as aml_report_generations.file_content)
+
+
+class RegulatoryDocumentChange(BaseModel):
+    """Append-only metadata-correction log. One row per changed field."""
+    change_id: UUID
+    document_id: UUID
+    field_name: str
+    old_value: Optional[str]
+    new_value: Optional[str]
+    changed_by: str
+    changed_at: datetime
+    reason: str                        # required — enforced NOT NULL + non-empty CHECK
+```
+
+DB-level guarantees (migration `013`):
+- Partial unique index: one `current` document per `document_family_id`;
+  one `draft` per `document_family_id`.
+- Trigger rejecting `UPDATE OF text, section_reference` on
+  `regulatory_chunks` and `DELETE` of chunks whose document status is
+  not `draft` — immutability enforced at the data layer, not just the
+  API (same stance as constitution rule 4).
+- `regulatory_document_changes.reason` `CHECK (length(trim(reason)) > 0)`.
+- Backfill: existing rows → `status='current'`,
+  `document_family_id=document_id`, `version_number=1`,
+  `source_method='seed'`; chunks get `ordinal` by current
+  `section_reference` order and `char_count`.
+
+### Pipeline (agent-service, Temporal — app-api never calls agent-service directly)
+| Workflow | Input | Output | LLM/embedding? |
+|---|---|---|---|
+| `RegulatoryExtractionWorkflow` | `source_file_id` or `url` or pasted text | normalized plain text (+ page map) stored on the draft | no |
+| `RegulatoryChunkPreviewWorkflow` | draft `document_id` + `ChunkingConfig` | draft chunks (unembedded) with warnings + injection flags | no |
+| `RegulatoryEmbedDraftWorkflow` | draft `document_id` | embeddings for every draft chunk, progress via workflow query | yes — `get_embedding()` |
+| `RegulatoryPublishWorkflow` | draft `document_id`, `published_by` | draft → `current`, previous `current` in family → `superseded`, single DB transaction | no |
+| `RegulatoryReembedWorkflow` | *(exists)* | unchanged | yes |
+| `RegulatoryRetrievalPreviewWorkflow` | `query`, `top_k`, optional draft `document_id` | ranked chunks via `preview_regulatory_retrieval()` — Document view's "Test retrieval"; app-api awaits the result (short-lived) | yes — query embedding |
+| `RegulatoryDocumentIngestionWorkflow` | *(exists)* | kept for `seed_regulatory_corpus.py`; new UI no longer uses it | yes |
+
+Extraction libraries (agent-service only): `pypdf` (PDF text layer —
+no OCR; a PDF with no extractable text fails with a clear reason),
+`python-docx`, and `httpx` (already a dependency) for URL fetch with a
+10 MB cap, 20 s timeout, `http(s)` only, no redirects to private
+address ranges.
+
+Chunking lives in `app/platform/regulatory/chunking.py` as pure
+functions (text + `ChunkingConfig` → chunks), unit-tested with
+fixtures, no I/O — platform-level, so a second feature's corpus reuses
+it unchanged.
+
+### Retrieval contract changes
+`retrieve_regulatory_context(feature_code, query, top_k=5, typology_code=None)`:
+- filters `status = 'current' AND retrieval_enabled`
+- if `typology_code` is given, excludes documents whose
+  `related_typology_codes` is non-empty and doesn't contain it
+- orders by `similarity × retrieval_priority`
+- its signature gains **no** draft-inclusion option. The Document
+  view's "Test retrieval" uses a separate function,
+  `preview_regulatory_retrieval(feature_code, query, top_k, include_draft_document_id)`,
+  sharing the same scoring SQL but living in
+  `app/platform/regulatory/preview.py`. A unit test asserts no module
+  under `app/features/` imports `preview.py` — so a draft can never
+  reach an agent prompt by construction, not convention.
+
+`typology_code` is optional and defaulted, so the existing Pattern
+Matching call keeps working unchanged until it's updated to pass it.
