@@ -1,18 +1,11 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import {
-  disableKillSwitch,
-  getBacktestJob,
-  getTypologyHistory,
-  listKillSwitches,
-  listTypologies,
-  promoteTypology,
-  reactivateKillSwitch,
-  startTypologyBacktest,
-  updateTypology,
-} from '../api/client';
-import type { BacktestJob, KillSwitchScope, TypologyConfigVersion, TypologyConsoleOverview } from '../api/types';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { disableKillSwitch, listKillSwitches, listTypologies, reactivateKillSwitch } from '../api/client';
+import type { KillSwitchScope, TypologyConsoleOverview, TypologyStatus } from '../api/types';
 import { useAuth } from '../../../auth/AuthContext';
 import { useToast } from '../../../shell/ToastProvider';
+import { NewTypologyDialog } from './NewTypologyDialog';
+import { TypologyDetailPanel } from './TypologyDetailPanel';
+import { TypologyStatusBadge } from './TypologyStatusBadge';
 import './typology-console.css';
 
 const CAN_WRITE_ROLES = ['aml_detection.mlro_compliance_head'];
@@ -24,7 +17,7 @@ const CAN_WRITE_ROLES = ['aml_detection.mlro_compliance_head'];
 const TUNING_CONVERSION_THRESHOLD = 0.1;
 const HIGH_FP_THRESHOLD = 0.5;
 
-type StatusFilter = 'all' | 'active' | 'inactive';
+type StatusFilter = 'all' | TypologyStatus | 'draft_open';
 
 /** specs/suites/bfsi/features/aml-detection/screens/06-typology-rules-console.md
  * — restyled to match design-exports/bfsi/aml-detection/Typology
@@ -52,6 +45,11 @@ type StatusFilter = 'all' | 'active' | 'inactive';
  *    against historical evidence bundles with the draft config, a
  *    larger follow-up, not built yet). That real, narrower number is
  *    what's shown here, not an invented before/after.
+ *
+ * v2 lifecycle (same spec, "Typology lifecycle"): the table lists every
+ * typology incl. never-promoted ones; the detail panel
+ * (TypologyDetailPanel) edits drafts only and gates Promote on a
+ * passing golden-dataset regression.
  */
 export function TypologyRulesConsoleScreen() {
   const { session } = useAuth();
@@ -75,16 +73,7 @@ export function TypologyRulesConsoleScreen() {
   const [search, setSearch] = useState('');
 
   const [selectedCode, setSelectedCode] = useState<string | null>(null);
-  const [history, setHistory] = useState<TypologyConfigVersion[] | null>(null);
-  const [draftDescription, setDraftDescription] = useState('');
-  const [changeReason, setChangeReason] = useState('');
-  const [saving, setSaving] = useState(false);
-  const [backtestJob, setBacktestJob] = useState<BacktestJob | null>(null);
-  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const [promoteReason, setPromoteReason] = useState('');
-  const [promoting, setPromoting] = useState(false);
-  const [ackChecked, setAckChecked] = useState(false);
-  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [newOpen, setNewOpen] = useState(false);
 
   const load = useCallback(() => {
     listTypologies()
@@ -103,17 +92,11 @@ export function TypologyRulesConsoleScreen() {
     loadKillSwitches();
   }, [load, loadKillSwitches]);
 
-  useEffect(() => {
-    return () => {
-      if (pollRef.current) clearInterval(pollRef.current);
-    };
-  }, []);
-
   const rows = overview?.typologies ?? [];
   const filteredRows = useMemo(() => {
     return rows.filter((r) => {
-      if (statusFilter === 'active' && !r.active) return false;
-      if (statusFilter === 'inactive' && r.active) return false;
+      if (statusFilter === 'draft_open' && !r.draft) return false;
+      if (statusFilter !== 'all' && statusFilter !== 'draft_open' && r.status !== statusFilter) return false;
       if (tuningOnly && r.strConversionRate >= TUNING_CONVERSION_THRESHOLD) return false;
       if (search.trim() && !`${r.typologyLabel} ${r.typologyCode}`.toLowerCase().includes(search.trim().toLowerCase())) return false;
       return true;
@@ -121,82 +104,6 @@ export function TypologyRulesConsoleScreen() {
   }, [rows, statusFilter, tuningOnly, search]);
 
   const selected = rows.find((r) => r.typologyCode === selectedCode) ?? null;
-
-  const selectTypology = (code: string) => {
-    setSelectedCode(code);
-    setBacktestJob(null);
-    setPromoteReason('');
-    setAckChecked(false);
-    const row = rows.find((r) => r.typologyCode === code);
-    setDraftDescription(row?.ruleLogicDescription ?? '');
-    setChangeReason('');
-    getTypologyHistory(code)
-      .then(setHistory)
-      .catch((err: unknown) => toast.error(err instanceof Error ? err.message : String(err)));
-  };
-
-  const handleSave = async (activeOverride?: boolean) => {
-    if (!selected || !session) return;
-    setSaving(true);
-    try {
-      await updateTypology(selected.typologyCode, {
-        rule_logic_description: draftDescription !== selected.ruleLogicDescription ? draftDescription : undefined,
-        active: activeOverride,
-        change_reason: changeReason || (activeOverride !== undefined ? `Toggled ${activeOverride ? 'active' : 'inactive'}` : 'Rule logic edit'),
-        changed_by: session.user.userId,
-      });
-      setChangeReason('');
-      load();
-      getTypologyHistory(selected.typologyCode).then(setHistory);
-      toast.success(activeOverride === undefined ? 'Rule logic updated.' : activeOverride ? 'Typology activated.' : 'Typology deactivated.');
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : String(err));
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const handleBacktest = async () => {
-    if (!selected) return;
-    try {
-      const job = await startTypologyBacktest(selected.typologyCode);
-      setBacktestJob(job);
-      setAckChecked(false);
-      toast.success('Backtest started.');
-      pollRef.current = setInterval(() => {
-        void getBacktestJob(job.jobId).then((updated) => {
-          setBacktestJob(updated);
-          if (updated.status === 'complete' || updated.status === 'failed') {
-            if (pollRef.current) clearInterval(pollRef.current);
-            toast[updated.status === 'complete' ? 'success' : 'error'](`Backtest ${updated.status}.`);
-          }
-        });
-      }, 1500);
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : String(err));
-    }
-  };
-
-  const handlePromote = async () => {
-    if (!selected || !session || !promoteReason.trim()) return;
-    setConfirmOpen(false);
-    setPromoting(true);
-    try {
-      await promoteTypology(selected.typologyCode, {
-        backtest_job_id: backtestJob?.status === 'complete' ? backtestJob.jobId : undefined,
-        reason: promoteReason,
-        promoted_by: session.user.userId,
-      });
-      setPromoteReason('');
-      setAckChecked(false);
-      load();
-      toast.success('Promoted to production.');
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : String(err));
-    } finally {
-      setPromoting(false);
-    }
-  };
 
   const featureKillSwitch = killSwitches.find((k) => k.typologyCode === null) ?? null;
   const typologyKillSwitch = selectedCode ? killSwitches.find((k) => k.typologyCode === selectedCode) ?? null : null;
@@ -210,6 +117,12 @@ export function TypologyRulesConsoleScreen() {
     if (!selected) return;
     setKillSwitchReason('');
     setKillSwitchModal({ action: 'disable', scope: 'typology', typologyCode: selected.typologyCode, typologyLabel: selected.typologyLabel });
+  };
+
+  const handleCreated = (code: string) => {
+    setNewOpen(false);
+    load();
+    setSelectedCode(code);
   };
 
   const openReactivateModal = (target: KillSwitchScope) => setKillSwitchModal({ action: 'reactivate', target });
@@ -229,6 +142,7 @@ export function TypologyRulesConsoleScreen() {
       setKillSwitchModal(null);
       setKillSwitchReason('');
       loadKillSwitches();
+      load();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : String(err));
     } finally {
@@ -239,9 +153,9 @@ export function TypologyRulesConsoleScreen() {
   if (error) return <div className="aml-status aml-status--error">{error}</div>;
   if (!overview) return <div className="aml-status">Loading typology console…</div>;
 
-  const liveCount = rows.filter((r) => r.active).length;
-  const retiredCount = rows.filter((r) => !r.active).length;
-  const draftsInBacktestCount = rows.filter((r) => r.hasActiveBacktest).length;
+  const liveCount = rows.filter((r) => r.status === 'live').length;
+  const retiredCount = rows.filter((r) => r.status === 'retired').length;
+  const draftsOpenCount = rows.filter((r) => r.draft).length;
   const alerts30d = rows.reduce((sum, r) => sum + r.alertVolume30d, 0);
 
   return (
@@ -261,11 +175,11 @@ export function TypologyRulesConsoleScreen() {
             <div style={{ fontFamily: 'var(--font-heading)', fontSize: 20 }}>{retiredCount}</div>
           </div>
           <div>
-            <div className="aml-label" style={{ color: draftsInBacktestCount > 0 ? 'var(--color-accent-700)' : undefined }}>
-              Drafts in backtest
+            <div className="aml-label" style={{ color: draftsOpenCount > 0 ? 'var(--color-accent-700)' : undefined }}>
+              Drafts open
             </div>
-            <div style={{ fontFamily: 'var(--font-heading)', fontSize: 20, color: draftsInBacktestCount > 0 ? 'var(--color-accent-700)' : undefined }}>
-              {draftsInBacktestCount}
+            <div style={{ fontFamily: 'var(--font-heading)', fontSize: 20, color: draftsOpenCount > 0 ? 'var(--color-accent-700)' : undefined }}>
+              {draftsOpenCount}
             </div>
           </div>
           <div>
@@ -328,8 +242,10 @@ export function TypologyRulesConsoleScreen() {
         </span>
         <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}>
           <option value="all">Status: all</option>
-          <option value="active">Active</option>
-          <option value="inactive">Retired</option>
+          <option value="live">Live</option>
+          <option value="retired">Retired</option>
+          <option value="not_live">Not yet live</option>
+          <option value="draft_open">Draft open</option>
         </select>
         <label className="typology-console__tuneToggle">
           <input type="checkbox" checked={tuningOnly} onChange={(e) => setTuningOnly(e.target.checked)} />
@@ -343,6 +259,11 @@ export function TypologyRulesConsoleScreen() {
           onChange={(e) => setSearch(e.target.value)}
           style={{ marginLeft: 'auto', width: 240, fontSize: 12.5 }}
         />
+        {canWrite && (
+          <button className="aml-btn aml-btn--primary" onClick={() => setNewOpen(true)}>
+            New typology…
+          </button>
+        )}
       </div>
 
       <div className="typology-console__scroll">
@@ -366,28 +287,25 @@ export function TypologyRulesConsoleScreen() {
           filteredRows.map((r) => (
             <div
               key={r.typologyCode}
-              className={`typology-console__row ${r.active ? 'typology-console__row--live' : 'typology-console__row--draft'} ${selectedCode === r.typologyCode ? 'typology-console__row--selected' : ''}`}
-              onClick={() => selectTypology(r.typologyCode)}
-              style={{ opacity: r.active ? 1 : 0.65 }}
+              className={`typology-console__row ${r.status === 'live' ? 'typology-console__row--live' : 'typology-console__row--draft'} ${selectedCode === r.typologyCode ? 'typology-console__row--selected' : ''}`}
+              onClick={() => setSelectedCode(r.typologyCode)}
+              style={{ opacity: r.status === 'live' ? 1 : 0.75 }}
             >
               <div className="typology-console__cell">
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span style={{ fontSize: 13.5, fontWeight: 500 }}>{r.typologyLabel}</span>
-                  {r.hasActiveBacktest && (
-                    <span className="typology-console__draftBadge">DRAFT IN BACKTEST</span>
-                  )}
+                  {r.draft && <span className="typology-console__draftBadge">DRAFT v{r.draft.version} OPEN</span>}
+                  {r.hasActiveBacktest && <span className="typology-console__draftBadge">IN BACKTEST</span>}
                 </div>
                 <div style={{ fontSize: 11, color: 'var(--color-neutral-700)' }}>
-                  {r.typologyCode} · v{r.productionVersion}
+                  {r.typologyCode} · {r.productionVersion != null ? `v${r.productionVersion} live` : 'never promoted'}
                 </div>
               </div>
               <div className="typology-console__cell">
-                <span className={r.active ? 'typology-console__liveBadge' : 'typology-console__retiredBadge'}>
-                  {r.active ? 'ACTIVE' : 'RETIRED'}
-                </span>
+                <TypologyStatusBadge status={r.status} killSwitched={r.killSwitched} />
               </div>
               <div className="typology-console__cell" style={{ textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>
-                {r.active ? r.alertVolume30d : '—'}
+                {r.status === 'not_live' ? '—' : r.alertVolume30d}
               </div>
               <div className="typology-console__cell">
                 <div style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
@@ -425,255 +343,19 @@ export function TypologyRulesConsoleScreen() {
         )}
 
         {selected && (
-          <div className="typology-console__detail">
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 11 }}>
-              <h5 style={{ margin: 0, letterSpacing: '.1em', textTransform: 'uppercase', fontSize: 13 }}>Rule detail</h5>
-              <span style={{ fontSize: 12, color: 'var(--color-neutral-700)' }}>
-                {selected.typologyLabel} · {selected.typologyCode} · {selected.active ? 'active' : 'retired'}
-              </span>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1.5fr 1fr', gap: 14, alignItems: 'start' }}>
-              <div className="tile">
-                <i className="corner tl" />
-                <i className="corner tr" />
-                <i className="corner bl" />
-                <i className="corner br" />
-                <div className="tile-head" style={{ borderBottom: '1px solid var(--color-divider)' }}>
-                  <h6 style={{ margin: 0 }}>Detection logic in plain language</h6>
-                  <span className={selected.active ? 'typology-console__liveBadge' : 'typology-console__retiredBadge'}>
-                    {selected.active ? 'LIVE — AFFECTING REAL ALERTS' : 'RETIRED — NOT RUNNING'}
-                  </span>
-                  <span style={{ marginLeft: 'auto', fontSize: 11, color: 'var(--color-neutral-700)' }}>v{selected.productionVersion} in production</span>
-                </div>
-                <div className="tile-body">
-                  <textarea
-                    className="input"
-                    value={draftDescription}
-                    onChange={(e) => setDraftDescription(e.target.value)}
-                    rows={4}
-                    disabled={!canWrite}
-                    style={{ width: '100%', boxSizing: 'border-box' }}
-                  />
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1, background: 'var(--color-divider)', marginTop: 11 }}>
-                    <div style={{ background: 'var(--color-bg)', padding: '8px 10px' }}>
-                      <div className="aml-label">FMU code</div>
-                      <div style={{ fontSize: 13.5, marginTop: 2 }}>{selected.typologyCode}</div>
-                    </div>
-                    <div style={{ background: 'var(--color-bg)', padding: '8px 10px' }}>
-                      <div className="aml-label">Alerts (30d)</div>
-                      <div style={{ fontSize: 13.5, marginTop: 2 }}>{selected.alertVolume30d}</div>
-                    </div>
-                    <div style={{ background: 'var(--color-bg)', padding: '8px 10px' }}>
-                      <div className="aml-label">STR conversion</div>
-                      <div style={{ fontSize: 13.5, marginTop: 2 }}>{(selected.strConversionRate * 100).toFixed(1)}%</div>
-                    </div>
-                  </div>
-
-                  {canWrite && (
-                    <>
-                      <label className="typology-console__field" style={{ marginTop: 11 }}>
-                        Change reason (required to save)
-                        <input value={changeReason} onChange={(e) => setChangeReason(e.target.value)} />
-                      </label>
-                      <div className="typology-console__actions">
-                        <button className="aml-btn aml-btn--primary" disabled={saving || !changeReason} onClick={() => void handleSave()}>
-                          Save rule-logic edit
-                        </button>
-                        <button className="aml-btn" disabled={saving} onClick={() => void handleSave(!selected.active)}>
-                          {selected.active ? 'Retire rule' : 'Reactivate'}
-                        </button>
-                      </div>
-                    </>
-                  )}
-
-                  <div
-                    style={{
-                      marginTop: 11,
-                      paddingTop: 11,
-                      borderTop: '1px solid var(--color-divider)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 10,
-                      flexWrap: 'wrap',
-                    }}
-                  >
-                    <span className="aml-label" style={{ color: typologyKillSwitch ? 'var(--color-alert)' : undefined }}>
-                      Kill switch
-                    </span>
-                    {typologyKillSwitch ? (
-                      <>
-                        <span style={{ fontSize: 12, color: 'var(--color-alert)' }}>
-                          Disabled — excluded from Pattern Matching's catalog. “{typologyKillSwitch.reason}”
-                        </span>
-                        {canWrite && (
-                          <button className="aml-btn" disabled={killSwitchBusy} onClick={() => openReactivateModal(typologyKillSwitch)}>
-                            Reactivate…
-                          </button>
-                        )}
-                      </>
-                    ) : (
-                      canWrite && (
-                        <button className="aml-btn" disabled={killSwitchBusy} onClick={openDisableTypologyModal}>
-                          Disable this typology…
-                        </button>
-                      )
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              <div className="tile">
-                <i className="corner tl" />
-                <i className="corner tr" />
-                <i className="corner bl" />
-                <i className="corner br" />
-                <div className="tile-head" style={{ borderBottom: '1px solid var(--color-divider)' }}>
-                  <h6 style={{ margin: 0 }}>Version history</h6>
-                  <span className="tag tag-neutral" style={{ fontSize: 10 }}>
-                    {history?.length ?? 0} versions
-                  </span>
-                </div>
-                <div>
-                  {history?.map((v) => (
-                    <div
-                      key={v.versionId}
-                      style={{
-                        display: 'flex',
-                        gap: 11,
-                        alignItems: 'flex-start',
-                        padding: '9px 13px',
-                        borderBottom: '1px solid color-mix(in srgb, var(--color-text) 8%, transparent)',
-                        background: v.version === selected.productionVersion ? 'var(--color-accent-100)' : 'var(--color-bg)',
-                      }}
-                    >
-                      <div style={{ flex: 'none', width: 56 }}>
-                        <div style={{ fontFamily: 'var(--font-heading)', fontSize: 13 }}>v{v.version}</div>
-                        <div style={{ fontSize: 10.5, color: 'var(--color-neutral-600)' }}>{new Date(v.changedAt).toLocaleDateString()}</div>
-                      </div>
-                      <div style={{ minWidth: 0, flex: 1 }}>
-                        <div style={{ fontSize: 12.5, lineHeight: 1.4 }}>{v.changeReason}</div>
-                        <div style={{ fontSize: 10.5, color: 'var(--color-neutral-600)', marginTop: 1 }}>
-                          {v.changedBy} · {v.active ? 'active' : 'inactive'}
-                        </div>
-                      </div>
-                      {v.version === selected.productionVersion && (
-                        <div style={{ flex: 'none', fontSize: 11, color: 'var(--color-accent-800)' }}>LIVE</div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {canWrite && (
-              <div className="typology-console__backtestPanel">
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, marginBottom: 11 }}>
-                  <h5 style={{ margin: 0, letterSpacing: '.1em', textTransform: 'uppercase', fontSize: 13, color: 'var(--color-accent-800)' }}>
-                    Backtest sandbox
-                  </h5>
-                  <span className="typology-console__draftPill">DRAFT — NOT AFFECTING LIVE DETECTION</span>
-                  <span style={{ fontSize: 12, color: 'var(--color-accent-800)' }}>Nothing in this section raises an alert or touches a customer record.</span>
-                </div>
-
-                <button className="aml-btn" onClick={() => void handleBacktest()} disabled={backtestJob?.status === 'running' || backtestJob?.status === 'queued'}>
-                  Start backtest
-                </button>
-
-                {backtestJob && (
-                  <div className="typology-console__jobStatus">
-                    <div>
-                      Status: <strong>{backtestJob.status}</strong>
-                    </div>
-                    {backtestJob.comparisonReport && (
-                      <div className="typology-console__report">
-                        <div>Sample size: {backtestJob.comparisonReport.sampleSize}</div>
-                        <div>
-                          Production agreement rate:{' '}
-                          {backtestJob.comparisonReport.productionAgreementRate !== null
-                            ? `${(backtestJob.comparisonReport.productionAgreementRate * 100).toFixed(0)}%`
-                            : 'n/a (no historical dispositions yet)'}
-                        </div>
-                        <div className="typology-console__reportMethod">{backtestJob.comparisonReport.method}</div>
-                      </div>
-                    )}
-
-                    {backtestJob.status === 'complete' && (
-                      <div className="typology-console__ackRow">
-                        <div className="typology-console__ackBox" onClick={() => setAckChecked((v) => !v)}>
-                          <span className="typology-console__ackCheck">{ackChecked ? '✕' : ''}</span>
-                          <div>
-                            <div style={{ fontSize: 13 }}>I have read the backtest result and accept it as the basis for promotion.</div>
-                            <div style={{ fontSize: 11, color: 'var(--color-accent-700)' }}>Promotion changes live detection from the next batch run.</div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                <div className="typology-console__promoteSection">
-                  <div className="aml-label">Promote to production</div>
-                  {!backtestJob && (
-                    <div className="typology-console__promoteWarning">No backtest run this session — the promotion will be flagged as unlinked.</div>
-                  )}
-                  <input
-                    className="typology-console__promoteReason"
-                    placeholder="Reason for promotion (required)"
-                    value={promoteReason}
-                    onChange={(e) => setPromoteReason(e.target.value)}
-                  />
-                  <button
-                    className="aml-btn aml-btn--primary"
-                    disabled={promoting || !promoteReason.trim() || (backtestJob?.status === 'complete' && !ackChecked)}
-                    onClick={() => setConfirmOpen(true)}
-                  >
-                    Promote
-                  </button>
-                  {backtestJob?.status === 'complete' && !ackChecked && (
-                    <div style={{ fontSize: 11.5, color: 'var(--color-accent-800)', marginTop: 4 }}>
-                      Locked until the acknowledgement above is checked.
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
+          <TypologyDetailPanel
+            code={selected.typologyCode}
+            canWrite={canWrite}
+            killSwitch={typologyKillSwitch}
+            killSwitchBusy={killSwitchBusy}
+            onDisableKillSwitch={openDisableTypologyModal}
+            onReactivateKillSwitch={openReactivateModal}
+            onChanged={load}
+          />
         )}
       </div>
 
-      {confirmOpen && selected && (
-        <div className="typology-console__dialogBackdrop">
-          <div className="tile typology-console__dialog">
-            <i className="corner tl" />
-            <i className="corner tr" />
-            <i className="corner bl" />
-            <i className="corner br" />
-            <div className="tile-head" style={{ fontFamily: 'var(--font-heading)', fontSize: 14 }}>
-              Promote {selected.typologyLabel} to production?
-            </div>
-            <div className="tile-body" style={{ fontSize: 13 }}>
-              <p style={{ margin: '0 0 8px' }}>This replaces the live detection logic for this typology from the next batch run.</p>
-              <div style={{ border: '1px solid var(--color-divider)', background: 'var(--color-neutral-100)', padding: '9px 11px', fontSize: 12.5, lineHeight: 1.6 }}>
-                Reason: {promoteReason}
-                <br />
-                Backtest linked: {backtestJob?.status === 'complete' ? `job ${backtestJob.jobId.slice(0, 8)}` : 'none — will be flagged'}
-              </div>
-              <p style={{ margin: '8px 0 0', fontSize: 12, color: 'var(--color-neutral-700)' }}>
-                The change is written to the version history and is auditable at any time.
-              </p>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 12 }}>
-                <button className="aml-btn" onClick={() => setConfirmOpen(false)}>
-                  Back to backtest
-                </button>
-                <button className="aml-btn aml-btn--primary" onClick={() => void handlePromote()}>
-                  Promote v{selected.productionVersion + 1}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {newOpen && <NewTypologyDialog onClose={() => setNewOpen(false)} onCreated={handleCreated} />}
 
       {killSwitchModal && (
         <div className="typology-console__dialogBackdrop">

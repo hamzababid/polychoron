@@ -783,16 +783,16 @@ match the same typology.
       `RUN_LIVE_LLM_TESTS`
 
 **Frontend**
-- [ ] Table: status badges (Live / Retired / Not yet live /
+- [x] Table: status badges (Live / Retired / Not yet live /
       Kill-switched), "Draft open" marker
-- [ ] "New typology" dialog (MLRO only)
-- [ ] Detail panel: live vs. draft side by side with word diff (reuse
+- [x] "New typology" dialog (MLRO only)
+- [x] Detail panel: live vs. draft side by side with word diff (reuse
       `regulatory-kb/wordDiff.ts`), draft editor, discard
-- [ ] Promotion checklist: regression (run / progress / pass / fail /
+- [x] Promotion checklist: regression (run / progress / pass / fail /
       stale), backtest present-or-flagged, golden coverage warning;
       promote disabled until the regression passes; confirm with reason
-- [ ] History: versions (all statuses) + promotions with reason and links
-- [ ] Remove the send of `changed_by`/`promoted_by` from the client
+- [x] History: versions (all statuses) + promotions with reason and links
+- [x] Remove the send of `changed_by`/`promoted_by` from the client
 
 **Build notes (2026-09-26, backend):** agent-service 101 passed / 4
 live-LLM skipped; app-api e2e 69 passed / 3 skipped (12 typology tests,
@@ -809,9 +809,19 @@ guard keys on `OLD.content_hash` (content can't change on leaving
 draft); regression progress is read from result rows, with Temporal
 status only before the run row exists; the seed script writes the
 baseline under the maintenance override, never overwriting an
-existing typology. The old v1 in-place edit endpoint is gone, so the
-**current Typology Console screen is broken until the Frontend group
-lands**.
+existing typology. The old v1 in-place edit endpoint is gone (the
+screen was rebuilt for v2 in the Frontend group below).
+
+**Build notes (2026-09-26, frontend):** detail panel split into
+`TypologyDetailPanel.tsx` (live vs. draft tiles, word diff, draft
+editor, promotion checklist, history), `NewTypologyDialog.tsx` and
+`TypologyStatusBadge.tsx`; type-checks and builds, no new lint
+warnings. Flow smoke-tested through the running app-api (the calls the
+screen makes); **not yet looked at in a browser**. Found while testing:
+nothing seeded the golden dataset on `docker compose up`, and a
+regression over zero cases fails by design — so a fresh stack could
+never promote. Added a `seed-golden-dataset` compose step (after
+`app-api-seed`, since cases are created by a demo user).
 
 **Close-out**
 - [ ] Update `docs/architecture/blueprint.html` (typology ERD + the
