@@ -328,6 +328,49 @@ calls the same extraction command. One extraction path for both.
 | `RegulatoryRetrievalPreviewCommand` | awaited | yes — one query embedding |
 | `RegulatoryDocumentIngestionWorkflow` *(exists)* | background job | yes — kept for `seed_regulatory_corpus.py`; new UI doesn't use it |
 
+**Awaited-command mechanics**
+- Each command = one workflow wrapping one activity; the activity does
+  its DB work in a single transaction.
+- Business-rule failures raise a non-retryable `ApplicationError` with
+  `type` in `Conflict | NotFound | Invalid`; app-api's shared
+  `RegulatoryKbCommands.run()` maps them to 409 / 404 / 400 (anything
+  else → 500 with the message). Transient errors retry (max 3).
+- Cheap validation (DTOs, role guard, existence checks) runs in app-api
+  before Temporal is touched.
+- Once-only commands use a deterministic workflow id — publish is
+  `kb-publish-{draftId}` — so a concurrent duplicate is rejected by
+  Temporal and returned as 409. Repeat-safe commands (save chunk list)
+  use a random id.
+- Large text never crosses Temporal: extracted text is stored on the
+  draft (`regulatory_documents.extracted_text`, agent-service-owned) and
+  chunk preview reads it from Postgres. Commands return small results
+  (counts, excerpt, warnings). The one payload that carries content —
+  saving the full chunk list — is capped at 1.5 MB with a clear 413.
+- DB constraints (partial unique indexes, immutability trigger) remain
+  the backstop even if a command has a bug.
+
+**Source-file mechanics (app-api)**
+- Upload: multipart ≤ 20 MB (413 above); extension *and* magic bytes
+  checked (`%PDF`, ZIP header for DOCX, valid UTF-8 for TXT); sha256;
+  stored in `regulatory_source_files.content` (bytea, excluded from
+  default SELECTs).
+- URL fetch: `http(s)` only; hostname resolved and rejected if
+  private / loopback / link-local; redirects followed manually (max 3),
+  each re-validated; streamed with a 10 MB cap; 20 s timeout; accepted
+  content types PDF / HTML / TXT / DOCX.
+- Discarding a draft deletes its source file after the discard command
+  succeeds; a source file of any published version is retained forever.
+
+**Future hook — Kafka (not now).** Commands stay on Temporal because they
+are request/response (the officer needs success or a 409 immediately);
+a message broker would need hand-built reply correlation, timeouts,
+retries and dedup that Temporal already provides. When Phase 2 adds
+Kafka for fan-out (spec 09), `RegulatoryPublishCommand` is the natural
+producer of a `RegulatoryDocumentPublished` event — e.g. Model
+Governance logging corpus changes, Typology Console flagging typologies
+whose cited regulation changed, a golden-dataset citation re-check.
+Emit it after the publish transaction commits; nothing waits on it.
+
 Extraction libraries (agent-service only): `pypdf` (PDF text layer —
 no OCR; a PDF with no extractable text fails with a clear reason),
 `python-docx`, and an HTML-to-text step for fetched pages. The URL
