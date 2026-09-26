@@ -82,6 +82,13 @@ proceed silently.
    `mlro_compliance_head` role — never automatic based on shadow
    results alone.
 
+**Until shadow mode is built** (decision #5,
+`phase-2-full-aml/api-contracts-phase2.md`): a typology change is
+promoted from a draft only after a passing golden-dataset regression
+run against the candidate catalog — see
+`screens/06-typology-rules-console.md`, "Promotion gate". When shadow
+mode lands, it slots in between that regression and promotion.
+
 ## MLOps tracing (Layer 1 — implement first)
 Emit OpenTelemetry spans for all node executions; use Langfuse (or
 Arize Phoenix) specifically for the LLM call spans (prompt, completion,

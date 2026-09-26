@@ -703,6 +703,103 @@ backfilled by section number (`COLLATE "C"`).
       `screens/11-regulatory-knowledge-base.md`; demo scenarios
       re-verified end to end
 
+### Typology Console — lifecycle (v2) — spec: `screens/06-typology-rules-console.md`
+Fixes two defects in the first build and adds creation. (1) Edits and
+toggles wrote straight onto the live `aml_typology_configs` row, which
+the Pattern Matching Agent reads, so every edit went live on save and
+`promote` only moved a version number. (2) `changed_by`/`promoted_by`
+came from the request body; promote's `reason` was accepted and
+dropped. And no typology could be added except by a developer editing
+`seed-typology-configs.ts`. Decisions recorded as decision #5 in
+`phase-2-full-aml/api-contracts-phase2.md`. Additive discipline: re-run
+all existing tests after each group; both demo scenarios must still
+match the same typology.
+
+**Data layer**
+- [ ] Migration `014_typology_lifecycle.sql`: move `typology_label` onto
+      versions; add `status`, `content_hash`, `updated_at` to versions;
+      `created_by` + nullable `production_version` on configs; `reason`
+      (CHECK non-empty) + `eval_run_id` (FK `platform_eval_runs`) on
+      promotions; `typology_version` on `aml_typology_matches`
+- [ ] Backfill: the latest existing version of each typology becomes
+      `promoted` (it is what the agent has actually been reading, since
+      v1 edits went live) and `production_version` points at it;
+      earlier versions `superseded`; old promotions get a placeholder
+      reason `'(recorded before v2 — reason not stored)'`, `eval_run_id`
+      null. Then drop `rule_logic_description`/`active` from configs so
+      there is one source of truth
+- [ ] DB guarantees: partial unique indexes (one `draft`, one
+      `promoted` per code); trigger blocking content UPDATE/DELETE on
+      non-draft versions; `eval_run_id` NOT NULL for promotions after
+      the migration (CHECK on `promoted_at`, or a trigger)
+- [ ] Test: direct SQL `UPDATE` of a promoted version's
+      `rule_logic_description` fails; seeded catalog text unchanged
+- [ ] `seed-typology-configs.ts`: write v1 as `promoted` (still
+      idempotent) so a fresh reset matches the backfilled shape
+
+**agent-service**
+- [ ] `get_active_typologies()` joins to the promoted version (only
+      `active` ones); drafts / never-promoted invisible — test that a
+      draft edit leaves its output unchanged
+- [ ] Pattern Matching writes `typology_version` on `TypologyMatch`
+- [ ] Catalog override for evaluation only: `candidate_catalog(code,
+      version)` = production catalog with the draft substituted
+      (added, replaced, or removed if `active=false`); threaded into
+      the node through an explicit parameter used only by the eval
+      runner — plus an import-isolation test like the KB's
+      `preview.py` one (nothing under `app/features/` production paths
+      calls it)
+- [ ] `run_golden_dataset_regression()` accepts that catalog; new
+      `TypologyRegressionWorkflow` (background, progress
+      `{done, total}` via query) keyed
+      `typology:<code>:v<version>:<hash12>`; registered on the worker
+- [ ] Wire `assert_passes_before_shadow_mode()`'s logic as the promote
+      gate (replaces TASKS' earlier "not wired into promote()" note) —
+      exposed to app-api by reading `platform_eval_runs`, not a new
+      cross-service call
+- [ ] Re-run `pytest` + both seed scenarios: same typology matched
+
+**app-api**
+- [ ] Entities for new columns; DTOs drop `changed_by`/`promoted_by`
+      (acting user from session); reasons non-empty (`@IsNotEmpty`)
+- [ ] `POST /typologies` create (code regex, uniqueness, reserved
+      `no_significant_pattern`)
+- [ ] Draft endpoints: open, patch (recompute hash), discard (reason)
+- [ ] `POST /{code}/draft/regression` → start workflow; `GET
+      /regression-runs/{runId}` with progress then results
+- [ ] Promote: 409 without a passing run for the current hash; single
+      transaction (draft → promoted, previous → superseded, pointer,
+      promotion row with reason/eval run/backtest/session user)
+- [ ] Remove v1 `POST /{code}` in-place update
+- [ ] `GET /` and `GET /{code}` return live + draft + status +
+      kill-switch state + golden coverage count
+- [ ] e2e (with a seeded passing `platform_eval_runs` row — no live LLM
+      in CI, same approach as the KB's fixed vectors): create → not in
+      catalog → regression-gated promote → live; promote 409 with no run
+      / stale run after a draft edit; retire removes from catalog;
+      one open draft (409); body `promoted_by` ignored; every write 403
+      for `platform.model_risk_audit`. Live regression run behind
+      `RUN_LIVE_LLM_TESTS`
+
+**Frontend**
+- [ ] Table: status badges (Live / Retired / Not yet live /
+      Kill-switched), "Draft open" marker
+- [ ] "New typology" dialog (MLRO only)
+- [ ] Detail panel: live vs. draft side by side with word diff (reuse
+      `regulatory-kb/wordDiff.ts`), draft editor, discard
+- [ ] Promotion checklist: regression (run / progress / pass / fail /
+      stale), backtest present-or-flagged, golden coverage warning;
+      promote disabled until the regression passes; confirm with reason
+- [ ] History: versions (all statuses) + promotions with reason and links
+- [ ] Remove the send of `changed_by`/`promoted_by` from the client
+
+**Close-out**
+- [ ] Update `docs/architecture/blueprint.html` (typology ERD + the
+      promotion flow)
+- [ ] Walk every acceptance-criteria box in
+      `screens/06-typology-rules-console.md`; demo scenarios
+      re-verified end to end
+
 ### MLOps tracing layer (platform-wide, not a screen)
 - [ ] OpenTelemetry spans for every agent node execution
       (`agent-service`)

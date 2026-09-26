@@ -7,7 +7,7 @@ before expanding Phase 2 into task-level detail.**
 Written after reading all five Phase 2 screen specs in full. Three
 scope decisions were made explicitly with the project owner before
 writing this (recorded here so they're not re-litigated per screen) —
-#4 was added later, same discipline:
+#4 and #5 were added later, same discipline:
 
 1. **RBAC for Typology Console / Model Governance**: `mvp-phases.md`
    scopes the full platform RBAC/SSO system to Phase 3, but these two
@@ -42,6 +42,22 @@ writing this (recorded here so they're not re-litigated per screen) —
    export. Full detail: `screens/11-regulatory-knowledge-base.md` and
    the Phase 2 addendum in `platform/10-regulatory-knowledge-base-spec.md`.
 
+5. **Typology lifecycle** (added 2026-09-26, after reviewing the first
+   Typology Console build): an MLRO can create typologies from the
+   console (previously only a developer seed script could). Rule edits,
+   active/inactive toggles and new typologies are **versioned drafts**
+   that the Pattern Matching Agent never sees until promoted — the
+   first build wrote edits onto the live row, so `promote` was
+   cosmetic. Promotion requires a passing golden-dataset regression run
+   against the candidate catalog, pinned to the draft's content hash
+   (constitution rule 15, applied at promotion because real shadow mode
+   still isn't built); the historical backtest stays optional but
+   flagged. Typologies are retired (promoted `active=false`), never
+   deleted. The kill switch stays the immediate, unversioned emergency
+   control. Any `mlro_compliance_head` may promote — no maker-checker
+   until Phase 3, same as #4. Acting user always from the session.
+   Full detail: `screens/06-typology-rules-console.md`.
+
 ## New data models this phase adds
 (Extends `specs/suites/bfsi/features/aml-detection/data-models.py`.
 `SamplingReview` already existed in that file but had no table until
@@ -52,13 +68,19 @@ now — Phase 1's migration comment explicitly deferred it.)
   `created_at`. Replaces Phase 1's hardcoded, in-repo
   `agent-service/app/features/aml_detection/typology_catalog.py` as
   the Pattern Matching Agent's "typology config lookup" tool — Phase 1
-  anticipated this swap explicitly.
+  anticipated this swap explicitly. **v2 (decision #5):** identity only
+  — `typology_code`, `production_version` (nullable: never promoted),
+  `created_by`, `created_at`; label/description/active move to the
+  version row.
 - **`TypologyConfigVersion`**: append-only version/change history —
   `typology_code`, `version`, `rule_logic_description`, `active`,
   `changed_by`, `changed_at`, `change_reason`. Every edit *and* every
   active/inactive toggle writes one row (screen spec: "toggling
   active/inactive is itself a change requiring the same version-history
-  logging as a rule-logic edit").
+  logging as a rule-logic edit"). **v2:** adds `typology_label`,
+  `status` (`draft`/`promoted`/`superseded`/`discarded`),
+  `content_hash`, `updated_at`; one `draft` and one `promoted` per
+  typology; content immutable outside `draft` (trigger).
 - **`TypologyBacktestJob`**: `job_id`, `typology_code`, `status`
   (`queued`/`running`/`complete`/`failed`), `started_at`,
   `completed_at`, `comparison_report` (jsonb — agreement rate vs.
@@ -67,7 +89,12 @@ now — Phase 1's migration comment explicitly deferred it.)
 - **`TypologyPromotion`**: `typology_code`, `promoted_version`,
   `backtest_job_id` (nullable — but a null here must be visibly
   flagged per the screen's acceptance criteria, never silently
-  allowed), `promoted_by`, `promoted_at`.
+  allowed), `promoted_by`, `promoted_at`. **v2:** adds `reason`
+  (non-empty CHECK — the v1 DTO accepted a reason and dropped it) and
+  `eval_run_id` (FK `platform_eval_runs`, NOT NULL for promotions made
+  after migration 014).
+- **`TypologyMatch.typology_version`** (v2): the promoted version of
+  the matched typology that was in the prompt.
 - **`ScreeningHit`**: a dedicated queue entity, not just the
   `ScreeningResult` embedded in `EvidenceBundle` — `hit_id`,
   `customer_id`, `list_source`, `matched_name`, `match_confidence`,
@@ -89,14 +116,50 @@ now — Phase 1's migration comment explicitly deferred it.)
   (Phase 3).
 
 ## Typology & Rules Console
-`GET /api/v1/features/aml_detection/typologies` → `TypologyConfig[]`
-with computed metrics (`alert_volume_30d`, `str_conversion_rate`,
-`false_positive_rate`) joined from `Case`/`Disposition`, not
-hand-maintained columns.
-`GET /api/v1/features/aml_detection/typologies/{code}/history` → `TypologyConfigVersion[]`
-`POST /api/v1/features/aml_detection/typologies/{code}/backtest` → starts a `TypologyBacktestJob`, returns `job_id`
-`GET /api/v1/features/aml_detection/typologies/backtest-jobs/{job_id}` → job status + `comparison_report` once complete
-`POST /api/v1/features/aml_detection/typologies/{code}/promote` → Body: `{backtest_job_id?, reason}` — `platform.mlro_compliance_head` only (feature-level `aml_detection.mlro_compliance_head`, per role-manifest.md — the console's RBAC line in the screen spec names the bare role; this repo's actual role codes are feature-namespaced, same as every other Phase 1 endpoint)
+All under `/api/v1/features/aml_detection/typologies`. Reads:
+`aml_detection.mlro_compliance_head` + `platform.model_risk_audit`.
+Writes: `aml_detection.mlro_compliance_head` only (the console's RBAC
+line in the screen spec names the bare role; this repo's actual role
+codes are feature-namespaced, same as every other endpoint). The acting
+user is always the session user — no `*_by` field is accepted in a body.
+
+**Reads**
+- `GET /` → `TypologyRow[]`: live version content, `status`
+  (`live`/`retired`/`not_live`), `killSwitched`, `draft: {version,
+  updatedAt} | null`, computed metrics (`alert_volume_30d`,
+  `str_conversion_rate`, `false_positive_rate`) joined from
+  `Case`/`Disposition`, not hand-maintained columns; plus
+  `lastPromotion`
+- `GET /{code}` → config, promoted version, draft, the draft's latest
+  regression run (with `stale: boolean` if its hash ≠ the draft's),
+  latest backtest, golden-dataset coverage count for the code
+- `GET /{code}/history` → `TypologyConfigVersion[]` (all statuses) +
+  `TypologyPromotion[]`
+- `GET /backtest-jobs/{job_id}` → unchanged
+- `GET /regression-runs/{run_id}` → `{status, done, total, passed,
+  failed, results?}` — progress via Temporal workflow query while
+  running, from `platform_eval_runs`/`platform_eval_case_results` after
+
+**Writes**
+- `POST /` → `{typology_code, typology_label, rule_logic_description,
+  reason}` → 201 config + v1 draft. 409 if code exists; 400 if code
+  fails `^[a-z][a-z0-9_]{2,63}$` or is `no_significant_pattern`
+- `POST /{code}/draft` → opens a draft copied from the promoted
+  version; 409 if one is open
+- `PATCH /{code}/draft` → any of `typology_label`,
+  `rule_logic_description`, `active`, `change_reason`; recomputes
+  `content_hash`; 404 if no draft
+- `DELETE /{code}/draft` → `{reason}` → status `discarded`
+- `POST /{code}/draft/regression` → 400 if the draft's `change_reason`
+  is empty; starts `TypologyRegressionWorkflow` on the agent-service
+  worker (background job, same pattern as the KB embed job) → `{run_id}`
+- `POST /{code}/backtest` → unchanged
+- `POST /{code}/promote` → `{backtest_job_id?, reason}` → 409 unless a
+  draft exists and the latest regression run for
+  `typology:<code>:v<version>:<content_hash[:12]>` is `passed`; 400 on
+  empty reason. One transaction: draft → `promoted`, previous →
+  `superseded`, `production_version` set, promotion row written.
+- `POST /{code}` (v1 in-place update) → **removed**.
 
 ## Sanctions & PEP Screening Hub
 `GET /api/v1/features/aml_detection/screening/hits?status=held` → paginated `ScreeningHit[]`
