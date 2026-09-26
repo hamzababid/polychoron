@@ -2,7 +2,20 @@
 **PHASE: 2 (full AML feature set)**
 
 **Claude Design reference file:** `typology-rules-console.*`
-**Route:** `/:suiteCode/aml_detection/typologies` (nav label "Typology Console")
+**Routes (all under `/:suiteCode/aml_detection/`, nav label "Typology Console"):**
+
+| Route | Screen |
+|---|---|
+| `typologies` | Library (list) |
+| `typologies/new` | New typology |
+| `typologies/:code` | Typology view |
+| `typologies/:code/edit` | Edit draft + promotion |
+| `typologies/:code/compare/:older/:newer` | Version compare |
+
+Routed screens with breadcrumbs, not inline row expansion or modal
+forms — same structure as the Regulatory KB (screen 11), decided with
+the project owner 2026-09-26. Only confirmations (discard, promote,
+kill switch) are dialogs.
 **RBAC:** `mlro_compliance_head` (full: create, edit drafts, run
 regression/backtest, promote, retire), `model_risk_audit` (read-only —
 sees drafts, eval runs, backtests and history, but no write action is
@@ -124,32 +137,64 @@ can be traced back to the exact rule text that produced its match.
 
 Full request/response shapes: `phase-2-full-aml/api-contracts-phase2.md`.
 
-## Component → data binding
-- Rule table → one row per typology: live label/version, status badge
-  (**Live** / **Retired** / **Not yet live** / **Kill-switched**), a
-  "Draft open" marker, and metrics (`alert_volume_30d`,
-  `str_conversion_rate`, `false_positive_rate`) computed from
-  `Case`/`Disposition` grouped by `typology_code` — never hand-maintained
-- **New typology** button (MLRO only) → dialog: code (validated
-  `^[a-z][a-z0-9_]{2,63}$`, unique, not `no_significant_pattern`),
-  label, rule description, reason; creates the draft and opens it
-- Detail panel → live version (read-only) and, if open, the draft
-  beside it with a word-level diff (reuse the KB's `wordDiff.ts`);
-  draft editor; Discard; the promotion checklist (regression ✓/✗/stale,
-  backtest present/absent, golden coverage count); version + promotion
-  history
-- Regression run → start button, then `{done, total}` progress and
-  per-case pass/fail once complete; a result for an older draft hash
-  shows as **stale**
-- Backtest section → unchanged (poll the async job, before/after comparison)
-- Promote → disabled until the checklist's required item passes;
-  confirmation dialog with reason, showing the flags above
+## Screen 1 — Library (`typologies`)
+- Header strip: live / retired / drafts open / alerts 30d counts; last
+  promotion
+- Feature-wide kill switch banner (guardrail G6) — unchanged
+- Filters: status (live / retired / not yet live / draft open), tuning
+  candidates, search; **New typology** button (MLRO only)
+- Table → one row per typology: label, code, live version (or "never
+  promoted"), status badge (**Live** / **Retired** / **Not yet live** /
+  **Kill-switched**), "Draft vN open" marker, metrics
+  (`alert_volume_30d`, `str_conversion_rate`, `false_positive_rate`)
+  computed from `Case`/`Disposition` grouped by `typology_code` — never
+  hand-maintained. Row click navigates to the Typology view; no inline
+  expansion.
+
+## Screen 2 — New typology (`typologies/new`)
+Full-page form: code (validated `^[a-z][a-z0-9_]{2,63}$`, unique, not
+`no_significant_pattern`, permanent), label, rule description, reason.
+Creates the v1 draft and navigates to its Edit screen, where the
+regression and promotion happen.
+
+## Screen 3 — Typology view (`typologies/:code`)
+- Header: label, code, status badge; actions by state (MLRO only):
+  **Edit** (opens a draft, or continues the open one → Edit screen),
+  **Disable now… / Reactivate…** (per-typology kill switch)
+- Banners: draft in progress (link to Edit), not yet live, retired,
+  kill-switched
+- Live version tile (solid rail, read-only) + metrics
+- Draft summary tile (hatched) when one is open: saved diff vs. live
+  and its checklist state, linking to Edit
+- Latest backtest; version history (all statuses, each with
+  "Compare with live") and promotions (reason, regression run,
+  backtest or a flagged "none")
+- `model_risk_audit` sees all of it, with no action buttons
+
+## Screen 4 — Edit (`typologies/:code/edit`)
+- No open draft → one explicit button: "Open a draft from live vN"
+  (opening a draft is a write, so never implicit)
+- Draft editor (label, rule text, active, change reason), Save /
+  Revert / Discard…; live version alongside for reference, and a
+  word-level diff of the saved draft vs. live (the KB's `wordDiff.ts`)
+- Promotion checklist: change reason saved; golden-dataset regression
+  (start, `{done, total}` progress, per-case results, **stale** when
+  the draft changed after the run); optional backtest; golden coverage
+  warning
+- **Promote…** disabled until the regression passes; confirmation
+  dialog with reason and the flags above. After promote or discard →
+  Typology view
+- `model_risk_audit` → redirected to the Typology view
+
+## Screen 5 — Version compare (`typologies/:code/compare/:older/:newer`)
+Label, active flag and rule text of any two versions side by side with
+word-level highlights; version pickers to switch either side.
 
 ## Interactions
 - Toggling active/inactive is a draft change like any rule-logic edit —
   it goes through the same regression and promotion. The only
   immediate control is the kill switch.
-- Opening "Edit" on a typology with an open draft goes to that draft.
+- **Edit** on a typology with an open draft continues that draft.
 
 ## States
 - **Live vs. draft must be visually unmistakable** — same principle as
@@ -182,5 +227,7 @@ Full request/response shapes: `phase-2-full-aml/api-contracts-phase2.md`.
 - [ ] Request bodies carrying `changed_by`/`promoted_by` are rejected or
       ignored — the session user is recorded
 - [ ] New `TypologyMatch` rows record `typology_version`
+- [ ] Library, New, View, Edit and Compare are separate routes with
+      breadcrumbs; nothing expands inline under a table row
 - [ ] Both demo scenarios still match the same typology after the
       migration (catalog content unchanged by the backfill)

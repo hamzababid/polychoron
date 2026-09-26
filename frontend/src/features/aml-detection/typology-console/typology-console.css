@@ -500,3 +500,132 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* — routed screens (Library / New / View / Edit / Compare), same page
+   structure as the Regulatory KB screens. — */
+.typology-screen {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.typology-scroll {
+  flex: 1;
+  min-height: 0;
+  padding: 14px 18px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.typology-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 10px 18px;
+  border-bottom: 1px solid var(--color-divider);
+  background: var(--color-neutral-100);
+}
+
+.typology-head__main {
+  flex: 1;
+  min-width: 0;
+}
+
+.typology-head__title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-heading);
+  font-size: 20px;
+}
+
+.typology-head__actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.typology-head__actions a,
+.typology-scroll a.aml-btn {
+  text-decoration: none;
+}
+
+.typology-muted {
+  font-size: 12px;
+  color: var(--color-neutral-600);
+}
+
+.typology-banner {
+  padding: 7px 18px;
+  font-size: 12.5px;
+  border-bottom: 1px solid var(--color-divider);
+  background: color-mix(in srgb, #d9a441 16%, transparent);
+  color: #5e3f07;
+}
+
+.typology-banner--muted {
+  background: var(--color-neutral-200);
+  color: var(--color-neutral-800);
+}
+
+.typology-banner--alert {
+  background: color-mix(in srgb, var(--color-alert) 12%, transparent);
+  color: var(--color-alert);
+}
+
+.typology-danger {
+  color: var(--color-alert);
+  border-color: var(--color-alert);
+}
+
+.typology-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 16px;
+  align-items: start;
+}
+
+.typology-grid__main,
+.typology-grid__side {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.typology-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.typology-metrics__value {
+  font-family: var(--font-heading);
+  font-size: 18px;
+  margin-top: 2px;
+}
+
+.typology-form {
+  max-width: 760px;
+}
+
+.typology-form__error {
+  font-size: 11.5px;
+  color: var(--color-alert);
+  margin: -4px 0 6px;
+}
+
+.typology-history__compare {
+  display: inline-block;
+  margin-top: 3px;
+  font-size: 11px;
+}
+
+@media (max-width: 1100px) {
+  .typology-grid {
+    grid-template-columns: 1fr;
+  }
+}

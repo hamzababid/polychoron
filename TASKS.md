@@ -812,16 +812,37 @@ baseline under the maintenance override, never overwriting an
 existing typology. The old v1 in-place edit endpoint is gone (the
 screen was rebuilt for v2 in the Frontend group below).
 
-**Build notes (2026-09-26, frontend):** detail panel split into
-`TypologyDetailPanel.tsx` (live vs. draft tiles, word diff, draft
-editor, promotion checklist, history), `NewTypologyDialog.tsx` and
-`TypologyStatusBadge.tsx`; type-checks and builds, no new lint
-warnings. Flow smoke-tested through the running app-api (the calls the
+**Build notes (2026-09-26, frontend):** first built as an inline
+detail panel + "New typology" dialog on the Library; replaced the same
+day by routed screens (next group) at the owner's request. Type-checks
+and builds. Flow smoke-tested through the running app-api (the calls the
 screen makes); **not yet looked at in a browser**. Found while testing:
 nothing seeded the golden dataset on `docker compose up`, and a
 regression over zero cases fails by design — so a fresh stack could
 never promote. Added a `seed-golden-dataset` compose step (after
 `app-api-seed`, since cases are created by a demo user).
+
+**Frontend — routed screens (owner feedback 2026-09-26: "proper
+separate screens, like the KB")**
+- [x] Routes `typologies`, `/new`, `/:code`, `/:code/edit`,
+      `/:code/compare/:older/:newer`; breadcrumbs
+- [x] Library: table only, row click navigates (remove the inline
+      detail panel); New typology → route, not a dialog
+- [x] Typology view: header actions by state, banners, live tile,
+      draft summary, backtest, history with compare links, per-typology
+      kill switch
+- [x] Edit: draft editor, diff, promotion checklist, promote/discard
+      confirmations; explicit "open a draft"; audit role redirected
+- [x] Compare: two versions with word-level highlights
+
+**Build notes (routed screens):** `TypologyLibraryScreen` (renamed from
+`TypologyRulesConsoleScreen`), `TypologyNewScreen`, `TypologyViewScreen`,
+`TypologyEditScreen`, `TypologyCompareScreen`; shared components in
+`typologyShared.tsx`, helpers in `typologyUtils.ts`, and a
+`KillSwitchDialog` used by the Library (feature-wide) and the View
+(per-typology). Reuses the KB's `Tile`, `ConfirmDialog` and
+`wordDiff`. No API change — Compare reads the history endpoint. Routes
+served and compiled by the dev server; **not yet looked at in a browser**.
 
 **Close-out**
 - [ ] Update `docs/architecture/blueprint.html` (typology ERD + the

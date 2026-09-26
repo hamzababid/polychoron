@@ -1,14 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { disableKillSwitch, listKillSwitches, listTypologies, reactivateKillSwitch } from '../api/client';
+import { useNavigate } from 'react-router-dom';
+import { listKillSwitches, listTypologies } from '../api/client';
 import type { KillSwitchScope, TypologyConsoleOverview, TypologyStatus } from '../api/types';
-import { useAuth } from '../../../auth/AuthContext';
-import { useToast } from '../../../shell/ToastProvider';
-import { NewTypologyDialog } from './NewTypologyDialog';
-import { TypologyDetailPanel } from './TypologyDetailPanel';
+import { useFeatureBasePath } from '../useFeatureBasePath';
+import { KillSwitchDialog, type KillSwitchAction } from './KillSwitchDialog';
 import { TypologyStatusBadge } from './TypologyStatusBadge';
+import { useCanWriteTypologies } from './typologyUtils';
 import './typology-console.css';
 
-const CAN_WRITE_ROLES = ['aml_detection.mlro_compliance_head'];
 // "Tuning candidates only" (design-exports/.../Typology Rules
 // Console.dc.html) flags rules with weak STR conversion — a real
 // computed threshold, not user-configurable yet (the mockup exposes
@@ -46,34 +45,24 @@ type StatusFilter = 'all' | TypologyStatus | 'draft_open';
  *    larger follow-up, not built yet). That real, narrower number is
  *    what's shown here, not an invented before/after.
  *
- * v2 lifecycle (same spec, "Typology lifecycle"): the table lists every
- * typology incl. never-promoted ones; the detail panel
- * (TypologyDetailPanel) edits drafts only and gates Promote on a
- * passing golden-dataset regression.
+ * Screen 1 — Library (same spec, v2): the table lists every typology
+ * incl. never-promoted ones, and a row click navigates to the Typology
+ * view — viewing, editing and adding are their own routes (like the
+ * Regulatory KB), never expanded inline here.
  */
-export function TypologyRulesConsoleScreen() {
-  const { session } = useAuth();
-  const toast = useToast();
-  const canWrite = session ? CAN_WRITE_ROLES.some((r) => session.user.roleCodes.includes(r)) : false;
+export function TypologyLibraryScreen() {
+  const navigate = useNavigate();
+  const base = useFeatureBasePath();
+  const { canWrite } = useCanWriteTypologies();
 
   const [overview, setOverview] = useState<TypologyConsoleOverview | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [killSwitches, setKillSwitches] = useState<KillSwitchScope[]>([]);
-  const [killSwitchReason, setKillSwitchReason] = useState('');
-  const [killSwitchBusy, setKillSwitchBusy] = useState(false);
-  const [killSwitchModal, setKillSwitchModal] = useState<
-    | { action: 'disable'; scope: 'feature' }
-    | { action: 'disable'; scope: 'typology'; typologyCode: string; typologyLabel: string }
-    | { action: 'reactivate'; target: KillSwitchScope }
-    | null
-  >(null);
+  const [killSwitchRequest, setKillSwitchRequest] = useState<KillSwitchAction | null>(null);
 
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [tuningOnly, setTuningOnly] = useState(false);
   const [search, setSearch] = useState('');
-
-  const [selectedCode, setSelectedCode] = useState<string | null>(null);
-  const [newOpen, setNewOpen] = useState(false);
 
   const load = useCallback(() => {
     listTypologies()
@@ -103,52 +92,7 @@ export function TypologyRulesConsoleScreen() {
     });
   }, [rows, statusFilter, tuningOnly, search]);
 
-  const selected = rows.find((r) => r.typologyCode === selectedCode) ?? null;
-
   const featureKillSwitch = killSwitches.find((k) => k.typologyCode === null) ?? null;
-  const typologyKillSwitch = selectedCode ? killSwitches.find((k) => k.typologyCode === selectedCode) ?? null : null;
-
-  const openDisableFeatureModal = () => {
-    setKillSwitchReason('');
-    setKillSwitchModal({ action: 'disable', scope: 'feature' });
-  };
-
-  const openDisableTypologyModal = () => {
-    if (!selected) return;
-    setKillSwitchReason('');
-    setKillSwitchModal({ action: 'disable', scope: 'typology', typologyCode: selected.typologyCode, typologyLabel: selected.typologyLabel });
-  };
-
-  const handleCreated = (code: string) => {
-    setNewOpen(false);
-    load();
-    setSelectedCode(code);
-  };
-
-  const openReactivateModal = (target: KillSwitchScope) => setKillSwitchModal({ action: 'reactivate', target });
-
-  const handleConfirmKillSwitchAction = async () => {
-    if (!session || !killSwitchModal) return;
-    setKillSwitchBusy(true);
-    try {
-      if (killSwitchModal.action === 'disable') {
-        const typologyCode = killSwitchModal.scope === 'typology' ? killSwitchModal.typologyCode : undefined;
-        await disableKillSwitch({ typology_code: typologyCode, reason: killSwitchReason, disabled_by: session.user.userId });
-        toast.success(typologyCode ? 'Typology kill switch activated — routes straight to manual review.' : 'AML Detection kill switch activated for this tenant.');
-      } else {
-        await reactivateKillSwitch(killSwitchModal.target.scopeId, session.user.userId);
-        toast.success('Kill switch reactivated — normal agent processing resumes.');
-      }
-      setKillSwitchModal(null);
-      setKillSwitchReason('');
-      loadKillSwitches();
-      load();
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : String(err));
-    } finally {
-      setKillSwitchBusy(false);
-    }
-  };
 
   if (error) return <div className="aml-status aml-status--error">{error}</div>;
   if (!overview) return <div className="aml-status">Loading typology console…</div>;
@@ -219,7 +163,7 @@ export function TypologyRulesConsoleScreen() {
               {featureKillSwitch.disabledBy} on {new Date(featureKillSwitch.disabledAt).toLocaleString()}: “{featureKillSwitch.reason}”
             </span>
             {canWrite && (
-              <button className="aml-btn aml-btn--primary" disabled={killSwitchBusy} onClick={() => openReactivateModal(featureKillSwitch)}>
+              <button className="aml-btn aml-btn--primary" onClick={() => setKillSwitchRequest({ action: 'reactivate', target: featureKillSwitch })}>
                 Reactivate…
               </button>
             )}
@@ -228,7 +172,7 @@ export function TypologyRulesConsoleScreen() {
           <>
             <span style={{ fontSize: 12.5, color: 'var(--color-neutral-700)' }}>AML Detection's agent chain is active for this tenant.</span>
             {canWrite && (
-              <button className="aml-btn" style={{ marginLeft: 'auto' }} disabled={killSwitchBusy} onClick={openDisableFeatureModal}>
+              <button className="aml-btn" style={{ marginLeft: 'auto' }} onClick={() => setKillSwitchRequest({ action: 'disable', typologyCode: null })}>
                 Disable entire feature…
               </button>
             )}
@@ -260,7 +204,7 @@ export function TypologyRulesConsoleScreen() {
           style={{ marginLeft: 'auto', width: 240, fontSize: 12.5 }}
         />
         {canWrite && (
-          <button className="aml-btn aml-btn--primary" onClick={() => setNewOpen(true)}>
+          <button className="aml-btn aml-btn--primary" onClick={() => navigate(`${base}/typologies/new`)}>
             New typology…
           </button>
         )}
@@ -287,8 +231,8 @@ export function TypologyRulesConsoleScreen() {
           filteredRows.map((r) => (
             <div
               key={r.typologyCode}
-              className={`typology-console__row ${r.status === 'live' ? 'typology-console__row--live' : 'typology-console__row--draft'} ${selectedCode === r.typologyCode ? 'typology-console__row--selected' : ''}`}
-              onClick={() => setSelectedCode(r.typologyCode)}
+              className={`typology-console__row ${r.status === 'live' ? 'typology-console__row--live' : 'typology-console__row--draft'}`}
+              onClick={() => navigate(`${base}/typologies/${r.typologyCode}`)}
               style={{ opacity: r.status === 'live' ? 1 : 0.75 }}
             >
               <div className="typology-console__cell">
@@ -342,97 +286,18 @@ export function TypologyRulesConsoleScreen() {
           ))
         )}
 
-        {selected && (
-          <TypologyDetailPanel
-            code={selected.typologyCode}
-            canWrite={canWrite}
-            killSwitch={typologyKillSwitch}
-            killSwitchBusy={killSwitchBusy}
-            onDisableKillSwitch={openDisableTypologyModal}
-            onReactivateKillSwitch={openReactivateModal}
-            onChanged={load}
-          />
-        )}
       </div>
 
-      {newOpen && <NewTypologyDialog onClose={() => setNewOpen(false)} onCreated={handleCreated} />}
-
-      {killSwitchModal && (
-        <div className="typology-console__dialogBackdrop">
-          <div
-            className="tile typology-console__dialog"
-            style={killSwitchModal.action === 'disable' ? { boxShadow: 'inset 0 0 0 2px var(--color-alert)' } : undefined}
-          >
-            <i className="corner tl" />
-            <i className="corner tr" />
-            <i className="corner bl" />
-            <i className="corner br" />
-            <div
-              className="tile-head"
-              style={{ fontFamily: 'var(--font-heading)', fontSize: 14, color: killSwitchModal.action === 'disable' ? 'var(--color-alert)' : undefined }}
-            >
-              {killSwitchModal.action === 'disable'
-                ? killSwitchModal.scope === 'feature'
-                  ? 'Disable AML Detection for this tenant?'
-                  : `Disable "${killSwitchModal.typologyCode}"?`
-                : `Reactivate ${killSwitchModal.target.typologyCode ?? 'AML Detection'}?`}
-            </div>
-            <div className="tile-body" style={{ fontSize: 13 }}>
-              {killSwitchModal.action === 'disable' ? (
-                <>
-                  <p style={{ margin: '0 0 8px', color: 'var(--color-alert)' }}>
-                    {killSwitchModal.scope === 'feature'
-                      ? 'Every new alert for this tenant will route straight to manual review — Pattern Matching and Case & Narrative will not run at all until this is reactivated.'
-                      : 'This typology will be excluded from Pattern Matching\'s catalog entirely — the agent will not be able to match against it until this is reactivated.'}
-                  </p>
-                  <label className="typology-console__field">
-                    Reason (required)
-                    <textarea
-                      className="input"
-                      rows={3}
-                      value={killSwitchReason}
-                      onChange={(e) => setKillSwitchReason(e.target.value)}
-                      style={{ width: '100%', boxSizing: 'border-box' }}
-                      autoFocus
-                    />
-                  </label>
-                  <p style={{ margin: '8px 0 0', fontSize: 12, color: 'var(--color-neutral-700)' }}>
-                    This action and its reason are permanently logged and auditable.
-                  </p>
-                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 12 }}>
-                    <button className="aml-btn" onClick={() => setKillSwitchModal(null)}>
-                      Cancel
-                    </button>
-                    <button
-                      className="aml-btn aml-btn--primary"
-                      style={{ background: 'var(--color-alert)', borderColor: 'var(--color-alert)' }}
-                      disabled={killSwitchBusy || !killSwitchReason.trim()}
-                      onClick={() => void handleConfirmKillSwitchAction()}
-                    >
-                      {killSwitchBusy ? 'Disabling…' : 'Disable'}
-                    </button>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <p style={{ margin: '0 0 8px' }}>
-                    Normal agent processing resumes immediately for{' '}
-                    {killSwitchModal.target.typologyCode ? `this typology` : 'this tenant'}. Currently disabled since{' '}
-                    {new Date(killSwitchModal.target.disabledAt).toLocaleString()}: “{killSwitchModal.target.reason}”
-                  </p>
-                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 12 }}>
-                    <button className="aml-btn" onClick={() => setKillSwitchModal(null)}>
-                      Cancel
-                    </button>
-                    <button className="aml-btn aml-btn--primary" disabled={killSwitchBusy} onClick={() => void handleConfirmKillSwitchAction()}>
-                      {killSwitchBusy ? 'Reactivating…' : 'Reactivate'}
-                    </button>
-                  </div>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
+      {killSwitchRequest && (
+        <KillSwitchDialog
+          request={killSwitchRequest}
+          onCancel={() => setKillSwitchRequest(null)}
+          onDone={() => {
+            setKillSwitchRequest(null);
+            loadKillSwitches();
+            load();
+          }}
+        />
       )}
     </div>
   );
