@@ -22,8 +22,10 @@ from app.features.aml_detection.activities import ALL_ACTIVITIES
 from app.features.aml_detection.workflows import AmlDetectionWorkflow
 from app.platform.logging import configure_logging, get_logger
 from app.platform.regulatory.activities import ALL_REGULATORY_ACTIVITIES
+from app.platform.regulatory.commands import ALL_KB_COMMAND_ACTIVITIES, ALL_KB_COMMAND_WORKFLOWS
 from app.platform.regulatory.workflows import (
     RegulatoryDocumentIngestionWorkflow,
+    RegulatoryEmbedDraftWorkflow,
     RegulatoryReembedWorkflow,
 )
 
@@ -40,8 +42,14 @@ async def run_worker() -> None:
         worker = Worker(
             client,
             task_queue=settings.temporal_task_queue,
-            workflows=[AmlDetectionWorkflow, RegulatoryDocumentIngestionWorkflow, RegulatoryReembedWorkflow],
-            activities=ALL_ACTIVITIES + ALL_REGULATORY_ACTIVITIES,
+            workflows=[
+                AmlDetectionWorkflow,
+                RegulatoryDocumentIngestionWorkflow,
+                RegulatoryReembedWorkflow,
+                RegulatoryEmbedDraftWorkflow,
+                *ALL_KB_COMMAND_WORKFLOWS,
+            ],
+            activities=ALL_ACTIVITIES + ALL_REGULATORY_ACTIVITIES + ALL_KB_COMMAND_ACTIVITIES,
             activity_executor=activity_executor,
         )
         logger.info(

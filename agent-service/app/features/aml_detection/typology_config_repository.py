@@ -29,6 +29,15 @@ def get_active_typologies() -> list[dict[str, str]]:
     return [dict(row) for row in rows]
 
 
+def get_offered_typology_codes(tenant_id: str, feature_code: str = "aml_detection") -> list[str]:
+    """The typology codes actually presented to the Pattern Matching
+    Agent — active in the Typology Console and not under a kill switch.
+    Also scopes regulatory retrieval: a KB document restricted to other
+    typologies isn't offered as a candidate citation."""
+    disabled = get_disabled_typology_codes(tenant_id, feature_code)
+    return [t["typology_code"] for t in get_active_typologies() if t["typology_code"] not in disabled]
+
+
 def active_catalog_as_prompt_block(tenant_id: str, feature_code: str = "aml_detection") -> str:
     """Guardrail G6: a typology under an active per-typology kill
     switch is excluded from the catalog entirely, so the Pattern

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from enum import Enum
+from typing import Literal
 from uuid import UUID, uuid4
 
 from pydantic import BaseModel, Field
@@ -52,3 +53,32 @@ class RegulatoryCitation(BaseModel):
     document_title: str
     section_reference: str
     relevance_score: float = Field(..., ge=0, le=1)
+
+
+# ── Phase 2 addendum: document lifecycle & configurable ingestion ────
+
+
+class RegulatoryDocumentStatus(str, Enum):
+    DRAFT = "draft"  # never retrievable; the only deletable state
+    CURRENT = "current"  # retrievable if retrieval_enabled
+    SUPERSEDED = "superseded"  # retained forever, not retrievable
+    WITHDRAWN = "withdrawn"  # repealed with no replacement; retained, not retrievable
+
+
+class ChunkingStrategy(str, Enum):
+    HEADING_PATTERN = "heading_pattern"
+    PARAGRAPH = "paragraph"
+    FIXED_SIZE = "fixed_size"
+    MANUAL = "manual"
+
+
+class ChunkingConfig(BaseModel):
+    strategy: ChunkingStrategy
+    heading_pattern: str | None = None  # regex, HEADING_PATTERN only
+    target_chunk_chars: int = Field(1200, ge=100, le=20000)
+    max_chunk_chars: int = Field(2000, ge=100, le=40000)
+    overlap_chars: int = Field(150, ge=0, le=5000)
+    min_chunk_chars: int = Field(120, ge=0, le=5000)
+    section_reference_mode: Literal["from_heading", "template"] = "from_heading"
+    section_reference_template: str | None = None  # e.g. "{title} ¶{n}"
+    strip_headers_footers: bool = True
