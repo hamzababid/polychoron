@@ -11,9 +11,13 @@ import type {
   DashboardTrends,
   DataLineageResponse,
   DispositionType,
+  EvalRunsResponse,
+  FairnessFlagsResponse,
   FilingDetail,
   FilingDraftResponse,
   FilingSummary,
+  GuardrailViolationsResponse,
+  KillSwitchScope,
   IngestionJobStatus,
   ModelVersionsResponse,
   Paginated,
@@ -194,6 +198,47 @@ export function getModelVersions(params: { page?: number; pageSize?: number } = 
 
 export function getDataLineage() {
   return apiFetch<DataLineageResponse>(`${BASE}/governance/data-lineage`);
+}
+
+// ADDITIVE (specs/platform/11-evals-and-guardrails-framework.md)
+
+export function getEvalRuns(params: { page?: number; pageSize?: number } = {}) {
+  const query = new URLSearchParams();
+  if (params.page) query.set('page', String(params.page));
+  if (params.pageSize) query.set('page_size', String(params.pageSize));
+  const qs = query.toString();
+  return apiFetch<EvalRunsResponse>(`${BASE}/governance/eval-runs${qs ? `?${qs}` : ''}`);
+}
+
+export function getFairnessFlags(params: { page?: number; pageSize?: number } = {}) {
+  const query = new URLSearchParams();
+  if (params.page) query.set('page', String(params.page));
+  if (params.pageSize) query.set('page_size', String(params.pageSize));
+  const qs = query.toString();
+  return apiFetch<FairnessFlagsResponse>(`${BASE}/governance/fairness-flags${qs ? `?${qs}` : ''}`);
+}
+
+export function getGuardrailViolations(params: { page?: number; pageSize?: number } = {}) {
+  const query = new URLSearchParams();
+  if (params.page) query.set('page', String(params.page));
+  if (params.pageSize) query.set('page_size', String(params.pageSize));
+  const qs = query.toString();
+  return apiFetch<GuardrailViolationsResponse>(`${BASE}/governance/guardrail-violations${qs ? `?${qs}` : ''}`);
+}
+
+export function listKillSwitches() {
+  return apiFetch<KillSwitchScope[]>(`${BASE}/kill-switch`);
+}
+
+export function disableKillSwitch(body: { typology_code?: string; reason: string; disabled_by: string }) {
+  return apiFetch<KillSwitchScope>(`${BASE}/kill-switch`, { method: 'POST', body: JSON.stringify(body) });
+}
+
+export function reactivateKillSwitch(scopeId: string, reactivatedBy: string) {
+  return apiFetch<KillSwitchScope>(`${BASE}/kill-switch/${scopeId}/reactivate`, {
+    method: 'POST',
+    body: JSON.stringify({ reactivated_by: reactivatedBy }),
+  });
 }
 
 // ADDITIVE (specs/platform/10-regulatory-knowledge-base-spec.md's

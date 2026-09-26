@@ -4,6 +4,9 @@ import {
   ModelGovernanceService,
   type ConsistencyResponse,
   type DataLineageResponse,
+  type EvalRunsResponse,
+  type FairnessFlagsResponse,
+  type GuardrailViolationsResponse,
   type ModelVersionsResponse,
   type SamplingOverview,
   type SamplingReviewRow,
@@ -70,5 +73,27 @@ export class ModelGovernanceController {
   @Get('data-lineage')
   async getDataLineage(): Promise<DataLineageResponse> {
     return this.modelGovernanceService.getDataLineage();
+  }
+
+  // ADDITIVE (specs/platform/11-evals-and-guardrails-framework.md) —
+  // eval E1 (golden-dataset regression) and E5 (fairness monitoring),
+  // both read-only: agent-service is the writer.
+
+  @RequireRoles(...CONSISTENCY_AUDIT_ROLES)
+  @Get('eval-runs')
+  async getEvalRuns(@Query() query: PageQueryDto): Promise<EvalRunsResponse> {
+    return this.modelGovernanceService.getEvalRuns(query.page ?? 1, query.page_size ?? 10);
+  }
+
+  @RequireRoles(...CONSISTENCY_AUDIT_ROLES)
+  @Get('fairness-flags')
+  async getFairnessFlags(@Query() query: PageQueryDto): Promise<FairnessFlagsResponse> {
+    return this.modelGovernanceService.getFairnessFlags(query.page ?? 1, query.page_size ?? 10);
+  }
+
+  @RequireRoles(...CONSISTENCY_AUDIT_ROLES)
+  @Get('guardrail-violations')
+  async getGuardrailViolations(@Query() query: PageQueryDto): Promise<GuardrailViolationsResponse> {
+    return this.modelGovernanceService.getGuardrailViolations(query.page ?? 1, query.page_size ?? 10);
   }
 }

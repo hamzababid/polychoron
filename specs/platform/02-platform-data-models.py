@@ -152,6 +152,109 @@ class PlatformSession(BaseModel):
 
 
 # ---------------------------------------------------------------------
+# Guardrails & Evals (full spec in platform/11-evals-and-guardrails-framework.md)
+# ---------------------------------------------------------------------
+
+class GuardrailType(str, Enum):
+    EVIDENCE_COMPLETENESS = "evidence_completeness"
+    PROMPT_INJECTION_FILTER = "prompt_injection_filter"
+    CITATION_FABRICATION_CHECK = "citation_fabrication_check"
+    SCHEMA_VALIDATION = "schema_validation"
+    CONFIDENCE_ROUTING = "confidence_routing"
+    PII_REDACTION = "pii_redaction"
+    KILL_SWITCH = "kill_switch"
+
+
+class GuardrailViolation(BaseModel):
+    violation_id: UUID = Field(default_factory=uuid4)
+    tenant_id: str
+    suite_code: str
+    feature_code: str
+    external_case_ref: str
+    guardrail_type: GuardrailType
+    node_name: str
+    severity: str  # "blocked" | "flagged" | "escalated"
+    details: str
+    detected_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class ConfidenceRoutingPolicy(BaseModel):
+    tenant_id: str
+    feature_code: str
+    typology_code: str
+    escalate_below: float = Field(..., ge=0, le=1)
+    high_confidence_above: float = Field(..., ge=0, le=1)
+    updated_by: str
+    updated_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class KillSwitchScope(BaseModel):
+    scope_id: UUID = Field(default_factory=uuid4)
+    tenant_id: str
+    feature_code: str
+    typology_code: Optional[str] = None  # None = entire feature disabled
+    disabled_by: str
+    disabled_at: datetime = Field(default_factory=datetime.utcnow)
+    reason: str
+    reactivated_at: Optional[datetime] = None
+    reactivated_by: Optional[str] = None
+
+
+class GoldenDatasetCase(BaseModel):
+    case_id: UUID = Field(default_factory=uuid4)
+    feature_code: str
+    scenario_name: str
+    input_evidence_fixture: dict
+    expected_typology: Optional[str] = None
+    expected_recommendation: Optional[str] = None
+    expected_confidence_min: Optional[float] = None
+    expected_confidence_max: Optional[float] = None
+    tags: list[str] = Field(default_factory=list)
+    created_by: str
+    created_at: datetime = Field(default_factory=datetime.utcnow)
+
+
+class EvalCaseResult(BaseModel):
+    result_id: UUID = Field(default_factory=uuid4)
+    run_id: UUID
+    golden_case_id: UUID
+    actual_typology: Optional[str] = None
+    actual_recommendation: Optional[str] = None
+    actual_confidence: Optional[float] = None
+    matched_expected: bool
+    notes: Optional[str] = None
+
+
+class EvalRun(BaseModel):
+    run_id: UUID = Field(default_factory=uuid4)
+    feature_code: str
+    agent_version_under_test: str
+    triggered_by: str
+    started_at: datetime = Field(default_factory=datetime.utcnow)
+    completed_at: Optional[datetime] = None
+    total_cases: int
+    passed: int
+    failed: int
+    faithfulness_score_avg: Optional[float] = None
+    consistency_variance: Optional[float] = None
+    status: str  # "running" | "passed" | "failed" | "needs_review"
+
+
+class FairnessMonitoringSnapshot(BaseModel):
+    snapshot_id: UUID = Field(default_factory=uuid4)
+    tenant_id: str
+    feature_code: str
+    period_start: datetime
+    period_end: datetime
+    segment_dimension: str
+    segment_value: str
+    str_recommendation_rate: float
+    false_positive_rate: float
+    baseline_deviation: float
+    flagged: bool
+
+
+# ---------------------------------------------------------------------
 # Model inference routing (full spec in platform/08-model-inference-routing-spec.md)
 # ---------------------------------------------------------------------
 

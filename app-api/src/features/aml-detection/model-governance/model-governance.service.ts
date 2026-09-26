@@ -2,6 +2,7 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { AmlSamplingReview } from '../entities/aml-sampling-review.entity.js';
+import { PlatformEvalRun, PlatformFairnessMonitoringSnapshot, PlatformGuardrailViolation } from '../../../platform/entities/index.js';
 
 const TREND_MONTHS = 6;
 // "Simple random-sample selection ... no stratification yet" (TASKS.md)
@@ -110,6 +111,61 @@ export interface DataLineageResponse {
   entries: DataLineageEntry[];
 }
 
+// ADDITIVE (specs/platform/11-evals-and-guardrails-framework.md,
+// eval E1/E5): agent-service writes platform_eval_runs and
+// platform_fairness_monitoring_snapshots; this service only reads them
+// to fill Model Governance's own panels, same read-only relationship
+// this file already has with platform_agent_activity_log.
+export interface EvalRunRow {
+  runId: string;
+  agentVersionUnderTest: string;
+  triggeredBy: string;
+  startedAt: string;
+  completedAt: string | null;
+  totalCases: number;
+  passed: number;
+  failed: number;
+  status: string;
+}
+
+export interface EvalRunsResponse {
+  asOf: string;
+  latestStatus: string | null;
+  rows: Paginated<EvalRunRow>;
+}
+
+export interface FairnessFlagRow {
+  snapshotId: string;
+  periodStart: string;
+  periodEnd: string;
+  segmentDimension: string;
+  segmentValue: string;
+  strRecommendationRate: number;
+  falsePositiveRate: number;
+  baselineDeviation: number;
+  flagged: boolean;
+}
+
+export interface FairnessFlagsResponse {
+  asOf: string;
+  rows: Paginated<FairnessFlagRow>;
+}
+
+export interface GuardrailViolationRow {
+  violationId: string;
+  externalCaseRef: string;
+  guardrailType: string;
+  nodeName: string;
+  severity: string;
+  details: string;
+  detectedAt: string;
+}
+
+export interface GuardrailViolationsResponse {
+  asOf: string;
+  rows: Paginated<GuardrailViolationRow>;
+}
+
 const FEATURE_CODE = 'aml_detection';
 const MOCK_BANK_SOURCES = ['mock_bank.kyc', 'mock_bank.transactions', 'mock_bank.linked_entities'];
 // Deviation (in percentage points) from a typology's own cross-branch
@@ -129,6 +185,9 @@ export class ModelGovernanceService {
   constructor(
     @InjectDataSource() private readonly dataSource: DataSource,
     @InjectRepository(AmlSamplingReview) private readonly samplingReviews: Repository<AmlSamplingReview>,
+    @InjectRepository(PlatformEvalRun) private readonly evalRuns: Repository<PlatformEvalRun>,
+    @InjectRepository(PlatformFairnessMonitoringSnapshot) private readonly fairnessSnapshots: Repository<PlatformFairnessMonitoringSnapshot>,
+    @InjectRepository(PlatformGuardrailViolation) private readonly guardrailViolations: Repository<PlatformGuardrailViolation>,
   ) {}
 
   async getSamplingOverview(params: {
@@ -418,6 +477,115 @@ export class ModelGovernanceService {
     });
 
     return { asOf: new Date().toISOString(), entries };
+  }
+
+  /** eval E1 — golden-dataset regression run history. Read-only: see
+   * agent-service/app/platform/evals/regression_runner.py for where
+   * these rows come from. */
+  async getEvalRuns(page: number, pageSize: number): Promise<EvalRunsResponse> {
+    const offset = (page - 1) * pageSize;
+    const [total, rows, latest] = await Promise.all([
+      this.evalRuns.count({ where: { featureCode: FEATURE_CODE } }),
+      this.evalRuns.find({
+        where: { featureCode: FEATURE_CODE },
+        order: { startedAt: 'DESC' },
+        take: pageSize,
+        skip: offset,
+      }),
+      this.evalRuns.findOne({ where: { featureCode: FEATURE_CODE }, order: { startedAt: 'DESC' } }),
+    ]);
+
+    return {
+      asOf: new Date().toISOString(),
+      latestStatus: latest?.status ?? null,
+      rows: {
+        items: rows.map((r) => ({
+          runId: r.runId,
+          agentVersionUnderTest: r.agentVersionUnderTest,
+          triggeredBy: r.triggeredBy,
+          startedAt: r.startedAt.toISOString(),
+          completedAt: r.completedAt ? r.completedAt.toISOString() : null,
+          totalCases: r.totalCases,
+          passed: r.passed,
+          failed: r.failed,
+          status: r.status,
+        })),
+        total,
+        page,
+        pageSize,
+      },
+    };
+  }
+
+  /** eval E5 — fairness monitoring flags, most recent period first.
+   * Flags are for human review only (constitution rule 16) — this
+   * endpoint is read-only, same as the rest of Model Governance. */
+  async getFairnessFlags(page: number, pageSize: number): Promise<FairnessFlagsResponse> {
+    const offset = (page - 1) * pageSize;
+    const [total, rows] = await Promise.all([
+      this.fairnessSnapshots.count({ where: { featureCode: FEATURE_CODE, flagged: true } }),
+      this.fairnessSnapshots.find({
+        where: { featureCode: FEATURE_CODE, flagged: true },
+        order: { periodEnd: 'DESC' },
+        take: pageSize,
+        skip: offset,
+      }),
+    ]);
+
+    return {
+      asOf: new Date().toISOString(),
+      rows: {
+        items: rows.map((r) => ({
+          snapshotId: r.snapshotId,
+          periodStart: r.periodStart.toISOString(),
+          periodEnd: r.periodEnd.toISOString(),
+          segmentDimension: r.segmentDimension,
+          segmentValue: r.segmentValue,
+          strRecommendationRate: r.strRecommendationRate,
+          falsePositiveRate: r.falsePositiveRate,
+          baselineDeviation: r.baselineDeviation,
+          flagged: r.flagged,
+        })),
+        total,
+        page,
+        pageSize,
+      },
+    };
+  }
+
+  /** Guardrails G1 (prompt-injection filter) and G3 (citation-
+   * fabrication check) both write here for audit/review — this is the
+   * one place a compliance officer can actually see what those
+   * guardrails have flagged, rather than only Postgres access. */
+  async getGuardrailViolations(page: number, pageSize: number): Promise<GuardrailViolationsResponse> {
+    const offset = (page - 1) * pageSize;
+    const [total, rows] = await Promise.all([
+      this.guardrailViolations.count({ where: { featureCode: FEATURE_CODE } }),
+      this.guardrailViolations.find({
+        where: { featureCode: FEATURE_CODE },
+        order: { detectedAt: 'DESC' },
+        take: pageSize,
+        skip: offset,
+      }),
+    ]);
+
+    return {
+      asOf: new Date().toISOString(),
+      rows: {
+        items: rows.map((r) => ({
+          violationId: r.violationId,
+          externalCaseRef: r.externalCaseRef,
+          guardrailType: r.guardrailType,
+          nodeName: r.nodeName,
+          severity: r.severity,
+          details: r.details,
+          detectedAt: r.detectedAt.toISOString(),
+        })),
+        total,
+        page,
+        pageSize,
+      },
+    };
   }
 }
 

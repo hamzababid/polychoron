@@ -60,7 +60,47 @@ def test_tenant():
             text("DELETE FROM tenant_inference_profiles WHERE tenant_id = :t"),
             {"t": tenant_id},
         )
+        # specs/platform/11-evals-and-guardrails-framework.md tables
+        # that also FK to tenants.
+        conn.execute(
+            text("DELETE FROM platform_guardrail_violations WHERE tenant_id = :t"),
+            {"t": tenant_id},
+        )
+        conn.execute(
+            text("DELETE FROM platform_fairness_monitoring_snapshots WHERE tenant_id = :t"),
+            {"t": tenant_id},
+        )
+        conn.execute(
+            text("DELETE FROM platform_kill_switch_scopes WHERE tenant_id = :t"),
+            {"t": tenant_id},
+        )
         conn.execute(text("DELETE FROM tenants WHERE tenant_id = :t"), {"t": tenant_id})
+        conn.commit()
+
+
+@pytest.fixture()
+def test_user(test_tenant):
+    """A throwaway platform_users row for tests that need a valid FK
+    target (created_by/triggered_by/disabled_by, etc.) — same
+    single-purpose-fixture discipline as test_tenant. Depends on
+    test_tenant so it tears down first (any row that FKs to this user
+    must be cleaned up by the test itself before this fixture's own
+    teardown deletes the user)."""
+    user_id = f"test-user-{uuid.uuid4().hex[:8]}"
+    with get_connection() as conn:
+        conn.execute(
+            text(
+                "INSERT INTO platform_users (user_id, tenant_id, display_name, email, role_codes) "
+                "VALUES (:u, :t, :d, :e, :r)"
+            ),
+            {"u": user_id, "t": test_tenant["tenant_id"], "d": "Test User", "e": "test-user@test.local", "r": []},
+        )
+        conn.commit()
+
+    yield user_id
+
+    with get_connection() as conn:
+        conn.execute(text("DELETE FROM platform_users WHERE user_id = :u"), {"u": user_id})
         conn.commit()
 
 

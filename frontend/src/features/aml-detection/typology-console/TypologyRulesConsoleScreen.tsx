@@ -1,6 +1,16 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { getBacktestJob, getTypologyHistory, listTypologies, promoteTypology, startTypologyBacktest, updateTypology } from '../api/client';
-import type { BacktestJob, TypologyConfigVersion, TypologyConsoleOverview } from '../api/types';
+import {
+  disableKillSwitch,
+  getBacktestJob,
+  getTypologyHistory,
+  listKillSwitches,
+  listTypologies,
+  promoteTypology,
+  reactivateKillSwitch,
+  startTypologyBacktest,
+  updateTypology,
+} from '../api/client';
+import type { BacktestJob, KillSwitchScope, TypologyConfigVersion, TypologyConsoleOverview } from '../api/types';
 import { useAuth } from '../../../auth/AuthContext';
 import { useToast } from '../../../shell/ToastProvider';
 import './typology-console.css';
@@ -50,6 +60,15 @@ export function TypologyRulesConsoleScreen() {
 
   const [overview, setOverview] = useState<TypologyConsoleOverview | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [killSwitches, setKillSwitches] = useState<KillSwitchScope[]>([]);
+  const [killSwitchReason, setKillSwitchReason] = useState('');
+  const [killSwitchBusy, setKillSwitchBusy] = useState(false);
+  const [killSwitchModal, setKillSwitchModal] = useState<
+    | { action: 'disable'; scope: 'feature' }
+    | { action: 'disable'; scope: 'typology'; typologyCode: string; typologyLabel: string }
+    | { action: 'reactivate'; target: KillSwitchScope }
+    | null
+  >(null);
 
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [tuningOnly, setTuningOnly] = useState(false);
@@ -73,9 +92,16 @@ export function TypologyRulesConsoleScreen() {
       .catch((err: unknown) => setError(err instanceof Error ? err.message : String(err)));
   }, []);
 
+  const loadKillSwitches = useCallback(() => {
+    listKillSwitches()
+      .then(setKillSwitches)
+      .catch(() => undefined);
+  }, []);
+
   useEffect(() => {
     load();
-  }, [load]);
+    loadKillSwitches();
+  }, [load, loadKillSwitches]);
 
   useEffect(() => {
     return () => {
@@ -172,6 +198,44 @@ export function TypologyRulesConsoleScreen() {
     }
   };
 
+  const featureKillSwitch = killSwitches.find((k) => k.typologyCode === null) ?? null;
+  const typologyKillSwitch = selectedCode ? killSwitches.find((k) => k.typologyCode === selectedCode) ?? null : null;
+
+  const openDisableFeatureModal = () => {
+    setKillSwitchReason('');
+    setKillSwitchModal({ action: 'disable', scope: 'feature' });
+  };
+
+  const openDisableTypologyModal = () => {
+    if (!selected) return;
+    setKillSwitchReason('');
+    setKillSwitchModal({ action: 'disable', scope: 'typology', typologyCode: selected.typologyCode, typologyLabel: selected.typologyLabel });
+  };
+
+  const openReactivateModal = (target: KillSwitchScope) => setKillSwitchModal({ action: 'reactivate', target });
+
+  const handleConfirmKillSwitchAction = async () => {
+    if (!session || !killSwitchModal) return;
+    setKillSwitchBusy(true);
+    try {
+      if (killSwitchModal.action === 'disable') {
+        const typologyCode = killSwitchModal.scope === 'typology' ? killSwitchModal.typologyCode : undefined;
+        await disableKillSwitch({ typology_code: typologyCode, reason: killSwitchReason, disabled_by: session.user.userId });
+        toast.success(typologyCode ? 'Typology kill switch activated — routes straight to manual review.' : 'AML Detection kill switch activated for this tenant.');
+      } else {
+        await reactivateKillSwitch(killSwitchModal.target.scopeId, session.user.userId);
+        toast.success('Kill switch reactivated — normal agent processing resumes.');
+      }
+      setKillSwitchModal(null);
+      setKillSwitchReason('');
+      loadKillSwitches();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : String(err));
+    } finally {
+      setKillSwitchBusy(false);
+    }
+  };
+
   if (error) return <div className="aml-status aml-status--error">{error}</div>;
   if (!overview) return <div className="aml-status">Loading typology console…</div>;
 
@@ -217,6 +281,45 @@ export function TypologyRulesConsoleScreen() {
               : 'No promotions recorded yet.'}
           </div>
         </div>
+      </div>
+
+      <div
+        className="tile"
+        style={{
+          margin: '0 0 12px',
+          padding: '9px 14px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 12,
+          background: featureKillSwitch ? 'color-mix(in srgb, var(--color-alert) 10%, transparent)' : undefined,
+          boxShadow: featureKillSwitch ? 'inset 0 0 0 2px var(--color-alert)' : undefined,
+        }}
+      >
+        <span className="aml-label" style={{ color: featureKillSwitch ? 'var(--color-alert)' : undefined }}>
+          Kill switch (guardrail G6)
+        </span>
+        {featureKillSwitch ? (
+          <>
+            <span style={{ fontSize: 12.5, color: 'var(--color-alert)' }}>
+              AML Detection is DISABLED for this tenant — every new alert routes straight to manual review. Disabled by{' '}
+              {featureKillSwitch.disabledBy} on {new Date(featureKillSwitch.disabledAt).toLocaleString()}: “{featureKillSwitch.reason}”
+            </span>
+            {canWrite && (
+              <button className="aml-btn aml-btn--primary" disabled={killSwitchBusy} onClick={() => openReactivateModal(featureKillSwitch)}>
+                Reactivate…
+              </button>
+            )}
+          </>
+        ) : (
+          <>
+            <span style={{ fontSize: 12.5, color: 'var(--color-neutral-700)' }}>AML Detection's agent chain is active for this tenant.</span>
+            {canWrite && (
+              <button className="aml-btn" style={{ marginLeft: 'auto' }} disabled={killSwitchBusy} onClick={openDisableFeatureModal}>
+                Disable entire feature…
+              </button>
+            )}
+          </>
+        )}
       </div>
 
       <div className="typology-console__filterBar">
@@ -383,6 +486,40 @@ export function TypologyRulesConsoleScreen() {
                       </div>
                     </>
                   )}
+
+                  <div
+                    style={{
+                      marginTop: 11,
+                      paddingTop: 11,
+                      borderTop: '1px solid var(--color-divider)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 10,
+                      flexWrap: 'wrap',
+                    }}
+                  >
+                    <span className="aml-label" style={{ color: typologyKillSwitch ? 'var(--color-alert)' : undefined }}>
+                      Kill switch
+                    </span>
+                    {typologyKillSwitch ? (
+                      <>
+                        <span style={{ fontSize: 12, color: 'var(--color-alert)' }}>
+                          Disabled — excluded from Pattern Matching's catalog. “{typologyKillSwitch.reason}”
+                        </span>
+                        {canWrite && (
+                          <button className="aml-btn" disabled={killSwitchBusy} onClick={() => openReactivateModal(typologyKillSwitch)}>
+                            Reactivate…
+                          </button>
+                        )}
+                      </>
+                    ) : (
+                      canWrite && (
+                        <button className="aml-btn" disabled={killSwitchBusy} onClick={openDisableTypologyModal}>
+                          Disable this typology…
+                        </button>
+                      )
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -533,6 +670,84 @@ export function TypologyRulesConsoleScreen() {
                   Promote v{selected.productionVersion + 1}
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {killSwitchModal && (
+        <div className="typology-console__dialogBackdrop">
+          <div
+            className="tile typology-console__dialog"
+            style={killSwitchModal.action === 'disable' ? { boxShadow: 'inset 0 0 0 2px var(--color-alert)' } : undefined}
+          >
+            <i className="corner tl" />
+            <i className="corner tr" />
+            <i className="corner bl" />
+            <i className="corner br" />
+            <div
+              className="tile-head"
+              style={{ fontFamily: 'var(--font-heading)', fontSize: 14, color: killSwitchModal.action === 'disable' ? 'var(--color-alert)' : undefined }}
+            >
+              {killSwitchModal.action === 'disable'
+                ? killSwitchModal.scope === 'feature'
+                  ? 'Disable AML Detection for this tenant?'
+                  : `Disable "${killSwitchModal.typologyCode}"?`
+                : `Reactivate ${killSwitchModal.target.typologyCode ?? 'AML Detection'}?`}
+            </div>
+            <div className="tile-body" style={{ fontSize: 13 }}>
+              {killSwitchModal.action === 'disable' ? (
+                <>
+                  <p style={{ margin: '0 0 8px', color: 'var(--color-alert)' }}>
+                    {killSwitchModal.scope === 'feature'
+                      ? 'Every new alert for this tenant will route straight to manual review — Pattern Matching and Case & Narrative will not run at all until this is reactivated.'
+                      : 'This typology will be excluded from Pattern Matching\'s catalog entirely — the agent will not be able to match against it until this is reactivated.'}
+                  </p>
+                  <label className="typology-console__field">
+                    Reason (required)
+                    <textarea
+                      className="input"
+                      rows={3}
+                      value={killSwitchReason}
+                      onChange={(e) => setKillSwitchReason(e.target.value)}
+                      style={{ width: '100%', boxSizing: 'border-box' }}
+                      autoFocus
+                    />
+                  </label>
+                  <p style={{ margin: '8px 0 0', fontSize: 12, color: 'var(--color-neutral-700)' }}>
+                    This action and its reason are permanently logged and auditable.
+                  </p>
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 12 }}>
+                    <button className="aml-btn" onClick={() => setKillSwitchModal(null)}>
+                      Cancel
+                    </button>
+                    <button
+                      className="aml-btn aml-btn--primary"
+                      style={{ background: 'var(--color-alert)', borderColor: 'var(--color-alert)' }}
+                      disabled={killSwitchBusy || !killSwitchReason.trim()}
+                      onClick={() => void handleConfirmKillSwitchAction()}
+                    >
+                      {killSwitchBusy ? 'Disabling…' : 'Disable'}
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <p style={{ margin: '0 0 8px' }}>
+                    Normal agent processing resumes immediately for{' '}
+                    {killSwitchModal.target.typologyCode ? `this typology` : 'this tenant'}. Currently disabled since{' '}
+                    {new Date(killSwitchModal.target.disabledAt).toLocaleString()}: “{killSwitchModal.target.reason}”
+                  </p>
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 12 }}>
+                    <button className="aml-btn" onClick={() => setKillSwitchModal(null)}>
+                      Cancel
+                    </button>
+                    <button className="aml-btn aml-btn--primary" disabled={killSwitchBusy} onClick={() => void handleConfirmKillSwitchAction()}>
+                      {killSwitchBusy ? 'Reactivating…' : 'Reactivate'}
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>

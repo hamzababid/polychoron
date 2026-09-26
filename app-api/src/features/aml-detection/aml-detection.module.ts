@@ -13,6 +13,10 @@ import { AmlSamplingReview } from './entities/aml-sampling-review.entity.js';
 import { AmlReportGeneration } from './entities/aml-report-generation.entity.js';
 import {
   FeatureCaseEnvelope,
+  PlatformEvalRun,
+  PlatformFairnessMonitoringSnapshot,
+  PlatformGuardrailViolation,
+  PlatformKillSwitchScope,
   PlatformSession,
   PlatformUser,
   RegulatoryChunk,
@@ -36,6 +40,8 @@ import { ModelGovernanceController } from './model-governance/model-governance.c
 import { ModelGovernanceService } from './model-governance/model-governance.service.js';
 import { ReportingController } from './reporting/reporting.controller.js';
 import { ReportingService } from './reporting/reporting.service.js';
+import { KillSwitchController } from './kill-switch/kill-switch.controller.js';
+import { KillSwitchService } from './kill-switch/kill-switch.service.js';
 import { RegulatoryKbController } from './regulatory-kb/regulatory-kb.controller.js';
 import { RegulatoryKbService } from './regulatory-kb/regulatory-kb.service.js';
 import { TemporalModule } from '../../common/temporal/temporal.module.js';
@@ -58,6 +64,10 @@ import { CommonAuthModule } from '../../common/auth/common-auth.module.js';
       FeatureCaseEnvelope,
       PlatformUser,
       PlatformSession,
+      PlatformKillSwitchScope,
+      PlatformGuardrailViolation,
+      PlatformEvalRun,
+      PlatformFairnessMonitoringSnapshot,
       RegulatoryDocument,
       RegulatoryChunk,
     ]),
@@ -73,6 +83,7 @@ import { CommonAuthModule } from '../../common/auth/common-auth.module.js';
     Customer360Controller,
     ModelGovernanceController,
     ReportingController,
+    KillSwitchController,
     RegulatoryKbController,
   ],
   providers: [
@@ -86,6 +97,7 @@ import { CommonAuthModule } from '../../common/auth/common-auth.module.js';
     Customer360Service,
     ModelGovernanceService,
     ReportingService,
+    KillSwitchService,
     RegulatoryKbService,
   ],
 })

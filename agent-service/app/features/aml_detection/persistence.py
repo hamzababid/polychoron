@@ -20,11 +20,13 @@ def save_evidence_bundle(bundle: EvidenceBundle) -> None:
                 """
                 INSERT INTO aml_evidence_bundles (
                     case_id, kyc, transaction_timeline, linked_entities,
-                    prior_cases, screening_results, assembled_at, agent_version
+                    prior_cases, screening_results, assembled_at, agent_version,
+                    data_gaps, evidence_incomplete
                 ) VALUES (
                     :case_id, cast(:kyc as jsonb), cast(:transaction_timeline as jsonb),
                     cast(:linked_entities as jsonb), cast(:prior_cases as jsonb),
-                    cast(:screening_results as jsonb), :assembled_at, :agent_version
+                    cast(:screening_results as jsonb), :assembled_at, :agent_version,
+                    cast(:data_gaps as jsonb), :evidence_incomplete
                 )
                 ON CONFLICT (case_id) DO UPDATE SET
                     kyc = EXCLUDED.kyc,
@@ -33,7 +35,9 @@ def save_evidence_bundle(bundle: EvidenceBundle) -> None:
                     prior_cases = EXCLUDED.prior_cases,
                     screening_results = EXCLUDED.screening_results,
                     assembled_at = EXCLUDED.assembled_at,
-                    agent_version = EXCLUDED.agent_version
+                    agent_version = EXCLUDED.agent_version,
+                    data_gaps = EXCLUDED.data_gaps,
+                    evidence_incomplete = EXCLUDED.evidence_incomplete
                 """
             ),
             {
@@ -45,6 +49,8 @@ def save_evidence_bundle(bundle: EvidenceBundle) -> None:
                 "screening_results": json.dumps([s.model_dump(mode="json") for s in bundle.screening_results]),
                 "assembled_at": bundle.assembled_at,
                 "agent_version": bundle.agent_version,
+                "data_gaps": json.dumps(bundle.data_gaps),
+                "evidence_incomplete": len(bundle.data_gaps) > 0,
             },
         )
         conn.commit()

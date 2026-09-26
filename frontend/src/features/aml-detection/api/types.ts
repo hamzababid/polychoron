@@ -414,6 +414,70 @@ export interface DataLineageResponse {
   entries: DataLineageEntry[];
 }
 
+// ADDITIVE (specs/platform/11-evals-and-guardrails-framework.md)
+
+export interface EvalRunRow {
+  runId: string;
+  agentVersionUnderTest: string;
+  triggeredBy: string;
+  startedAt: string;
+  completedAt: string | null;
+  totalCases: number;
+  passed: number;
+  failed: number;
+  status: 'running' | 'passed' | 'failed' | 'needs_review';
+}
+
+export interface EvalRunsResponse {
+  asOf: string;
+  latestStatus: string | null;
+  rows: Paginated<EvalRunRow>;
+}
+
+export interface FairnessFlagRow {
+  snapshotId: string;
+  periodStart: string;
+  periodEnd: string;
+  segmentDimension: string;
+  segmentValue: string;
+  strRecommendationRate: number;
+  falsePositiveRate: number;
+  baselineDeviation: number;
+  flagged: boolean;
+}
+
+export interface FairnessFlagsResponse {
+  asOf: string;
+  rows: Paginated<FairnessFlagRow>;
+}
+
+export interface GuardrailViolationRow {
+  violationId: string;
+  externalCaseRef: string;
+  guardrailType: string;
+  nodeName: string;
+  severity: 'blocked' | 'flagged' | 'escalated';
+  details: string;
+  detectedAt: string;
+}
+
+export interface GuardrailViolationsResponse {
+  asOf: string;
+  rows: Paginated<GuardrailViolationRow>;
+}
+
+export interface KillSwitchScope {
+  scopeId: string;
+  tenantId: string;
+  featureCode: string;
+  typologyCode: string | null;
+  disabledBy: string;
+  disabledAt: string;
+  reason: string;
+  reactivatedAt: string | null;
+  reactivatedBy: string | null;
+}
+
 // ADDITIVE (specs/platform/10-regulatory-knowledge-base-spec.md's
 // deferred management screen)
 

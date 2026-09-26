@@ -47,6 +47,7 @@ from app.features.aml_detection.schemas import (
     EvidenceBundle,
     InboundAlert,
 )
+from app.platform.guardrails.repository import is_feature_active, mark_evidence_kill_switch_active
 from app.platform.logging import get_logger, set_case_id, set_correlation_id
 
 logger = get_logger("agent-service.graph")
@@ -64,8 +65,13 @@ class AmlGraphState(TypedDict, total=False):
     # returns it again.
     correlation_id: str | None
     evidence: dict
-    typology_match: dict
-    assessment: dict
+    typology_match: dict | None
+    assessment: dict | None
+    # ADDITIVE (specs/platform/11-evals-and-guardrails-framework.md,
+    # guardrail G6): set when the feature-wide kill switch short-
+    # circuits pattern_matching/case_narrative — see those node
+    # functions below.
+    kill_switch_active: bool
 
 
 def _enter_node(name: str, state: AmlGraphState) -> float:
@@ -95,8 +101,23 @@ def _evidence_gathering_node(state: AmlGraphState) -> dict:
 
 def _pattern_matching_node(state: AmlGraphState) -> dict:
     started_at = _enter_node("pattern_matching", state)
+    tenant_id = state["tenant_id"]
+
+    # Guardrail G6 — checked before any typology-specific reasoning
+    # runs at all. A feature-wide kill switch short-circuits the case
+    # to manual review: Pattern Matching and Case & Narrative never
+    # run, which both saves cost and makes it unambiguous in the audit
+    # trail that the agent didn't touch the case (per-typology kill
+    # switches are enforced separately, by excluding that typology from
+    # the catalog prompt — see typology_config_repository.py).
+    if not is_feature_active(tenant_id, "aml_detection"):
+        logger.warning("aml_detection kill switch active for tenant=%s; routing case to manual review", tenant_id)
+        mark_evidence_kill_switch_active(state["case_id"])
+        _exit_node("pattern_matching", started_at)
+        return {"typology_match": None, "kill_switch_active": True}
+
     evidence = EvidenceBundle.model_validate(state["evidence"])
-    match = PatternMatchingNode().run(evidence, state["tenant_id"], state["case_id"])
+    match = PatternMatchingNode().run(evidence, tenant_id, state["case_id"])
     save_typology_match(match)
     _exit_node("pattern_matching", started_at)
     return {"typology_match": match.model_dump(mode="json")}
@@ -104,6 +125,12 @@ def _pattern_matching_node(state: AmlGraphState) -> dict:
 
 def _case_narrative_node(state: AmlGraphState) -> dict:
     started_at = _enter_node("case_narrative", state)
+
+    if state.get("kill_switch_active"):
+        logger.info("case_narrative skipped — kill switch active for this case")
+        _exit_node("case_narrative", started_at)
+        return {"assessment": None}
+
     node_input = CaseNarrativeInput.model_validate(
         {
             "evidence": state["evidence"],

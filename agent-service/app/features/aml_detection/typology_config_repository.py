@@ -11,6 +11,7 @@ from sqlalchemy import text
 
 from app.db import get_connection
 from app.features.aml_detection.typology_catalog import DEMO_CASH_REPORTING_THRESHOLD_PKR
+from app.platform.guardrails.repository import get_disabled_typology_codes
 
 _SELECT_ACTIVE = text(
     """
@@ -28,8 +29,16 @@ def get_active_typologies() -> list[dict[str, str]]:
     return [dict(row) for row in rows]
 
 
-def active_catalog_as_prompt_block() -> str:
+def active_catalog_as_prompt_block(tenant_id: str, feature_code: str = "aml_detection") -> str:
+    """Guardrail G6: a typology under an active per-typology kill
+    switch is excluded from the catalog entirely, so the Pattern
+    Matching Agent structurally cannot reason about it — the strongest
+    form of "checked ... before any typology-specific reasoning runs"
+    (specs/platform/11-evals-and-guardrails-framework.md)."""
     typologies = get_active_typologies()
+    disabled = get_disabled_typology_codes(tenant_id, feature_code)
+    typologies = [t for t in typologies if t["typology_code"] not in disabled]
+
     lines = [
         (
             f"Cash reporting threshold for this exercise: PKR {DEMO_CASH_REPORTING_THRESHOLD_PKR:,} "

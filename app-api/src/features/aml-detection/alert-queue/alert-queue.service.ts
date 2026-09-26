@@ -34,6 +34,11 @@ export interface AlertQueueRow {
   slaTargetHours: number | null;
   slaRemainingHours: number | null;
   pastSla: boolean;
+  // ADDITIVE (specs/platform/11-evals-and-guardrails-framework.md,
+  // guardrail G2): true when the Evidence Gathering Agent couldn't
+  // reach every data source — never silently scored as if the
+  // evidence were complete, so it's surfaced and prioritized here.
+  evidenceIncomplete: boolean;
 }
 
 interface AlertQueueRawRow {
@@ -50,6 +55,7 @@ interface AlertQueueRawRow {
   typology_code: string | null;
   typology_label: string | null;
   customer_name: string | null;
+  evidence_incomplete: boolean | null;
 }
 
 @Injectable()
@@ -94,14 +100,15 @@ export class AlertQueueService {
          u.display_name AS assigned_analyst_name,
          a.risk_score, a.recommendation, a.recommendation_confidence, a.draft_narrative,
          t.typology_code, t.typology_label,
-         e.kyc ->> 'customer_name' AS customer_name
+         e.kyc ->> 'customer_name' AS customer_name,
+         e.evidence_incomplete
        FROM aml_cases c
        LEFT JOIN aml_case_assessments a ON a.case_id = c.case_id
        LEFT JOIN aml_typology_matches t ON t.case_id = c.case_id
        LEFT JOIN platform_users u ON u.user_id = c.assigned_analyst_id
        LEFT JOIN aml_evidence_bundles e ON e.case_id = c.case_id
        ${whereClause}
-       ORDER BY a.risk_score DESC NULLS LAST, c.created_at DESC
+       ORDER BY e.evidence_incomplete DESC NULLS LAST, a.risk_score DESC NULLS LAST, c.created_at DESC
        LIMIT $${rowParams.length - 1} OFFSET $${rowParams.length}`,
       rowParams,
     )) as AlertQueueRawRow[];
@@ -124,7 +131,8 @@ export class AlertQueueService {
          u.display_name AS assigned_analyst_name,
          a.risk_score, a.recommendation, a.recommendation_confidence, a.draft_narrative,
          t.typology_code, t.typology_label,
-         e.kyc ->> 'customer_name' AS customer_name
+         e.kyc ->> 'customer_name' AS customer_name,
+         e.evidence_incomplete
        FROM aml_cases c
        LEFT JOIN aml_case_assessments a ON a.case_id = c.case_id
        LEFT JOIN aml_typology_matches t ON t.case_id = c.case_id
@@ -184,6 +192,7 @@ export class AlertQueueService {
       slaTargetHours,
       slaRemainingHours,
       pastSla: slaRemainingHours !== null && slaRemainingHours < 0,
+      evidenceIncomplete: r.evidence_incomplete ?? false,
     };
   }
 }

@@ -42,6 +42,8 @@ specs/
     08-model-inference-routing-spec.md  Tenant-configurable self-hosted vs. foundation-API routing
     09-backend-service-boundary-spec.md  NestJS app API + FastAPI agent service split
     10-regulatory-knowledge-base-spec.md  Retrieval layer grounding agent reasoning in actual regulatory text (ADDITIVE — see file for in-progress-build migration notes)
+    11-evals-and-guardrails-framework.md  Guardrail mechanisms + eval harness (ADDITIVE — same migration approach)
+    tenant-user-journey.md            Narrative walkthrough of a real tenant's day-to-day use, cross-reference when building screens
     screens/
       admin-access-control.md         Platform-wide user/role management screen
   suites/
@@ -52,6 +54,7 @@ specs/
           role-manifest.md
           mvp-phases.md
           data-models.py
+          golden-dataset-and-fairness-spec.md  ADDITIVE — see specs/platform/11-evals-and-guardrails-framework.md
           agent-implementation.md
           aml-e2e-flow.mermaid
           aml-agentic-workflow.mermaid

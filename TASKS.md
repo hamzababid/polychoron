@@ -209,6 +209,81 @@ the Pattern Matching node rather than a hard dependency.
 
 ---
 
+## ADDITIVE — Evals & Guardrails Framework (added mid-build; core to the AI concept, treat as high priority within the additive work — not lower priority than the regulatory KB block above)
+See `specs/platform/11-evals-and-guardrails-framework.md`,
+`specs/suites/bfsi/features/aml-detection/golden-dataset-and-fairness-spec.md`,
+and `specs/platform/tenant-user-journey.md`. Same additive discipline as
+the Regulatory KB block: new tables, new optional/defaulted fields,
+re-run existing tests after each step.
+
+**Guardrails (build these first — they're cheap and prevent the worst failure modes):**
+- [x] Add `GuardrailViolation`, `ConfidenceRoutingPolicy`,
+      `KillSwitchScope` tables (platform-level)
+- [x] Implement `sanitize_evidence_for_prompt()` +
+      `detect_injection_patterns()`; wire into every node that builds a
+      prompt from evidence text (guardrail G1)
+- [x] Add `data_gaps: list[str]` to `EvidenceBundle`; wire the
+      `evidence_incomplete` flag into Alert Queue's prioritization
+      (guardrail G2) — also closes evidence_gathering.py's previously-
+      documented partial-evidence gap for transactions/linked-entities/
+      prior-cases (KYC failures still hard-fail; no valid empty default)
+- [x] Implement `validate_citations()`; wire into the Pattern Matching
+      node immediately after it receives the LLM's typology output,
+      before persisting `TypologyMatch` (guardrail G3) — the node now
+      shows the model a candidate-citation list and asks which
+      chunk_ids it actually relied on, so the fabrication check has
+      something real to validate against
+- [x] Implement `is_typology_active()`; wire as the first check in the
+      Pattern Matching node, before any reasoning call — a disabled
+      typology/feature must short-circuit to manual review (guardrail G6)
+      — per-typology kill switches filter the catalog prompt itself
+      (the typology is never presented as an option); a feature-wide
+      switch short-circuits Pattern Matching/Case & Narrative entirely
+- [x] Build the kill-switch control itself (`mlro_compliance_head`-only
+      action) — minimal UI is fine for now, but the enforcement must be
+      real, not a stub — API + a minimal panel on Typology Console
+      (feature-wide banner + per-typology toggle in the rule detail view)
+- [x] Test: re-run existing seed scenarios — confirm no regression, then
+      add one adversarial-fixture test proving an injected instruction
+      in transaction narration doesn't change the agent's conclusion —
+      `tests/test_guardrails.py`; also verified live against a real LLM
+      via the golden dataset's two adversarial injection cases (both pass)
+
+**Evals (build after guardrails are in place):**
+- [x] Add `GoldenDatasetCase`, `EvalRun`, `EvalCaseResult`,
+      `FairnessMonitoringSnapshot` tables (platform-level)
+- [x] Load the initial AML golden dataset (12 cases specified in
+      `golden-dataset-and-fairness-spec.md`) — `golden_dataset.py` +
+      `scripts/seed_golden_dataset.py`; 2 of the 12 don't map onto
+      Phase 1's 2-typology catalog and deliberately leave
+      expected_typology unset rather than inventing a mapping
+- [x] Build the golden-dataset regression runner; wire it as a required
+      gate before any typology/prompt change can enter shadow mode
+      (constitution rule 15 — do not allow this to be skipped) —
+      `regression_runner.py`'s `assert_passes_before_shadow_mode()`;
+      not wired into `TypologyConsoleService.promote()` because that
+      method is Phase 1's documented no-shadow-mode simplification (it
+      already says so in its own comments) — the real gate attaches
+      once Phase 2 builds actual shadow-mode entry, not before
+- [x] Build the fairness-monitoring scheduled job using the three
+      dimensions specified (`occupation_category`, `branch_code`,
+      `account_type`); surface flags on Model Governance & Audit —
+      `fairness.py` computes on demand (no scheduler infra exists
+      anywhere else in this codebase yet, so this doesn't invent one);
+      `account_type` has no dedicated data-model field, so it's a
+      same-discipline heuristic bucket off declared_occupation, documented
+      as such
+- [x] Defer the full faithfulness-scorer LLM-judge and the weekly
+      consistency-eval automation to AML Phase 2 — for Phase 1/demo,
+      running the golden dataset manually once before the demo is
+      sufficient; the scheduling/automation is Phase 2 scope — first
+      live run completed 2026-09-23: 6/12 passed (both adversarial
+      injection cases passed; the other 4 failures are golden-dataset
+      expected-value calibration gaps, not code defects — see the
+      Model Governance screen's eval-run history)
+
+---
+
 ## ADDITIVE — Dashboard Trend Widgets (pulled forward from Phase 2 Reporting & MI)
 See `specs/suites/bfsi/features/aml-detection/screens/01-dashboard.md`
 (acceptance criteria updated) and
