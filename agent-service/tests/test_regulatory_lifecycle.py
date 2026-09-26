@@ -50,6 +50,7 @@ def kb_user(test_user):
             conn.execute(text("DELETE FROM regulatory_chunks WHERE document_id = ANY(:d)"), {"d": docs})
             conn.execute(text("DELETE FROM regulatory_documents WHERE document_id = ANY(:d)"), {"d": docs})
         conn.execute(text("DELETE FROM regulatory_source_files WHERE uploaded_by = :u"), {"u": test_user})
+        conn.execute(text("DELETE FROM regulatory_chunking_profiles WHERE created_by = :u"), {"u": test_user})
 
 
 def _draft_with_chunks(user: str, source: str = SOURCE) -> str:
@@ -144,7 +145,7 @@ def test_save_chunks_validation(kb_user):
         lifecycle.save_chunks(document_id=document_id, feature_code=FEATURE, chunks=[])
     with pytest.raises(KbInvalid, match="section reference and text"):
         lifecycle.save_chunks(document_id=document_id, feature_code=FEATURE, chunks=[{"section_reference": "", "text": "x"}])
-    with pytest.raises(KbInvalid, match="too large"):
+    with pytest.raises(lifecycle.KbTooLarge, match="too large"):
         big = [{"section_reference": f"S{i}", "text": "x" * 20000} for i in range(80)]
         lifecycle.save_chunks(document_id=document_id, feature_code=FEATURE, chunks=big)
 
@@ -372,3 +373,12 @@ def test_retrieval_honours_typology_restriction(kb_user):
     found = _retrieve(typology_codes=["OTHER"])
     assert unrestricted in found and restricted not in found
     assert restricted in _retrieve()  # no filter requested
+
+
+def test_chunking_profiles_validate_and_are_unique(kb_user):
+    name = f"Profile {uuid.uuid4().hex[:6]}"
+    lifecycle.create_chunking_profile(feature_code=FEATURE, name=name, config=HEADINGS, created_by=kb_user)
+    with pytest.raises(KbConflict, match="already exists"):
+        lifecycle.create_chunking_profile(feature_code=FEATURE, name=name, config=HEADINGS, created_by=kb_user)
+    with pytest.raises(KbInvalid, match="name"):
+        lifecycle.create_chunking_profile(feature_code=FEATURE, name=" ", config=HEADINGS, created_by=kb_user)

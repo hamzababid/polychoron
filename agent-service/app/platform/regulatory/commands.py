@@ -10,7 +10,7 @@ returns the result inside the same HTTP request. No job id, no polling.
 Each workflow wraps exactly one activity. Business-rule failures
 (lifecycle.KbError, extraction/chunking errors, trigger violations)
 become a non-retryable ApplicationError whose `type` is Conflict /
-NotFound / Invalid; app-api maps that to 409 / 404 / 400."""
+NotFound / Invalid / TooLarge; app-api maps that to 409 / 404 / 400 / 413."""
 
 from __future__ import annotations
 
@@ -53,6 +53,7 @@ _DRAFT_OPS = {
     "save_chunks": lifecycle.save_chunks,
     "acknowledge_injection": lifecycle.acknowledge_injection,
     "discard": lifecycle.discard_draft,
+    "create_profile": lifecycle.create_chunking_profile,
 }
 _METADATA_OPS = {"correct": lifecycle.correct_metadata, "withdraw": lifecycle.withdraw}
 

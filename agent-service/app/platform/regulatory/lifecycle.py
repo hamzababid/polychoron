@@ -75,6 +75,10 @@ class KbConflict(KbError):
     kind = "Conflict"
 
 
+class KbTooLarge(KbError):
+    kind = "TooLarge"
+
+
 # ── Drafts ───────────────────────────────────────────────────────────
 
 
@@ -246,7 +250,7 @@ def save_chunks(*, document_id: str, feature_code: str, chunks: list[dict]) -> d
     adjustment). A chunk whose text is unchanged keeps its embedding and
     its injection acknowledgement."""
     if len(json.dumps(chunks).encode()) > MAX_CHUNK_PAYLOAD_BYTES:
-        raise KbInvalid("chunk list too large for one save (1.5 MB) — split the document into several")
+        raise KbTooLarge("chunk list too large for one save (1.5 MB) — split the document into several")
     drafts = []
     for i, c in enumerate(chunks, start=1):
         ref, body = (c.get("section_reference") or "").strip(), (c.get("text") or "").strip()
@@ -384,6 +388,33 @@ def withdraw(*, document_id: str, feature_code: str, reason: str, withdrawn_by: 
             {"by": withdrawn_by, "at": datetime.now(UTC), "reason": reason.strip(), "id": document_id},
         )
     return {"document_id": document_id}
+
+
+# ── Chunking profiles ────────────────────────────────────────────────
+
+
+def create_chunking_profile(*, feature_code: str, name: str, config: dict, created_by: str) -> dict:
+    name = (name or "").strip()
+    if not name:
+        raise KbInvalid("a profile needs a name")
+    validated = ChunkingConfig(**config)
+    with engine.begin() as conn:
+        exists = conn.execute(
+            text("SELECT 1 FROM regulatory_chunking_profiles WHERE feature_code = :f AND name = :n"),
+            {"f": feature_code, "n": name},
+        ).scalar_one_or_none()
+        if exists:
+            raise KbConflict(f"a chunking profile named {name!r} already exists")
+        profile_id = conn.execute(
+            text(
+                """
+                INSERT INTO regulatory_chunking_profiles (feature_code, name, config, created_by)
+                VALUES (:f, :n, cast(:c as jsonb), :by) RETURNING profile_id
+                """
+            ),
+            {"f": feature_code, "n": name, "c": json.dumps(validated.model_dump(mode="json")), "by": created_by},
+        ).scalar_one()
+    return {"profile_id": str(profile_id)}
 
 
 # ── Embedding (the one background job) ──────────────────────────────

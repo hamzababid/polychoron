@@ -12,3 +12,6 @@ export { PlatformEvalRun } from './platform-eval-run.entity.js';
 export { PlatformFairnessMonitoringSnapshot } from './platform-fairness-monitoring-snapshot.entity.js';
 export { RegulatoryDocument } from './regulatory-document.entity.js';
 export { RegulatoryChunk } from './regulatory-chunk.entity.js';
+export { RegulatorySourceFile } from './regulatory-source-file.entity.js';
+export { RegulatoryDocumentChange } from './regulatory-document-change.entity.js';
+export { RegulatoryChunkingProfile } from './regulatory-chunking-profile.entity.js';
