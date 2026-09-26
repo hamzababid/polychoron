@@ -6,3 +6,5 @@ export { PlatformRole } from './platform-role.entity.js';
 export { PlatformUser } from './platform-user.entity.js';
 export { PlatformSession } from './platform-session.entity.js';
 export { PlatformAgentActivityLog } from './platform-agent-activity-log.entity.js';
+export { RegulatoryDocument } from './regulatory-document.entity.js';
+export { RegulatoryChunk } from './regulatory-chunk.entity.js';

@@ -8,6 +8,7 @@ import { TypologyRulesConsoleScreen } from './typology-console/TypologyRulesCons
 import { Customer360Screen } from './customer-360/Customer360Screen';
 import { ModelGovernanceScreen } from './model-governance/ModelGovernanceScreen';
 import { ReportingScreen } from './reporting/ReportingScreen';
+import { RegulatoryKnowledgeBaseScreen } from './regulatory-kb/RegulatoryKnowledgeBaseScreen';
 import './aml-theme.css';
 
 /** The AML Detection feature's routed screens. Its own top-level
@@ -33,6 +34,7 @@ export function AmlDetectionRoutes() {
         <Route path="typologies" element={<TypologyRulesConsoleScreen />} />
         <Route path="governance" element={<ModelGovernanceScreen />} />
         <Route path="reports" element={<ReportingScreen />} />
+        <Route path="regulatory-kb" element={<RegulatoryKnowledgeBaseScreen />} />
       </Routes>
     </div>
   );
