@@ -19,7 +19,6 @@ from app.platform.regulatory.repository import (
     ingest_document,
     list_chunks,
     list_documents,
-    supersede_document,
 )
 from app.platform.regulatory.types import RegulatorySourceType
 
@@ -67,33 +66,12 @@ def test_list_chunks_empty_for_new_document(kb_document):
     assert list_chunks(kb_document) == []
 
 
-def test_supersede_document_points_old_at_new(test_tenant, kb_user, kb_document):
-    replacement_id = ingest_document(
-        feature_code=test_tenant["feature_code"],
-        title="Replacement",
-        source_type=RegulatorySourceType.GUIDANCE,
-        issuing_authority="Test Authority",
-        version_label="v2",
-        ingested_by=kb_user,
-    )
-    try:
-        supersede_document(old_document_id=kb_document, new_document_id=replacement_id)
-
-        documents = list_documents(test_tenant["feature_code"])
-        old = next(d for d in documents if d["document_id"] == kb_document)
-        new = next(d for d in documents if d["document_id"] == replacement_id)
-        assert old["superseded_by"] == replacement_id
-        assert new["superseded_by"] is None
-    finally:
-        # Delete the old (superseding) row first — it's the one with
-        # superseded_by pointing at replacement_id, so replacement_id
-        # can't be deleted while that FK reference still exists. The
-        # kb_document fixture's own teardown will no-op on the already-
-        # deleted row afterward.
-        with get_connection() as conn:
-            conn.execute(text("DELETE FROM regulatory_documents WHERE document_id = :d"), {"d": str(kb_document)})
-            conn.execute(text("DELETE FROM regulatory_documents WHERE document_id = :d"), {"d": str(replacement_id)})
-            conn.commit()
+def test_new_document_starts_as_draft(kb_document):
+    documents = list_documents("aml_detection")
+    assert any(d["document_id"] == kb_document for d in documents)
+    with get_connection() as conn:
+        status = conn.execute(text("SELECT status FROM regulatory_documents WHERE document_id = :d"), {"d": str(kb_document)}).scalar_one()
+    assert status == "draft"
 
 
 pytestmark_live = pytest.mark.skipif(
@@ -136,7 +114,10 @@ async def test_ingestion_workflow_creates_document_and_embedded_chunks(test_tena
     chunks = list_chunks(document_id)
     assert len(chunks) == 1
 
+    # Published (current) rows are retained by migration 013's triggers;
+    # test cleanup uses the explicit maintenance override.
     with get_connection() as conn:
+        conn.execute(text("SET LOCAL polychoron.kb_maintenance = 'on'"))
         conn.execute(text("DELETE FROM regulatory_chunks WHERE document_id = :d"), {"d": document_id})
         conn.execute(text("DELETE FROM regulatory_documents WHERE document_id = :d"), {"d": document_id})
         conn.commit()

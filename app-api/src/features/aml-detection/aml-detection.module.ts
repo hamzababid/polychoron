@@ -20,7 +20,10 @@ import {
   PlatformSession,
   PlatformUser,
   RegulatoryChunk,
+  RegulatoryChunkingProfile,
   RegulatoryDocument,
+  RegulatoryDocumentChange,
+  RegulatorySourceFile,
 } from '../../platform/entities/index.js';
 import { AmlDetectionController } from './aml-detection.controller.js';
 import { AmlDetectionService } from './aml-detection.service.js';
@@ -44,6 +47,8 @@ import { KillSwitchController } from './kill-switch/kill-switch.controller.js';
 import { KillSwitchService } from './kill-switch/kill-switch.service.js';
 import { RegulatoryKbController } from './regulatory-kb/regulatory-kb.controller.js';
 import { RegulatoryKbService } from './regulatory-kb/regulatory-kb.service.js';
+import { RegulatoryKbCommandsService } from './regulatory-kb/regulatory-kb-commands.service.js';
+import { RegulatorySourceFilesService } from './regulatory-kb/regulatory-source-files.service.js';
 import { TemporalModule } from '../../common/temporal/temporal.module.js';
 import { CommonAuthModule } from '../../common/auth/common-auth.module.js';
 
@@ -70,6 +75,9 @@ import { CommonAuthModule } from '../../common/auth/common-auth.module.js';
       PlatformFairnessMonitoringSnapshot,
       RegulatoryDocument,
       RegulatoryChunk,
+      RegulatorySourceFile,
+      RegulatoryDocumentChange,
+      RegulatoryChunkingProfile,
     ]),
     TemporalModule,
     CommonAuthModule,
@@ -99,6 +107,8 @@ import { CommonAuthModule } from '../../common/auth/common-auth.module.js';
     ReportingService,
     KillSwitchService,
     RegulatoryKbService,
+    RegulatoryKbCommandsService,
+    RegulatorySourceFilesService,
   ],
 })
 export class AmlDetectionModule {}

@@ -1,4 +1,4 @@
-import { apiFetch, getSessionId } from '../../../auth/apiClient';
+import { ApiError, apiFetch, getSessionId } from '../../../auth/apiClient';
 import type {
   ActivityLogEntry,
   AlertQueueRow,
@@ -21,8 +21,21 @@ import type {
   IngestionJobStatus,
   ModelVersionsResponse,
   Paginated,
+  ChunkingConfig,
+  ChunkingProfile,
+  DraftChunksResult,
   RegulatoryChunkRow,
+  RegulatoryCitationRow,
+  RegulatoryCompareResult,
+  RegulatoryDocumentChange,
+  RegulatoryDocumentDetail,
+  RegulatoryDocumentPage,
   RegulatoryDocumentRow,
+  RegulatoryDocumentStatus,
+  RegulatoryMetadataInput,
+  RegulatorySourceMethod,
+  RetrievalPreviewResult,
+  SourceSummary,
   ReportHistoryEntry,
   ReportingBreakdownBy,
   ReportingSummary,
@@ -241,36 +254,181 @@ export function reactivateKillSwitch(scopeId: string, reactivatedBy: string) {
   });
 }
 
-// ADDITIVE (specs/platform/10-regulatory-knowledge-base-spec.md's
-// deferred management screen)
+// Regulatory Knowledge Base — api-contracts-phase2.md "Regulatory Knowledge Base".
+// Every write is an awaited command (responds immediately); only
+// embedding returns a jobId.
 
-export function listRegulatoryDocuments() {
-  return apiFetch<RegulatoryDocumentRow[]>(`${BASE}/regulatory-kb/documents`);
-}
+const KB = `${BASE}/regulatory-kb`;
 
-export function listRegulatoryChunks(documentId: string) {
-  return apiFetch<RegulatoryChunkRow[]>(`${BASE}/regulatory-kb/documents/${documentId}/chunks`);
-}
-
-export function ingestRegulatoryDocument(body: {
-  title: string;
-  source_type: string;
-  issuing_authority: string;
-  version_label: string;
-  source_url?: string;
-  ingested_by: string;
-  chunks: { section_reference: string; text: string }[];
-  supersedes_document_id?: string;
+export function listRegulatoryDocuments(params: {
+  status?: RegulatoryDocumentStatus[];
+  sourceType?: string;
+  issuingAuthority?: string;
+  tag?: string;
+  q?: string;
+  page?: number;
+  pageSize?: number;
 }) {
-  return apiFetch<{ jobId: string }>(`${BASE}/regulatory-kb/documents`, { method: 'POST', body: JSON.stringify(body) });
+  const query = new URLSearchParams();
+  if (params.status?.length) query.set('status', params.status.join(','));
+  if (params.sourceType) query.set('source_type', params.sourceType);
+  if (params.issuingAuthority) query.set('issuing_authority', params.issuingAuthority);
+  if (params.tag) query.set('tag', params.tag);
+  if (params.q) query.set('q', params.q);
+  if (params.page) query.set('page', String(params.page));
+  if (params.pageSize) query.set('page_size', String(params.pageSize));
+  const qs = query.toString();
+  return apiFetch<RegulatoryDocumentPage>(`${KB}/documents${qs ? `?${qs}` : ''}`);
+}
+
+export function getRegulatoryDocument(documentId: string) {
+  return apiFetch<RegulatoryDocumentDetail>(`${KB}/documents/${documentId}`);
+}
+
+export function listRegulatoryChunks(documentId: string, q?: string) {
+  return apiFetch<RegulatoryChunkRow[]>(`${KB}/documents/${documentId}/chunks${q ? `?q=${encodeURIComponent(q)}` : ''}`);
+}
+
+export function listRegulatoryVersions(documentId: string) {
+  return apiFetch<RegulatoryDocumentRow[]>(`${KB}/documents/${documentId}/versions`);
+}
+
+export function listRegulatoryChanges(documentId: string) {
+  return apiFetch<RegulatoryDocumentChange[]>(`${KB}/documents/${documentId}/changes`);
+}
+
+export function listRegulatoryCitations(documentId: string, page = 1, pageSize = 10) {
+  return apiFetch<{ total: number; page: number; pageSize: number; items: RegulatoryCitationRow[] }>(
+    `${KB}/documents/${documentId}/citations?page=${page}&page_size=${pageSize}`,
+  );
+}
+
+export function compareRegulatoryVersions(documentId: string, otherId: string) {
+  return apiFetch<RegulatoryCompareResult>(`${KB}/documents/${documentId}/compare/${otherId}`);
+}
+
+export function getRegulatorySourceText(documentId: string) {
+  return apiFetch<{ text: string | null }>(`${KB}/documents/${documentId}/source-text`);
+}
+
+export function listChunkingProfiles() {
+  return apiFetch<ChunkingProfile[]>(`${KB}/chunking-profiles`);
+}
+
+export function createChunkingProfile(name: string, config: ChunkingConfig) {
+  return apiFetch<{ profile_id: string }>(`${KB}/chunking-profiles`, { method: 'POST', body: JSON.stringify({ name, config }) });
+}
+
+export function listIssuingAuthorities() {
+  return apiFetch<string[]>(`${KB}/issuing-authorities`);
+}
+
+export function createRegulatoryDraft(body: {
+  source_method: RegulatorySourceMethod;
+  supersedes_document_id?: string;
+  copy_chunks?: boolean;
+  metadata?: RegulatoryMetadataInput;
+}) {
+  return apiFetch<{ document_id: string }>(`${KB}/drafts`, { method: 'POST', body: JSON.stringify(body) });
+}
+
+export function updateRegulatoryDraft(documentId: string, body: RegulatoryMetadataInput & { chunking_config?: ChunkingConfig }) {
+  return apiFetch<{ document_id: string }>(`${KB}/drafts/${documentId}`, { method: 'PATCH', body: JSON.stringify(body) });
+}
+
+export function setRegulatorySourceText(documentId: string, text: string) {
+  return apiFetch<SourceSummary>(`${KB}/drafts/${documentId}/source-text`, { method: 'POST', body: JSON.stringify({ text }) });
+}
+
+export function fetchRegulatorySourceUrl(documentId: string, url: string) {
+  return apiFetch<SourceSummary>(`${KB}/drafts/${documentId}/source-url`, { method: 'POST', body: JSON.stringify({ url }) });
+}
+
+/** Multipart — apiFetch always sends JSON, so this sets its own headers. */
+export async function uploadRegulatorySourceFile(documentId: string, file: File): Promise<SourceSummary> {
+  const form = new FormData();
+  form.append('file', file);
+  const headers = new Headers();
+  const sessionId = getSessionId();
+  if (sessionId) headers.set('x-session-id', sessionId);
+  const res = await fetch(`/api/v1${KB}/drafts/${documentId}/source-file`, { method: 'POST', body: form, headers });
+  if (!res.ok) {
+    let message = `Upload failed: ${res.status}`;
+    try {
+      const body = (await res.json()) as { message?: string | string[] };
+      if (body.message) message = Array.isArray(body.message) ? body.message.join(' ') : body.message;
+    } catch {
+      // keep the generic message
+    }
+    throw new ApiError(res.status, message);
+  }
+  return (await res.json()) as SourceSummary;
+}
+
+export function previewRegulatoryChunks(documentId: string, chunkingConfig: ChunkingConfig) {
+  return apiFetch<DraftChunksResult>(`${KB}/drafts/${documentId}/chunk-preview`, {
+    method: 'POST',
+    body: JSON.stringify({ chunking_config: chunkingConfig }),
+  });
+}
+
+export function saveRegulatoryChunks(documentId: string, chunks: { section_reference: string; text: string }[]) {
+  return apiFetch<DraftChunksResult>(`${KB}/drafts/${documentId}/chunks`, { method: 'PUT', body: JSON.stringify({ chunks }) });
+}
+
+export function acknowledgeRegulatoryInjection(documentId: string, chunkId: string) {
+  return apiFetch<{ chunk_id: string }>(`${KB}/drafts/${documentId}/chunks/${chunkId}/acknowledge-injection`, { method: 'POST' });
+}
+
+export function embedRegulatoryDraft(documentId: string) {
+  return apiFetch<{ jobId: string }>(`${KB}/drafts/${documentId}/embed`, { method: 'POST' });
+}
+
+export function publishRegulatoryDraft(documentId: string) {
+  return apiFetch<{ document_id: string; superseded_document_id: string | null }>(`${KB}/drafts/${documentId}/publish`, { method: 'POST' });
+}
+
+export function discardRegulatoryDraft(documentId: string) {
+  return apiFetch<{ document_id: string }>(`${KB}/drafts/${documentId}`, { method: 'DELETE' });
+}
+
+export function correctRegulatoryMetadata(documentId: string, changes: RegulatoryMetadataInput, reason: string) {
+  return apiFetch<{ document_id: string; changed_fields: string[] }>(`${KB}/documents/${documentId}/metadata`, {
+    method: 'PATCH',
+    body: JSON.stringify({ changes, reason }),
+  });
+}
+
+export function withdrawRegulatoryDocument(documentId: string, reason: string) {
+  return apiFetch<{ document_id: string }>(`${KB}/documents/${documentId}/withdraw`, { method: 'POST', body: JSON.stringify({ reason }) });
 }
 
 export function reembedRegulatoryDocument(documentId: string) {
-  return apiFetch<{ jobId: string }>(`${BASE}/regulatory-kb/documents/${documentId}/reembed`, { method: 'POST' });
+  return apiFetch<{ jobId: string }>(`${KB}/documents/${documentId}/reembed`, { method: 'POST' });
 }
 
-export function getIngestionJobStatus(jobId: string) {
-  return apiFetch<IngestionJobStatus>(`${BASE}/regulatory-kb/ingestion-jobs/${jobId}`);
+export function previewRegulatoryRetrieval(body: { query: string; top_k?: number; include_draft_document_id?: string }) {
+  return apiFetch<{ results: RetrievalPreviewResult[] }>(`${KB}/retrieval-preview`, { method: 'POST', body: JSON.stringify(body) });
+}
+
+export function getRegulatoryJob(jobId: string) {
+  return apiFetch<IngestionJobStatus>(`${KB}/jobs/${jobId}`);
+}
+
+/** The original uploaded/fetched file, fetched with the session header
+ * and handed to the browser as a download. */
+export async function downloadRegulatorySourceFile(documentId: string, filename: string): Promise<void> {
+  const headers = new Headers();
+  const sessionId = getSessionId();
+  if (sessionId) headers.set('x-session-id', sessionId);
+  const res = await fetch(`/api/v1${KB}/documents/${documentId}/source-file`, { headers });
+  if (!res.ok) throw new ApiError(res.status, `Download failed: ${res.status}`);
+  const url = URL.createObjectURL(await res.blob());
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
 }
 
 export function getReportingSummary(params: {

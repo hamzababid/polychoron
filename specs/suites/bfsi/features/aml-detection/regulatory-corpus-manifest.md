@@ -28,8 +28,25 @@ not a complete corpus:
   decides what changes for the corpus, and ingests the update; this is
   explicitly not automated (see constitution/spec note on scope — no
   auto-scraping SBP's website)
+- **How an update is made** (Phase 2, see
+  `screens/11-regulatory-knowledge-base.md`): the officer opens the
+  current document → Edit → "Edit content" (or starts a new document
+  with *Supersedes* set), which creates a **draft** version. The draft
+  is chunked, reviewed, embedded, and test-retrieved without ever being
+  visible to agents; **Publish** makes it current and supersedes the
+  old version in one step. The old version is retained forever. A
+  repealed regulation with no replacement is **Withdrawn**, not deleted.
+  Typos in metadata are corrected in place with a recorded reason.
 - **Source format**: PDF/text extraction of the official published
   regulation/circular — retain a `source_url` pointing to the official
   SBP/FMU publication for every document, so a citation can always be
   traced back to the authoritative source, not just the chunked text
-  stored in Polychoron AI
+  stored in Polychoron AI. Accepted inputs: PDF (text layer only — no
+  OCR), DOCX, TXT upload; pasted text; a single human-triggered fetch
+  of the official URL; or manual section-by-section entry. The
+  original uploaded/fetched file is retained alongside the chunks.
+- **Recommended chunking profiles** (saved in the app, reusable):
+  AMLA 2010 — heading pattern `^\d+[A-Z]?\.\s` (section numbers);
+  SBP AML/CFT/CPF Regulations — heading pattern on regulation numbers;
+  FMU red flags — one chunk per indicator (heading pattern on the
+  indicator bullet/number). Adjust in preview before publishing.

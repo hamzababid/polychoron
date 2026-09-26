@@ -147,3 +147,253 @@ This is designed to be added without disrupting work already underway:
   ingestion pipeline (document upload UI, chunking service, embedding
   refresh jobs) for Phase 1 — that's Phase 2 scope, tracked in
   `TASKS.md`.
+
+---
+
+## Phase 2 addendum — document lifecycle & configurable ingestion
+*Added 2026-09-26, decided with the project owner. Screen-level detail
+lives in `suites/bfsi/features/aml-detection/screens/11-regulatory-knowledge-base.md`;
+this section is the platform mechanism only. Still ADDITIVE: new
+columns are nullable/defaulted, new tables only, and the Phase 1 seeded
+corpus is migrated forward, not re-ingested.*
+
+### Decisions
+1. **Edit = versioned drafts.** Published chunk text is immutable
+   (constitution rule 8 — a case's stored `chunk_id` must keep
+   resolving to the exact text it cited). Content changes create a new
+   `draft` document in the same *family*; publishing supersedes the
+   previous version. Metadata corrections are in place, reason
+   required, change-logged.
+2. **Ingestion sources:** file upload (PDF/DOCX/TXT), pasted full text,
+   human-triggered single-URL fetch, manual chunks. No scheduled or
+   recursive fetching — non-negotiable #2 still stands.
+3. **Approval:** any `aml_detection.mlro_compliance_head` may publish;
+   no maker-checker (revisit with Phase 3 real RBAC).
+4. **Chunking is deterministic and configurable** (heading regex /
+   paragraph / fixed size + overlap), previewed and hand-adjustable
+   before any embedding call. No LLM-based chunking.
+
+### Data model additions
+
+```python
+class RegulatoryDocumentStatus(str, Enum):
+    DRAFT = "draft"            # never retrievable; the only deletable state
+    CURRENT = "current"        # retrievable if retrieval_enabled
+    SUPERSEDED = "superseded"  # retained forever, not retrievable
+    WITHDRAWN = "withdrawn"    # repealed with no replacement; retained, not retrievable
+
+
+class ChunkingStrategy(str, Enum):
+    HEADING_PATTERN = "heading_pattern"
+    PARAGRAPH = "paragraph"
+    FIXED_SIZE = "fixed_size"
+    MANUAL = "manual"
+
+
+class ChunkingConfig(BaseModel):
+    strategy: ChunkingStrategy
+    heading_pattern: Optional[str] = None      # regex, HEADING_PATTERN only
+    target_chunk_chars: int = 1200
+    max_chunk_chars: int = 2000
+    overlap_chars: int = 150
+    min_chunk_chars: int = 120
+    section_reference_mode: Literal["from_heading", "template"] = "from_heading"
+    section_reference_template: Optional[str] = None  # e.g. "{title} ¶{n}"
+    strip_headers_footers: bool = True
+
+
+class ChunkingProfile(BaseModel):
+    """Named, reusable ChunkingConfig — feature-scoped."""
+    profile_id: UUID = Field(default_factory=uuid4)
+    feature_code: str
+    name: str                  # e.g. "SBP Regulations — by Regulation number"
+    config: ChunkingConfig
+    created_by: str
+    created_at: datetime
+
+
+# RegulatoryDocument — new fields (all defaulted/nullable)
+    document_family_id: UUID          # shared by every version of one regulation; defaults to own document_id
+    version_number: int = 1           # monotonic within a family
+    status: RegulatoryDocumentStatus = RegulatoryDocumentStatus.CURRENT
+    jurisdiction: str = "PK"
+    language: str = "en"
+    tags: list[str] = []
+    related_typology_codes: list[str] = []   # empty = applies to all typologies
+    retrieval_enabled: bool = True
+    retrieval_priority: float = Field(1.0, ge=0.5, le=2.0)
+    notes: Optional[str] = None               # internal; never sent to an agent
+    source_method: Literal["upload", "paste", "url", "manual", "seed"] = "seed"
+    source_file_id: Optional[UUID] = None     # -> RegulatorySourceFile
+    chunking_config: Optional[ChunkingConfig] = None
+    published_by: Optional[str] = None
+    published_at: Optional[datetime] = None
+    withdrawn_by: Optional[str] = None
+    withdrawn_at: Optional[datetime] = None
+    withdrawal_reason: Optional[str] = None
+
+
+# RegulatoryChunk — new fields
+    ordinal: int                       # document order; list/preview order by this, not section_reference
+    char_count: int
+    embedding: nullable while status == draft and embedding job pending
+    injection_flags: list[str] = []    # detect_injection_patterns() hits
+    injection_acknowledged_by: Optional[str] = None
+
+
+class RegulatorySourceFile(BaseModel):
+    """Original uploaded/fetched bytes, retained for traceability."""
+    file_id: UUID
+    filename: str
+    content_type: str                  # application/pdf | ...docx | text/plain | text/html
+    size_bytes: int
+    sha256: str
+    fetched_from_url: Optional[str] = None
+    uploaded_by: str
+    uploaded_at: datetime
+    # bytes stored in a bytea column excluded from default SELECTs
+    # (same pattern as aml_report_generations.file_content)
+
+
+class RegulatoryDocumentChange(BaseModel):
+    """Append-only metadata-correction log. One row per changed field."""
+    change_id: UUID
+    document_id: UUID
+    field_name: str
+    old_value: Optional[str]
+    new_value: Optional[str]
+    changed_by: str
+    changed_at: datetime
+    reason: str                        # required — enforced NOT NULL + non-empty CHECK
+```
+
+DB-level guarantees (migration `013`):
+- Partial unique index: one `current` document per `document_family_id`;
+  one `draft` per `document_family_id`.
+- Trigger rejecting `UPDATE OF text, section_reference` on
+  `regulatory_chunks` and `DELETE` of chunks whose document status is
+  not `draft` — immutability enforced at the data layer, not just the
+  API (same stance as constitution rule 4).
+- `regulatory_document_changes.reason` `CHECK (length(trim(reason)) > 0)`.
+- Backfill: existing rows → `status='current'`,
+  `document_family_id=document_id`, `version_number=1`,
+  `source_method='seed'`; chunks get `ordinal` by current
+  `section_reference` order and `char_count`.
+
+### Pipeline — one background job, everything else awaited
+Two constraints from `09-backend-service-boundary-spec.md` shape this:
+NestJS never calls an LLM (so embedding runs on the agent-service
+worker), and table writes are exclusive per service (agent-service
+owns `regulatory_documents` / `regulatory_chunks`, so NestJS can't
+write them directly). Temporal is the only channel between the two.
+
+That does **not** mean every step is a user-visible job. Only one step
+is genuinely slow:
+
+| Kind | Steps | How app-api calls it | What the user sees |
+|---|---|---|---|
+| **Background job** | Embed a draft's chunks (one embeddings call per chunk — minutes for a large regulation); the existing Re-embed | `workflow.start()` → `jobId`, polled; progress via a workflow **query** | Progress bar (`embedded n / N`), navigable away |
+| **Awaited command** | Create draft (incl. new version with copied chunks + embeddings), extract text (upload / paste / URL), chunk preview, save chunk list, acknowledge injection flag, publish, discard draft, correct metadata, withdraw, retrieval preview | `workflow.execute()` — starts and awaits the result inside the HTTP request (timeout 30 s; URL fetch and large-PDF extraction are the only ones expected to take more than ~1 s) | A normal button click / spinner — no job id, no polling |
+
+Awaited commands are short Temporal workflows, one per command, defined
+in `app/platform/regulatory/commands.py`, each wrapping one activity
+that does its DB work in a single transaction. Failures surface as a
+normal HTTP error with the activity's message.
+
+**Table ownership additions** (extends spec 09's table):
+
+| Owned by NestJS (writes) | Owned by Python service (writes) |
+|---|---|
+| `regulatory_source_files` (raw upload / fetched bytes) | `regulatory_documents`, `regulatory_chunks` (as today) |
+| | `regulatory_document_changes`, `regulatory_chunking_profiles` |
+
+`regulatory_source_files` belongs to NestJS because an upload can be
+20 MB and Temporal payloads are capped around 2 MB. NestJS stores the
+bytes, then passes only the `file_id` to the extraction command, which
+reads them from Postgres. **URL fetch uses the same path**: fetching a
+URL is not an LLM call, so NestJS performs the one-off fetch itself
+(10 MB cap, 20 s timeout, http(s) only, private-address guard), stores
+the bytes in `regulatory_source_files` with `fetched_from_url` set, and
+calls the same extraction command. One extraction path for both.
+
+| Workflow | Kind | LLM? |
+|---|---|---|
+| `RegulatoryEmbedDraftWorkflow` | background job | yes — `get_embedding()` per chunk |
+| `RegulatoryReembedWorkflow` *(exists)* | background job | yes |
+| `RegulatoryExtractCommand` | awaited | no |
+| `RegulatoryChunkPreviewCommand` | awaited | no |
+| `RegulatoryDraftCommand` (create / save chunks / acknowledge / discard) | awaited | no |
+| `RegulatoryPublishCommand` (draft → `current`, prior `current` → `superseded`, one transaction) | awaited | no |
+| `RegulatoryMetadataCommand` (correct with reason / withdraw) | awaited | no |
+| `RegulatoryRetrievalPreviewCommand` | awaited | yes — one query embedding |
+| `RegulatoryDocumentIngestionWorkflow` *(exists)* | background job | yes — kept for `seed_regulatory_corpus.py`; new UI doesn't use it |
+
+**Awaited-command mechanics**
+- Each command = one workflow wrapping one activity; the activity does
+  its DB work in a single transaction.
+- Business-rule failures raise a non-retryable `ApplicationError` with
+  `type` in `Conflict | NotFound | Invalid`; app-api's shared
+  `RegulatoryKbCommands.run()` maps them to 409 / 404 / 400 (anything
+  else → 500 with the message). Transient errors retry (max 3).
+- Cheap validation (DTOs, role guard, existence checks) runs in app-api
+  before Temporal is touched.
+- Once-only commands use a deterministic workflow id — publish is
+  `kb-publish-{draftId}` — so a concurrent duplicate is rejected by
+  Temporal and returned as 409. Repeat-safe commands (save chunk list)
+  use a random id.
+- Large text never crosses Temporal: extracted text is stored on the
+  draft (`regulatory_documents.extracted_text`, agent-service-owned) and
+  chunk preview reads it from Postgres. Commands return small results
+  (counts, excerpt, warnings). The one payload that carries content —
+  saving the full chunk list — is capped at 1.5 MB with a clear 413.
+- DB constraints (partial unique indexes, immutability trigger) remain
+  the backstop even if a command has a bug.
+
+**Source-file mechanics (app-api)**
+- Upload: multipart ≤ 20 MB (413 above); extension *and* magic bytes
+  checked (`%PDF`, ZIP header for DOCX, valid UTF-8 for TXT); sha256;
+  stored in `regulatory_source_files.content` (bytea, excluded from
+  default SELECTs).
+- URL fetch: `http(s)` only; hostname resolved and rejected if
+  private / loopback / link-local; redirects followed manually (max 3),
+  each re-validated; streamed with a 10 MB cap; 20 s timeout; accepted
+  content types PDF / HTML / TXT / DOCX.
+- Discarding a draft deletes its source file after the discard command
+  succeeds; a source file of any published version is retained forever.
+
+**Future hook — Kafka (not now).** Commands stay on Temporal because they
+are request/response (the officer needs success or a 409 immediately);
+a message broker would need hand-built reply correlation, timeouts,
+retries and dedup that Temporal already provides. When Phase 2 adds
+Kafka for fan-out (spec 09), `RegulatoryPublishCommand` is the natural
+producer of a `RegulatoryDocumentPublished` event — e.g. Model
+Governance logging corpus changes, Typology Console flagging typologies
+whose cited regulation changed, a golden-dataset citation re-check.
+Emit it after the publish transaction commits; nothing waits on it.
+
+Extraction libraries (agent-service only): `pypdf` (PDF text layer —
+no OCR; a PDF with no extractable text fails with a clear reason),
+`python-docx`, and an HTML-to-text step for fetched pages. The URL
+fetch itself happens in NestJS (above), not here.
+
+Chunking lives in `app/platform/regulatory/chunking.py` as pure
+functions (text + `ChunkingConfig` → chunks), unit-tested with
+fixtures, no I/O — platform-level, so a second feature's corpus reuses
+it unchanged.
+
+### Retrieval contract changes
+`retrieve_regulatory_context(feature_code, query, top_k=5, typology_code=None)`:
+- filters `status = 'current' AND retrieval_enabled`
+- if `typology_code` is given, excludes documents whose
+  `related_typology_codes` is non-empty and doesn't contain it
+- orders by `similarity × retrieval_priority`
+- its signature gains **no** draft-inclusion option. The Document
+  view's "Test retrieval" uses a separate function,
+  `preview_regulatory_retrieval(feature_code, query, top_k, include_draft_document_id)`,
+  sharing the same scoring SQL but living in
+  `app/platform/regulatory/preview.py`. A unit test asserts no module
+  under `app/features/` imports `preview.py` — so a draft can never
+  reach an agent prompt by construction, not convention.
+
+`typology_code` is optional and defaulted, so the existing Pattern
+Matching call keeps working unchanged until it's updated to pass it.

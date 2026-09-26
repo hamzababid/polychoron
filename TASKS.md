@@ -576,6 +576,133 @@ status, never a direct HTTP call.
       both remain independently listed; non-mlro roles get 403 on
       every route
 
+### Regulatory Knowledge Base — full management (v2) — spec: `screens/11-regulatory-knowledge-base.md`
+Replaces the single-page KB screen above (inline row expansion, modal
+add/supersede, manual chunks only) with routed Library / Add wizard /
+Document view / Edit / Compare screens. Decisions made with the project
+owner 2026-09-26 (recorded as decision #4 in
+`phase-2-full-aml/api-contracts-phase2.md`): versioned drafts for
+content edits, in-place metadata corrections with a reason; all four
+ingestion sources; any MLRO publishes (no maker-checker); existing AML
+design system, no Claude Design export. Platform mechanism: Phase 2
+addendum in `specs/platform/10-regulatory-knowledge-base-spec.md`.
+Additive discipline as before — re-run all existing tests after each
+group; the two demo scenarios' citations must not regress.
+
+**Data layer**
+- [x] Update spec 09's table-ownership table (done in the spec
+      change) — confirm implementation matches it
+- [x] Migration `013_regulatory_kb_lifecycle.sql`: lifecycle/retrieval
+      columns on `regulatory_documents`; `ordinal`, `char_count`,
+      `injection_flags`, nullable `embedding` (drafts only) on
+      `regulatory_chunks`; new `regulatory_source_files`,
+      `regulatory_document_changes`, `regulatory_chunking_profiles`
+- [x] Backfill existing rows (`current`, own family, v1, `seed`;
+      ordinals by current order) — verify seeded corpus unchanged
+- [x] DB guarantees: one `current` + one `draft` per family (partial
+      unique indexes); trigger blocking chunk text/section edits and
+      deletes outside `draft`; non-empty `reason` CHECK on change log
+- [x] Test: direct SQL `UPDATE regulatory_chunks SET text=…` on a
+      current document fails
+
+**agent-service — pure functions first**
+- [x] `chunking.py`: `heading_pattern`, `paragraph`, `fixed_size` (+
+      overlap, min/max merge/split), section-reference modes, header/
+      footer stripping — pure, no I/O
+- [x] Unit tests on fixtures: an AMLA-style statute, an FMU red-flag
+      list, a no-heading wall of text; property: concatenated chunks
+      (minus overlap, stripping off) reproduce the input text
+- [x] `extraction.py`: PDF (`pypdf`, text layer only, clear failure on
+      no text), DOCX (`python-docx`), TXT, HTML-to-text — reads bytes
+      from `regulatory_source_files` by `file_id` (the URL fetch itself
+      is in app-api)
+- [x] Wire `detect_injection_patterns()` over preview chunks
+- [x] `retrieve_regulatory_context()`: filter `current` +
+      `retrieval_enabled`, optional `typology_code` restriction,
+      `similarity × retrieval_priority` — defaulted, existing call site
+      unchanged
+- [x] `preview.py` `preview_regulatory_retrieval()` (draft-inclusive)
+      + test asserting nothing under `app/features/` imports it
+- [x] Pass `typology_code` from the Pattern Matching node
+- [x] One background job: `RegulatoryEmbedDraftWorkflow` (embeds only
+      chunks lacking an embedding; progress via workflow query)
+- [x] Awaited commands (`commands.py`, one short workflow + activity
+      each, single DB transaction): Extract, ChunkPreview, Draft
+      (create incl. copy-with-embeddings / save chunks / acknowledge /
+      discard), Publish, Metadata (correct / withdraw), RetrievalPreview
+      — all registered on the worker
+- [x] Re-run `pytest` + golden dataset's two seed scenarios: citations
+      unchanged
+
+**app-api**
+- [x] Entities for new columns/tables; list endpoint → paginated +
+      filters + `statusCounts`
+- [x] Shared helper for awaited commands (`workflow.execute()`, 30 s
+      timeout, activity error → HTTP error) — used by every KB write
+      except embed/reembed
+- [x] `regulatory_source_files` writes (app-api-owned): multipart
+      upload ≤ 20 MB; one-off URL fetch (10 MB, 20 s, http(s) only,
+      private-address guard) stored the same way
+- [x] Read endpoints: document detail, ordered chunks with
+      `citedByCaseCount`, versions, changes, citations, compare,
+      source-file download, chunking profiles
+- [x] Draft endpoints: create (incl. new version with copied chunks +
+      embeddings), source file/text/url, patch, chunk-preview, put
+      chunks, acknowledge injection, embed, publish, discard
+- [x] Live endpoints: metadata correction (reason required, per-field
+      change log, rejects chunk fields), withdraw, retrieval preview
+- [x] `GET .../jobs/{jobId}` for embed/reembed with `{done, total}`
+      progress; keep `ingestion-jobs` alias
+- [x] e2e: full lifecycle (draft → embed → publish → new version →
+      publish supersedes → old still viewable); publish blocked with
+      unembedded chunks or unacknowledged injection flags; metadata
+      correction without reason → 400; no route mutates published
+      chunk text; discard only for drafts; one open draft per family
+      (409); every route 403 for non-MLRO roles
+
+**Frontend**
+- [x] Routes: `regulatory-kb`, `/new`, `/:documentId`,
+      `/:documentId/edit`, `/:documentId/compare/:otherId`; breadcrumbs
+      + page titles
+- [x] Library: filters in URL query, status counts, pagination, status
+      badges, row click navigates (no inline expansion)
+- [x] Add wizard shell: step rail, server-backed draft from step 3,
+      survives refresh, resumable from Library
+- [x] Step 1 Source (upload / paste / URL / manual) — immediate
+      extraction with spinner, then counts + excerpt
+- [x] Step 2 Metadata (issuer suggestions, typology multi-select, tags)
+- [x] Step 3 Chunking config + saved profiles + live regex match count
+- [x] Step 4 Preview & adjust: edit, merge, split at cursor, add,
+      delete, warnings, injection acknowledgement
+- [x] Step 5 Retrieval settings; Step 6 Review → Save draft / Publish
+      with confirmation + embedding progress bar (the only job UI)
+- [x] Document view: header actions by status, metadata panel, ordered
+      searchable chunks with cited-by counts, version timeline, change
+      log, cited-by cases, test retrieval
+- [x] Edit: "Correct metadata" tab (reason required) and "Edit content
+      → new version" tab; routes to existing draft if one is open
+- [x] Compare: metadata diff + chunk diff with word-level highlights
+- [x] Remove the old single-page screen's inline expansion + modals
+
+**Build notes (2026-09-26):** agent-service 83 passed / 4 live-LLM
+skipped; app-api e2e 63 passed / 2 skipped (19 new KB tests + the live
+embed test, run and passing locally with a real key); CI now starts the
+agent-service worker before app-api e2e. Deviations from the first spec
+draft, folded back into the specs: the wizard's server draft exists from
+step 1 (not step 3); the acting user always comes from the session, never
+the request body; a chunk list over 1.5 MB is a `TooLarge` → 413; the
+insert-into-non-draft trigger means the seed script and legacy one-shot
+ingestion now create a draft and publish it; Phase 1 chunk ordinals are
+backfilled by section number (`COLLATE "C"`).
+
+**Close-out**
+- [x] Update `docs/architecture/blueprint.html` (ERD + ingestion flow)
+- [x] Update `seed_regulatory_corpus.py` if needed so a fresh reset
+      still produces `current` documents with ordinals
+- [ ] Walk every acceptance-criteria box in
+      `screens/11-regulatory-knowledge-base.md`; demo scenarios
+      re-verified end to end
+
 ### MLOps tracing layer (platform-wide, not a screen)
 - [ ] OpenTelemetry spans for every agent node execution
       (`agent-service`)

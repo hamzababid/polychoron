@@ -133,6 +133,18 @@ jobs:
         working-directory: app-api
         run: npx vitest run
 
+      - name: Start agent-service worker (Regulatory KB commands)
+        # The Regulatory KB endpoints are awaited Temporal commands that
+        # run on the agent-service worker (spec 10, "Pipeline"), so
+        # regulatory-kb.e2e-spec.ts needs one polling. No OPENAI_API_KEY
+        # here: those tests never embed (they write a fixed vector into
+        # the DB); the live embed test stays behind RUN_LIVE_LLM_TESTS.
+        working-directory: agent-service
+        run: |
+          nohup python -m app.features.aml_detection.worker > worker.log 2>&1 &
+          for i in $(seq 1 30); do grep -q "worker polling" worker.log && break; sleep 1; done
+          cat worker.log
+
       - name: E2e tests
         working-directory: app-api
         # test/aml-disposition.e2e-spec.ts is gated behind

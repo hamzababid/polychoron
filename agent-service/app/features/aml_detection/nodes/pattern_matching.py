@@ -21,7 +21,10 @@ from typing import ClassVar
 from uuid import UUID
 
 from app.features.aml_detection.schemas import EvidenceBundle, TypologyMatch
-from app.features.aml_detection.typology_config_repository import active_catalog_as_prompt_block
+from app.features.aml_detection.typology_config_repository import (
+    active_catalog_as_prompt_block,
+    get_offered_typology_codes,
+)
 from app.platform.agent_node import PlatformAgentNode
 from app.platform.guardrails.citations import validate_citations
 from app.platform.guardrails.repository import write_guardrail_violation
@@ -92,6 +95,7 @@ class PatternMatchingNode(PlatformAgentNode[EvidenceBundle, TypologyMatch]):
                 feature_code=self.feature_code,
                 query=_evidence_summary_for_retrieval(input),
                 top_k=5,
+                typology_codes=get_offered_typology_codes(tenant_id, self.feature_code),
             )
         except Exception:
             logger.warning("regulatory knowledge base retrieval failed; proceeding without candidates", exc_info=True)

@@ -8,7 +8,11 @@ import { TypologyRulesConsoleScreen } from './typology-console/TypologyRulesCons
 import { Customer360Screen } from './customer-360/Customer360Screen';
 import { ModelGovernanceScreen } from './model-governance/ModelGovernanceScreen';
 import { ReportingScreen } from './reporting/ReportingScreen';
-import { RegulatoryKnowledgeBaseScreen } from './regulatory-kb/RegulatoryKnowledgeBaseScreen';
+import { RegulatoryKbLibraryScreen } from './regulatory-kb/RegulatoryKbLibraryScreen';
+import { RegulatoryKbWizardScreen } from './regulatory-kb/RegulatoryKbWizardScreen';
+import { RegulatoryKbDocumentScreen } from './regulatory-kb/RegulatoryKbDocumentScreen';
+import { RegulatoryKbEditScreen } from './regulatory-kb/RegulatoryKbEditScreen';
+import { RegulatoryKbCompareScreen } from './regulatory-kb/RegulatoryKbCompareScreen';
 import './aml-theme.css';
 
 /** The AML Detection feature's routed screens. Its own top-level
@@ -34,7 +38,11 @@ export function AmlDetectionRoutes() {
         <Route path="typologies" element={<TypologyRulesConsoleScreen />} />
         <Route path="governance" element={<ModelGovernanceScreen />} />
         <Route path="reports" element={<ReportingScreen />} />
-        <Route path="regulatory-kb" element={<RegulatoryKnowledgeBaseScreen />} />
+        <Route path="regulatory-kb" element={<RegulatoryKbLibraryScreen />} />
+        <Route path="regulatory-kb/new" element={<RegulatoryKbWizardScreen />} />
+        <Route path="regulatory-kb/:documentId" element={<RegulatoryKbDocumentScreen />} />
+        <Route path="regulatory-kb/:documentId/edit" element={<RegulatoryKbEditScreen />} />
+        <Route path="regulatory-kb/:documentId/compare/:otherId" element={<RegulatoryKbCompareScreen />} />
       </Routes>
     </div>
   );

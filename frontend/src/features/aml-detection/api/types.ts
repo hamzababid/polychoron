@@ -478,37 +478,194 @@ export interface KillSwitchScope {
   reactivatedBy: string | null;
 }
 
-// ADDITIVE (specs/platform/10-regulatory-knowledge-base-spec.md's
-// deferred management screen)
+// Regulatory Knowledge Base —
+// specs/suites/bfsi/features/aml-detection/screens/11-regulatory-knowledge-base.md,
+// api-contracts-phase2.md "Regulatory Knowledge Base".
 
 export type RegulatorySourceType = 'statute' | 'regulation' | 'circular' | 'guidance' | 'international';
+export type RegulatoryDocumentStatus = 'draft' | 'current' | 'superseded' | 'withdrawn';
+export type RegulatorySourceMethod = 'upload' | 'paste' | 'url' | 'manual';
+export type ChunkingStrategy = 'heading_pattern' | 'paragraph' | 'fixed_size';
+
+export interface ChunkingConfig {
+  strategy: ChunkingStrategy;
+  heading_pattern?: string | null;
+  target_chunk_chars: number;
+  max_chunk_chars: number;
+  overlap_chars: number;
+  min_chunk_chars: number;
+  section_reference_mode: 'from_heading' | 'template';
+  section_reference_template?: string | null;
+  strip_headers_footers: boolean;
+}
 
 export interface RegulatoryDocumentRow {
   documentId: string;
+  documentFamilyId: string;
+  versionNumber: number;
   title: string;
   sourceType: RegulatorySourceType;
   issuingAuthority: string;
   versionLabel: string;
   effectiveDate: string | null;
+  status: RegulatoryDocumentStatus;
   supersededBy: string | null;
   sourceUrl: string | null;
+  tags: string[];
   ingestedAt: string;
   ingestedBy: string;
   chunkCount: number;
+  embeddedCount: number;
+  lastChangedAt: string;
+}
+
+export interface RegulatoryDocumentPage {
+  items: RegulatoryDocumentRow[];
+  total: number;
+  page: number;
+  pageSize: number;
+  statusCounts: Record<RegulatoryDocumentStatus, number>;
+}
+
+export interface RegulatoryDocumentDetail extends RegulatoryDocumentRow {
+  jurisdiction: string;
+  language: string;
+  relatedTypologyCodes: string[];
+  retrievalEnabled: boolean;
+  retrievalPriority: number;
+  notes: string | null;
+  sourceMethod: string;
+  chunkingConfig: ChunkingConfig | null;
+  publishedBy: string | null;
+  publishedAt: string | null;
+  withdrawnBy: string | null;
+  withdrawnAt: string | null;
+  withdrawalReason: string | null;
+  hasExtractedText: boolean;
+  unacknowledgedInjectionCount: number;
+  sourceFile: {
+    fileId: string;
+    filename: string;
+    contentType: string;
+    sizeBytes: number;
+    sha256: string;
+    fetchedFromUrl: string | null;
+    uploadedAt: string;
+  } | null;
+  family: { currentDocumentId: string | null; draftDocumentId: string | null; versionCount: number };
 }
 
 export interface RegulatoryChunkRow {
   chunkId: string;
+  ordinal: number;
   sectionReference: string;
   text: string;
+  charCount: number;
+  embedded: boolean;
+  injectionFlags: string[];
+  injectionAcknowledged: boolean;
+  citedByCaseCount: number;
+  warnings: string[];
+}
+
+/** Chunk shape returned by the draft commands (snake_case — straight
+ * from agent-service's lifecycle.py). */
+export interface DraftChunk {
+  chunk_id: string;
+  ordinal: number;
+  section_reference: string;
+  text: string;
+  char_count: number;
+  embedded: boolean;
+  warnings: string[];
+  injection_flags: string[];
+  injection_acknowledged: boolean;
+}
+
+export interface DraftChunksResult {
+  chunks: DraftChunk[];
+  total_chars: number;
+  warning_count: number;
+  unacknowledged_injection_count: number;
+}
+
+export interface SourceSummary {
+  char_count: number;
+  page_count: number | null;
+  excerpt: string;
+}
+
+export interface RegulatoryDocumentChange {
+  changeId: string;
+  fieldName: string;
+  oldValue: string | null;
+  newValue: string | null;
+  changedBy: string;
+  changedAt: string;
+  reason: string;
+}
+
+export interface RegulatoryCitationRow {
+  caseId: string;
+  sourceAlertId: string;
+  customerId: string;
+  caseStatus: string;
+  typologyLabel: string;
+  matchedAt: string;
+  citedSections: string[];
+}
+
+export interface RegulatoryCompareResult {
+  older: { documentId: string; versionNumber: number; versionLabel: string; status: RegulatoryDocumentStatus; publishedAt: string | null };
+  newer: { documentId: string; versionNumber: number; versionLabel: string; status: RegulatoryDocumentStatus; publishedAt: string | null };
+  metadata: { field: string; older: unknown; newer: unknown }[];
+  chunks: { status: 'added' | 'removed' | 'changed' | 'unchanged'; sectionReference: string; olderText: string | null; newerText: string | null }[];
+}
+
+export interface ChunkingProfile {
+  profileId: string;
+  name: string;
+  config: ChunkingConfig;
+  createdBy: string;
+  createdAt: string;
+}
+
+export interface RetrievalPreviewResult {
+  chunk_id: string;
+  document_id: string;
+  document_title: string;
+  document_status: RegulatoryDocumentStatus;
+  section_reference: string;
+  text: string;
+  score: number;
 }
 
 export interface IngestionJobStatus {
   jobId: string;
+  kind: 'embed' | 'reembed' | 'ingest';
   status: 'running' | 'completed' | 'failed';
+  progress?: { done: number; total: number };
   documentId?: string;
   chunkCount?: number;
   error?: string;
+}
+
+/** Metadata fields a draft PATCH / live correction accepts (snake_case
+ * to match the API body). */
+export interface RegulatoryMetadataInput {
+  title?: string;
+  source_type?: RegulatorySourceType;
+  issuing_authority?: string;
+  version_label?: string;
+  effective_date?: string | null;
+  source_url?: string | null;
+  jurisdiction?: string;
+  language?: string;
+  tags?: string[];
+  related_typology_codes?: string[];
+  notes?: string | null;
+  retrieval_enabled?: boolean;
+  retrieval_priority?: number;
 }
 
 export interface Customer360Response {

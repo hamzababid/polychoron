@@ -14,12 +14,13 @@ from uuid import UUID
 
 from temporalio import activity
 
+from app.platform.regulatory import lifecycle
 from app.platform.regulatory.repository import (
     ingest_chunk,
     ingest_document,
     list_chunks,
+    publish_document,
     reembed_chunk,
-    supersede_document,
 )
 from app.platform.regulatory.types import RegulatorySourceType
 
@@ -34,6 +35,8 @@ def ingest_document_activity(payload: dict) -> str:
         version_label=payload["version_label"],
         ingested_by=payload["ingested_by"],
         source_url=payload.get("source_url"),
+        supersedes_document_id=UUID(payload["supersedes_document_id"]) if payload.get("supersedes_document_id") else None,
+        source_method="manual",
     )
     return str(document_id)
 
@@ -49,13 +52,18 @@ def ingest_chunk_activity(payload: dict) -> str:
 
 
 @activity.defn
-def supersede_document_activity(payload: dict) -> None:
-    supersede_document(old_document_id=UUID(payload["old_document_id"]), new_document_id=UUID(payload["new_document_id"]))
+def publish_document_activity(payload: dict) -> None:
+    publish_document(document_id=UUID(payload["document_id"]), published_by=payload["published_by"])
 
 
 @activity.defn
 def list_chunks_activity(document_id: str) -> list[dict]:
     return [{"chunk_id": str(c["chunk_id"]), "text": c["text"]} for c in list_chunks(UUID(document_id))]
+
+
+@activity.defn
+def list_unembedded_chunks_activity(document_id: str) -> list[dict]:
+    return lifecycle.list_unembedded_chunks(document_id)
 
 
 @activity.defn
@@ -66,7 +74,8 @@ def reembed_chunk_activity(payload: dict) -> None:
 ALL_REGULATORY_ACTIVITIES = [
     ingest_document_activity,
     ingest_chunk_activity,
-    supersede_document_activity,
+    publish_document_activity,
     list_chunks_activity,
+    list_unembedded_chunks_activity,
     reembed_chunk_activity,
 ]

@@ -27,7 +27,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from app.platform.regulatory.repository import ingest_chunk, ingest_document
+from app.platform.regulatory.repository import ingest_chunk, ingest_document, publish_document
 from app.platform.regulatory.types import RegulatorySourceType
 
 FEATURE_CODE = "aml_detection"
@@ -95,6 +95,7 @@ def main() -> None:
     )
     for section_reference, chunk_text in AMLA_CHUNKS:
         ingest_chunk(document_id=amla_id, section_reference=section_reference, chunk_text=chunk_text)
+    publish_document(document_id=amla_id, published_by=INGESTED_BY)
     print(f"Ingested AMLA 2010 ({len(AMLA_CHUNKS)} chunks)")
 
     fmu_id = ingest_document(
@@ -107,6 +108,7 @@ def main() -> None:
     )
     for section_reference, chunk_text in FMU_RED_FLAG_CHUNKS:
         ingest_chunk(document_id=fmu_id, section_reference=section_reference, chunk_text=chunk_text)
+    publish_document(document_id=fmu_id, published_by=INGESTED_BY)
     print(f"Ingested FMU Red Flags for Banks ({len(FMU_RED_FLAG_CHUNKS)} chunks)")
 
 

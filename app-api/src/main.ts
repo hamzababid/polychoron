@@ -1,14 +1,19 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
+import type { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { WinstonModule } from 'nest-winston';
 import { AppModule } from './app.module.js';
 import { createWinstonLogger } from './common/logging/winston.config.js';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     logger: WinstonModule.createLogger({ instance: createWinstonLogger() }),
   });
+  // Regulatory KB: a pasted regulation or a full chunk list can exceed
+  // Express's 100 kb default. The endpoints themselves cap content at
+  // 1.5 MB (it has to fit a Temporal payload); 2 mb leaves JSON overhead.
+  app.useBodyParser('json', { limit: '2mb' });
   app.setGlobalPrefix('api/v1');
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
   app.enableCors();
