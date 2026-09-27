@@ -10,6 +10,7 @@ import { TypologyStatusBadge } from './TypologyStatusBadge';
 import { HistoryTile, RegressionSummary, VersionContent, VersionDiff, VersionTile } from './typologyShared';
 import { errorText, formatDate, useCanWriteTypologies } from './typologyUtils';
 import './typology-console.css';
+import { Loader } from '../../../shell/Loader';
 
 /** Screen 3 — Typology view (screens/06-typology-rules-console.md).
  * Read-only: what is live, what is in progress, and how it got here.
@@ -49,7 +50,7 @@ export function TypologyViewScreen() {
   useEffect(load, [load]);
 
   if (error) return <div className="aml-status aml-status--error">{error}</div>;
-  if (!detail || !history) return <div className="aml-status">Loading typology…</div>;
+  if (!detail || !history) return <Loader label="Loading typology…" />;
 
   const { live, draft } = detail;
   const title = live?.typologyLabel ?? draft?.typologyLabel ?? code;

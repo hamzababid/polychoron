@@ -5,11 +5,13 @@ import { usePlatformRegistry } from './shell/usePlatformRegistry';
 import { AmlDetectionRoutes } from './features/aml-detection/AmlDetectionRoutes';
 import { DemoLoginScreen } from './auth/DemoLoginScreen';
 import { RequireAuth } from './auth/RequireAuth';
+import { ActivityBar } from './shell/ActivityBar';
+import { Loader } from './shell/Loader';
 
 function RootRedirect() {
   const { suites, loading, error } = usePlatformRegistry();
 
-  if (loading) return <div className="shell-status">Loading Polychoron AI…</div>;
+  if (loading) return <Loader page label="Loading Polychoron AI…" />;
   if (error) return <div className="shell-status shell-status--error">{error}</div>;
 
   const firstSuite = suites[0];
@@ -23,27 +25,30 @@ function RootRedirect() {
 
 export default function App() {
   return (
-    <Routes>
-      <Route path="/login" element={<DemoLoginScreen />} />
-      <Route
-        path="/"
-        element={
-          <RequireAuth>
-            <RootRedirect />
-          </RequireAuth>
-        }
-      />
-      <Route
-        path="/:suiteCode/:featureCode/*"
-        element={
-          <RequireAuth>
-            <NavigationShell />
-          </RequireAuth>
-        }
-      >
-        <Route path="*" element={<FeatureRouter />} />
-      </Route>
-    </Routes>
+    <>
+      <ActivityBar />
+      <Routes>
+        <Route path="/login" element={<DemoLoginScreen />} />
+        <Route
+          path="/"
+          element={
+            <RequireAuth>
+              <RootRedirect />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/:suiteCode/:featureCode/*"
+          element={
+            <RequireAuth>
+              <NavigationShell />
+            </RequireAuth>
+          }
+        >
+          <Route path="*" element={<FeatureRouter />} />
+        </Route>
+      </Routes>
+    </>
   );
 }
 

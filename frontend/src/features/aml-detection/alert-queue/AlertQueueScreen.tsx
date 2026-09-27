@@ -7,6 +7,7 @@ import { Pagination } from '../shared/Pagination';
 import { useFeatureBasePath } from '../useFeatureBasePath';
 import { useToast } from '../../../shell/ToastProvider';
 import './alert-queue.css';
+import { Loader } from '../../../shell/Loader';
 
 const DEFAULT_PAGE_SIZE = 10;
 const PAGE_SIZE_OPTIONS = [10, 25, 50];
@@ -192,7 +193,7 @@ export function AlertQueueScreen() {
   useEffect(() => {
     const id = setInterval(() => {
       if (document.visibilityState !== 'visible' || !loadedAt.current) return;
-      listAlerts({ ...buildQuery(), receivedAfter: loadedAt.current, page: 1, pageSize: 1 })
+      listAlerts({ ...buildQuery(), receivedAfter: loadedAt.current, page: 1, pageSize: 1 }, { background: true })
         .then((res) => setNewCount(res.total))
         .catch(() => undefined);
     }, NEW_ALERT_POLL_MS);
@@ -448,7 +449,7 @@ export function AlertQueueScreen() {
       </div>
 
       {rows === null ? (
-        <div className="aml-status">Loading alert queue…</div>
+        <Loader label="Loading alert queue…" />
       ) : rows.length === 0 ? (
         <div className="tile" style={{ margin: 18, padding: 24, textAlign: 'center' }}>
           No alerts match these filters.

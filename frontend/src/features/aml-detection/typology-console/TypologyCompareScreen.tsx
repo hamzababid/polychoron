@@ -7,6 +7,7 @@ import { Tile } from '../regulatory-kb/kbShared';
 import { VersionContent, VersionDiff } from './typologyShared';
 import { errorText } from './typologyUtils';
 import './typology-console.css';
+import { Loader } from '../../../shell/Loader';
 
 /** Screen 5 — Version compare (screens/06-typology-rules-console.md).
  * Any two versions of one typology, older on the left. */
@@ -24,7 +25,7 @@ export function TypologyCompareScreen() {
   }, [code]);
 
   if (error) return <div className="aml-status aml-status--error">{error}</div>;
-  if (!history) return <div className="aml-status">Loading versions…</div>;
+  if (!history) return <Loader label="Loading versions…" />;
 
   const byVersion = new Map(history.versions.map((v) => [v.version, v]));
   const a = byVersion.get(Number(older));

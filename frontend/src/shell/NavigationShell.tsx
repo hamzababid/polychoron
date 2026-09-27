@@ -5,6 +5,7 @@ import { FEATURE_NAV_ITEMS } from './featureNav';
 import { TopHeader } from './TopHeader';
 import { PageHeader } from './PageHeader';
 import { useAuth } from '../auth/AuthContext';
+import { Loader } from './Loader';
 import './shell.css';
 
 const COLLAPSE_STORAGE_KEY = 'polychoron.sidenavCollapsed';
@@ -47,7 +48,7 @@ export function NavigationShell() {
   };
 
   if (loading) {
-    return <div className="shell-status">Loading Polychoron AI…</div>;
+    return <Loader page label="Loading Polychoron AI…" />;
   }
   if (error) {
     return <div className="shell-status shell-status--error">Could not load the platform registry: {error}</div>;

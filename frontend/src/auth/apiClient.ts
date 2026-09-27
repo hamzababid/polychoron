@@ -41,10 +41,46 @@ export function getSessionId(): string | null {
   }
 }
 
+// — Request activity (drives the shell's ActivityBar) —
+// A count of foreground requests in flight, so every screen and every
+// action gets the same "something is happening" signal without each
+// one wiring its own. Background polling (job progress, new-alert
+// checks) opts out, or the bar would flash every few seconds.
+let inFlight = 0;
+const activityListeners = new Set<(active: boolean) => void>();
+
+function setInFlight(delta: number) {
+  const wasActive = inFlight > 0;
+  inFlight = Math.max(0, inFlight + delta);
+  if (wasActive !== inFlight > 0) activityListeners.forEach((l) => l(inFlight > 0));
+}
+
+export function subscribeToRequestActivity(listener: (active: boolean) => void): () => void {
+  activityListeners.add(listener);
+  listener(inFlight > 0);
+  return () => {
+    activityListeners.delete(listener);
+  };
+}
+
+export interface ApiFetchOptions {
+  // Polling that shouldn't show the global activity bar.
+  background?: boolean;
+}
+
 /** Attaches the demo session's x-session-id header (see AuthContext) to
  * every screen-facing API call — every AML screen requires a logged-in
  * demo user (specs/suites/bfsi/features/aml-detection/screens/*.md). */
-export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
+export async function apiFetch<T>(path: string, init?: RequestInit, options: ApiFetchOptions = {}): Promise<T> {
+  if (!options.background) setInFlight(1);
+  try {
+    return await request<T>(path, init);
+  } finally {
+    if (!options.background) setInFlight(-1);
+  }
+}
+
+async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const sessionId = getSessionId();
   const headers = new Headers(init?.headers);
   headers.set('Content-Type', 'application/json');

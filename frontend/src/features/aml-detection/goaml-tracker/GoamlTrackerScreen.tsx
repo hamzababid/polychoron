@@ -9,6 +9,7 @@ import { ApiError } from '../../../auth/apiClient';
 import { useToast } from '../../../shell/ToastProvider';
 import { useFeatureBasePath } from '../useFeatureBasePath';
 import './goaml-tracker.css';
+import { Loader } from '../../../shell/Loader';
 
 const STEPS = ['submitted', 'acknowledged', 'feedback_received'] as const;
 const STEP_LABELS = ['Submitted', 'Acknowledged by FMU', 'Feedback received'];
@@ -183,7 +184,7 @@ export function GoamlTrackerScreen() {
           </div>
           <div className="goaml-tracker__listScroll">
             {filings === null ? (
-              <div className="aml-status">Loading…</div>
+              <Loader label="Loading…" />
             ) : filings.length === 0 ? (
               <div className="aml-status">No filings submitted yet.</div>
             ) : (

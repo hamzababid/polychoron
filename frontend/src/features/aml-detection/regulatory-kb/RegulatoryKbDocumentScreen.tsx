@@ -29,6 +29,7 @@ import { useFeatureBasePath } from '../useFeatureBasePath';
 import { ConfirmDialog, JobProgress, StatusBadge, Tile } from './kbShared';
 import { SOURCE_TYPES, WARNING_LABEL, errorMessage, formatBytes, formatDate, useEmbedJob } from './kbUtils';
 import './regulatory-kb.css';
+import { Loader } from '../../../shell/Loader';
 
 type Dialog = null | 'withdraw' | 'discard' | 'publish';
 
@@ -115,7 +116,7 @@ export function RegulatoryKbDocumentScreen() {
   const changePaging = usePagedList(changes, { pageSizeOptions: [5, 10, 25], initialPageSize: 5, resetKey: documentId });
 
   if (error) return <div className="aml-status aml-status--error">{error}</div>;
-  if (!doc) return <div className="aml-status">Loading document…</div>;
+  if (!doc) return <Loader label="Loading document…" />;
 
   const isDraft = doc.status === 'draft';
   const isCurrent = doc.status === 'current';
@@ -277,7 +278,7 @@ export function RegulatoryKbDocumentScreen() {
               actions={<input className="input kb-chunk-search" placeholder="Search within this document…" value={chunkQuery} onChange={(e) => setChunkQuery(e.target.value)} />}
             >
               {chunks === null ? (
-                <div className="aml-status">Loading chunks…</div>
+                <Loader label="Loading chunks…" />
               ) : chunks.length === 0 ? (
                 <div className="kb-muted">{chunkQuery ? 'No chunks match.' : 'No chunks yet.'}</div>
               ) : (
@@ -348,7 +349,7 @@ export function RegulatoryKbDocumentScreen() {
 
             <Tile title={`Cited by ${citations?.total ?? '…'} case${citations?.total === 1 ? '' : 's'}`}>
               {!citations ? (
-                <div className="aml-status">Loading…</div>
+                <Loader label="Loading…" />
               ) : citations.total === 0 ? (
                 <div className="kb-muted">No cases cite this document yet.</div>
               ) : (

@@ -7,6 +7,7 @@ import { useFeatureBasePath } from '../useFeatureBasePath';
 import { MetadataForm, RetrievalForm, StatusBadge, Tile } from './kbShared';
 import { errorMessage, metadataFromDocument, metadataToInput, type MetadataValues, type RetrievalValues } from './kbUtils';
 import './regulatory-kb.css';
+import { Loader } from '../../../shell/Loader';
 
 type Tab = 'metadata' | 'content';
 
@@ -46,7 +47,7 @@ export function RegulatoryKbEditScreen() {
   }, [documentId, base, navigate]);
 
   if (error) return <div className="aml-status aml-status--error">{error}</div>;
-  if (!doc || !metadata || !retrieval) return <div className="aml-status">Loading document…</div>;
+  if (!doc || !metadata || !retrieval) return <Loader label="Loading document…" />;
 
   const original = { ...metadataToInput(metadataFromDocument(doc)), retrieval_enabled: doc.retrievalEnabled, retrieval_priority: doc.retrievalPriority, related_typology_codes: doc.relatedTypologyCodes };
   const edited: RegulatoryMetadataInput = { ...metadataToInput(metadata), ...retrieval };

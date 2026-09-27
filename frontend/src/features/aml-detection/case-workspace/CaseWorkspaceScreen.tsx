@@ -9,6 +9,7 @@ import { useAuth } from '../../../auth/AuthContext';
 import { useFeatureBasePath } from '../useFeatureBasePath';
 import { useToast } from '../../../shell/ToastProvider';
 import './case-workspace.css';
+import { Loader } from '../../../shell/Loader';
 
 const RECOMMENDATION_TO_DISPOSITION: Record<AgentRecommendation, DispositionType> = {
   clear: 'clear',
@@ -81,7 +82,7 @@ export function CaseWorkspaceScreen() {
   const logPaging = usePagedList(activityLog, { resetKey: caseId });
 
   if (error) return <div className="aml-status aml-status--error">Could not load case: {error}</div>;
-  if (!caseDetail) return <div className="aml-status">Loading case…</div>;
+  if (!caseDetail) return <Loader label="Loading case…" />;
 
   const canFile = session ? FILING_ROLES.some((r) => session.user.roleCodes.includes(r)) : false;
   const isDisposed = caseDetail.disposition !== null;
@@ -313,7 +314,9 @@ export function CaseWorkspaceScreen() {
               </>
             ) : (
               caseDetail.agentState === 'processing' && (
-                <div className="tile aml-status">Evidence is still being assembled by the agent chain…</div>
+                <div className="tile">
+                  <Loader label="Evidence is still being assembled by the agent chain…" />
+                </div>
               )
             )}
           </div>

@@ -9,6 +9,7 @@ import { StatusBadge, Tile } from './kbShared';
 import { errorMessage, formatDate } from './kbUtils';
 import { wordDiff } from './wordDiff';
 import './regulatory-kb.css';
+import { Loader } from '../../../shell/Loader';
 
 const STATUS_ORDER = { changed: 0, added: 1, removed: 2, unchanged: 3 } as const;
 
@@ -36,7 +37,7 @@ export function RegulatoryKbCompareScreen() {
   const paging = usePagedList(shown, { resetKey: String(showUnchanged) });
 
   if (error) return <div className="aml-status aml-status--error">{error}</div>;
-  if (!data) return <div className="aml-status">Comparing versions…</div>;
+  if (!data) return <Loader label="Comparing versions…" />;
 
   const counts = data.chunks.reduce<Record<string, number>>((acc, c) => ({ ...acc, [c.status]: (acc[c.status] ?? 0) + 1 }), {});
 

@@ -5,6 +5,7 @@ import { Pagination } from '../shared/Pagination';
 import { useAuth } from '../../../auth/AuthContext';
 import { useToast } from '../../../shell/ToastProvider';
 import './reporting.css';
+import { Loader } from '../../../shell/Loader';
 
 type PeriodPreset = 'month' | 'quarter' | 'custom';
 
@@ -117,7 +118,7 @@ export function ReportingScreen() {
   };
 
   if (error) return <div className="aml-status aml-status--error">Could not load reporting data: {error}</div>;
-  if (!summary) return <div className="aml-status">Loading reporting &amp; MI…</div>;
+  if (!summary) return <Loader label="Loading reporting & MI…" />;
 
   const delta = (cur: number | null, prev: number | null): string | null => {
     if (!comparePrevious || cur === null || prev === null) return null;
