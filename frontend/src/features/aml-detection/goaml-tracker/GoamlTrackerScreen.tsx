@@ -37,7 +37,7 @@ export function GoamlTrackerScreen() {
   // server too, across every filing rather than the page on screen.
   const [counts, setCounts] = useState<FilingPortfolioCounts | null>(null);
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(20);
+  const [pageSize, setPageSize] = useState(10);
   const [total, setTotal] = useState(0);
   const [loadError, setLoadError] = useState<ApiError | Error | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);

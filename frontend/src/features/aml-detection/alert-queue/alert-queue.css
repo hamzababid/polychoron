@@ -23,7 +23,7 @@
 
 .qrow {
   display: grid;
-  grid-template-columns: 124px 96px 190px minmax(180px, 1fr) 140px 116px 130px 150px 128px;
+  grid-template-columns: 118px 84px 168px minmax(160px, 1fr) 128px 108px 118px 140px 116px;
   align-items: center;
   border-bottom: 1px solid var(--color-divider);
   cursor: pointer;
@@ -160,7 +160,7 @@
 /* The grid keeps its columns legible on a narrow window by scrolling
    sideways inside the list rather than squeezing every cell. */
 .alert-queue__grid {
-  min-width: 1180px;
+  min-width: 1140px;
 }
 
 .alert-queue__views {
