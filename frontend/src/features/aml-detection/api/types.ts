@@ -250,12 +250,25 @@ export interface DashboardTrends {
   mostAgingAlerts: AgingAlertSummary[];
 }
 
+export type TypologyStatus = 'live' | 'retired' | 'not_live';
+export type TypologyVersionStatus = 'draft' | 'promoted' | 'superseded' | 'discarded';
+
+export interface TypologyDraftSummary {
+  version: number;
+  typologyLabel: string;
+  changedBy: string;
+  changedAt: string;
+}
+
 export interface TypologyRow {
   typologyCode: string;
+  // The live label, or the draft's for a typology never promoted.
   typologyLabel: string;
-  ruleLogicDescription: string;
-  active: boolean;
-  productionVersion: number;
+  ruleLogicDescription: string | null;
+  status: TypologyStatus;
+  productionVersion: number | null;
+  killSwitched: boolean;
+  draft: TypologyDraftSummary | null;
   alertVolume30d: number;
   strConversionRate: number;
   falsePositiveRate: number;
@@ -275,15 +288,66 @@ export interface TypologyConsoleOverview {
   lastPromotion: LastPromotion | null;
 }
 
-export interface TypologyConfigVersion {
-  versionId: string;
-  typologyCode: string;
+export interface TypologyVersion {
   version: number;
+  status: TypologyVersionStatus;
+  typologyLabel: string;
   ruleLogicDescription: string;
   active: boolean;
   changedBy: string;
   changedAt: string;
   changeReason: string;
+  candidateKey: string;
+  discardedBy: string | null;
+  discardedAt: string | null;
+  discardReason: string | null;
+}
+
+export type RegressionRunStatus = 'queued' | 'running' | 'passed' | 'failed' | 'needs_review';
+
+export interface RegressionCaseResult {
+  scenarioName: string;
+  expectedTypology: string | null;
+  actualTypology: string | null;
+  expectedRecommendation: string | null;
+  actualRecommendation: string | null;
+  actualConfidence: number | null;
+  matchedExpected: boolean;
+  notes: string | null;
+}
+
+export interface RegressionRun {
+  runId: string;
+  status: RegressionRunStatus;
+  candidateKey: string | null;
+  done: number;
+  total: number | null;
+  passed: number;
+  failed: number;
+  triggeredBy: string | null;
+  startedAt: string | null;
+  completedAt: string | null;
+  stale?: boolean;
+  results?: RegressionCaseResult[];
+}
+
+export interface TypologyDetail {
+  typologyCode: string;
+  status: TypologyStatus;
+  productionVersion: number | null;
+  createdBy: string;
+  createdAt: string;
+  killSwitched: boolean;
+  live: TypologyVersion | null;
+  draft: TypologyVersion | null;
+  regression: RegressionRun | null;
+  latestBacktest: BacktestJob | null;
+  goldenCoverage: number;
+}
+
+export interface TypologyHistory {
+  versions: TypologyVersion[];
+  promotions: TypologyPromotion[];
 }
 
 export type BacktestJobStatus = 'queued' | 'running' | 'complete' | 'failed';
@@ -307,6 +371,10 @@ export interface TypologyPromotion {
   typologyCode: string;
   promotedVersion: number;
   backtestJobId: string | null;
+  evalRunId: string | null;
+  reason: string;
+  // Recorded before the v2 lifecycle — its reason wasn't stored.
+  preV2: boolean;
   promotedBy: string;
   promotedAt: string;
 }

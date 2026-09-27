@@ -22,8 +22,9 @@ from uuid import UUID
 
 from app.features.aml_detection.schemas import EvidenceBundle, TypologyMatch
 from app.features.aml_detection.typology_config_repository import (
+    Catalog,
     active_catalog_as_prompt_block,
-    get_offered_typology_codes,
+    offered_catalog,
 )
 from app.platform.agent_node import PlatformAgentNode
 from app.platform.guardrails.citations import validate_citations
@@ -78,6 +79,13 @@ class PatternMatchingNode(PlatformAgentNode[EvidenceBundle, TypologyMatch]):
     output_schema = TypologyMatch
     tool_allowlist: ClassVar[list[str]] = ["aml_typology_configs", "regulatory_knowledge_base"]
 
+    def __init__(self, *, catalog_override: Catalog | None = None) -> None:
+        # Production never passes this: the node reads the promoted
+        # catalog. Only the Typology Console's golden-dataset regression
+        # (typology_regression.py) evaluates a candidate catalog through
+        # the real node — see test_typology_candidate_isolation.py.
+        self._catalog_override = catalog_override
+
     def _invoke(
         self, input: EvidenceBundle, tenant_id: str, external_case_ref: str | UUID, client: InferenceClient
     ) -> tuple[dict, list[str]]:
@@ -89,19 +97,20 @@ class PatternMatchingNode(PlatformAgentNode[EvidenceBundle, TypologyMatch]):
         # cited_chunk_ids' fabrication check meaningless, since whatever
         # was retrieved was attached verbatim rather than checked
         # against what the model claims to have used.
+        catalog = offered_catalog(tenant_id, self.feature_code, self._catalog_override)
         candidate_citations = []
         try:
             candidate_citations = retrieve_regulatory_context(
                 feature_code=self.feature_code,
                 query=_evidence_summary_for_retrieval(input),
                 top_k=5,
-                typology_codes=get_offered_typology_codes(tenant_id, self.feature_code),
+                typology_codes=[t["typology_code"] for t in catalog],
             )
         except Exception:
             logger.warning("regulatory knowledge base retrieval failed; proceeding without candidates", exc_info=True)
 
         prompt = (
-            f"{active_catalog_as_prompt_block(tenant_id, self.feature_code)}\n\n"
+            f"{active_catalog_as_prompt_block(tenant_id, self.feature_code, self._catalog_override)}\n\n"
             f"{sanitize_evidence_for_prompt(input)}\n\n"
             f"{_candidate_citations_block(candidate_citations)}\n\n"
             "Respond with only the JSON object described in the system prompt."
@@ -112,6 +121,8 @@ class PatternMatchingNode(PlatformAgentNode[EvidenceBundle, TypologyMatch]):
 
         parsed["case_id"] = str(external_case_ref)
         parsed["agent_version"] = AGENT_VERSION
+        versions = {t["typology_code"]: t["version"] for t in catalog}
+        parsed["typology_version"] = versions.get(parsed.get("typology_code"))
 
         data_sources_queried = ["aml_typology_configs"]
         claimed_chunk_ids = parsed.pop("cited_chunk_ids", []) or []

@@ -43,10 +43,12 @@ import type {
   SamplingOverview,
   SamplingReviewRow,
   StrFieldsDraft,
-  TypologyConfigVersion,
   TypologyConsoleOverview,
   TypologyPromotion,
-  TypologyRow,
+  TypologyDetail,
+  TypologyHistory,
+  TypologyVersion,
+  RegressionRun,
 } from './types';
 
 const BASE = '/features/aml_detection';
@@ -152,27 +154,55 @@ export function listTypologies() {
   return apiFetch<TypologyConsoleOverview>(`${BASE}/typologies`);
 }
 
-export function getTypologyHistory(code: string) {
-  return apiFetch<TypologyConfigVersion[]>(`${BASE}/typologies/${code}/history`);
+const TYPOLOGIES = `${BASE}/typologies`;
+
+export function getTypology(code: string) {
+  return apiFetch<TypologyDetail>(`${TYPOLOGIES}/${code}`);
 }
 
-export function updateTypology(
+export function getTypologyHistory(code: string) {
+  return apiFetch<TypologyHistory>(`${TYPOLOGIES}/${code}/history`);
+}
+
+// No *_by fields anywhere below: app-api records the session user.
+
+export function createTypology(body: { typology_code: string; typology_label: string; rule_logic_description: string; reason: string }) {
+  return apiFetch<TypologyDetail>(TYPOLOGIES, { method: 'POST', body: JSON.stringify(body) });
+}
+
+export function openTypologyDraft(code: string) {
+  return apiFetch<TypologyVersion>(`${TYPOLOGIES}/${code}/draft`, { method: 'POST' });
+}
+
+export function updateTypologyDraft(
   code: string,
-  body: { rule_logic_description?: string; active?: boolean; change_reason: string; changed_by: string },
+  body: { typology_label?: string; rule_logic_description?: string; active?: boolean; change_reason?: string },
 ) {
-  return apiFetch<TypologyRow>(`${BASE}/typologies/${code}`, { method: 'POST', body: JSON.stringify(body) });
+  return apiFetch<TypologyVersion>(`${TYPOLOGIES}/${code}/draft`, { method: 'PATCH', body: JSON.stringify(body) });
+}
+
+export function discardTypologyDraft(code: string, reason: string) {
+  return apiFetch<TypologyVersion>(`${TYPOLOGIES}/${code}/draft`, { method: 'DELETE', body: JSON.stringify({ reason }) });
+}
+
+export function startTypologyRegression(code: string) {
+  return apiFetch<{ runId: string; candidateKey: string }>(`${TYPOLOGIES}/${code}/draft/regression`, { method: 'POST' });
+}
+
+export function getRegressionRun(runId: string) {
+  return apiFetch<RegressionRun>(`${TYPOLOGIES}/regression-runs/${runId}`);
 }
 
 export function startTypologyBacktest(code: string) {
-  return apiFetch<BacktestJob>(`${BASE}/typologies/${code}/backtest`, { method: 'POST' });
+  return apiFetch<BacktestJob>(`${TYPOLOGIES}/${code}/backtest`, { method: 'POST' });
 }
 
 export function getBacktestJob(jobId: string) {
-  return apiFetch<BacktestJob>(`${BASE}/typologies/backtest-jobs/${jobId}`);
+  return apiFetch<BacktestJob>(`${TYPOLOGIES}/backtest-jobs/${jobId}`);
 }
 
-export function promoteTypology(code: string, body: { backtest_job_id?: string; reason: string; promoted_by: string }) {
-  return apiFetch<TypologyPromotion>(`${BASE}/typologies/${code}/promote`, { method: 'POST', body: JSON.stringify(body) });
+export function promoteTypology(code: string, body: { backtest_job_id?: string; reason: string }) {
+  return apiFetch<TypologyPromotion>(`${TYPOLOGIES}/${code}/promote`, { method: 'POST', body: JSON.stringify(body) });
 }
 
 export function getCustomer360(customerId: string) {

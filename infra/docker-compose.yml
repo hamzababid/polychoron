@@ -122,6 +122,26 @@ services:
     # fine here, this container only runs once per `docker compose up`.
     command: ["sh", "-c", "npm run build && npm run seed:demo-users && npm run seed:typology-configs"]
 
+  # The golden dataset gates every Typology Console promotion
+  # (constitution rule 15; screens/06-typology-rules-console.md) — a
+  # regression over zero cases fails, so without this a fresh stack
+  # could never promote a typology. After app-api-seed: the cases are
+  # created_by a seeded demo user. Idempotent.
+  seed-golden-dataset:
+    build:
+      context: ../agent-service
+    container_name: polychoron-seed-golden-dataset
+    restart: "no"
+    depends_on:
+      app-api-seed:
+        condition: service_completed_successfully
+    environment:
+      DATABASE_URL: postgresql://polychoron:polychoron_dev_only@postgres:5432/polychoron
+    volumes:
+      - ../agent-service:/app
+    working_dir: /app
+    command: ["python", "scripts/seed_golden_dataset.py"]
+
   # ══════════════════════════════════════════════════════════════
   # Long-running application services — one container each, hot
   # reload via bind mount, node_modules/.venv isolated per-container.

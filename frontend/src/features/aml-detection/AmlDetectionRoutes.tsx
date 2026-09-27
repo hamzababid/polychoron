@@ -4,7 +4,11 @@ import { AlertQueueScreen } from './alert-queue/AlertQueueScreen';
 import { CaseWorkspaceScreen } from './case-workspace/CaseWorkspaceScreen';
 import { FilingConsoleScreen } from './filing-console/FilingConsoleScreen';
 import { GoamlTrackerScreen } from './goaml-tracker/GoamlTrackerScreen';
-import { TypologyRulesConsoleScreen } from './typology-console/TypologyRulesConsoleScreen';
+import { TypologyLibraryScreen } from './typology-console/TypologyLibraryScreen';
+import { TypologyNewScreen } from './typology-console/TypologyNewScreen';
+import { TypologyViewScreen } from './typology-console/TypologyViewScreen';
+import { TypologyEditScreen } from './typology-console/TypologyEditScreen';
+import { TypologyCompareScreen } from './typology-console/TypologyCompareScreen';
 import { Customer360Screen } from './customer-360/Customer360Screen';
 import { ModelGovernanceScreen } from './model-governance/ModelGovernanceScreen';
 import { ReportingScreen } from './reporting/ReportingScreen';
@@ -35,7 +39,11 @@ export function AmlDetectionRoutes() {
         <Route path="cases/:caseId/filing" element={<FilingConsoleScreen />} />
         <Route path="customers/:customerId" element={<Customer360Screen />} />
         <Route path="filings" element={<GoamlTrackerScreen />} />
-        <Route path="typologies" element={<TypologyRulesConsoleScreen />} />
+        <Route path="typologies" element={<TypologyLibraryScreen />} />
+        <Route path="typologies/new" element={<TypologyNewScreen />} />
+        <Route path="typologies/:code" element={<TypologyViewScreen />} />
+        <Route path="typologies/:code/edit" element={<TypologyEditScreen />} />
+        <Route path="typologies/:code/compare/:older/:newer" element={<TypologyCompareScreen />} />
         <Route path="governance" element={<ModelGovernanceScreen />} />
         <Route path="reports" element={<ReportingScreen />} />
         <Route path="regulatory-kb" element={<RegulatoryKbLibraryScreen />} />

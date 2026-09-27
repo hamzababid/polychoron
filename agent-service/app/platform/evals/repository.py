@@ -86,17 +86,24 @@ def list_golden_dataset_cases(feature_code: str, *, tags: list[str] | None = Non
     return cases
 
 
-def create_eval_run(*, feature_code: str, agent_version_under_test: str, triggered_by: str, total_cases: int) -> UUID:
+def create_eval_run(
+    *, feature_code: str, agent_version_under_test: str, triggered_by: str, total_cases: int, run_id: UUID | None = None
+) -> UUID:
+    """run_id lets a caller that started the run elsewhere (app-api
+    starting a Typology Console regression workflow) know its id up
+    front; omitted, the database generates one."""
     with get_connection() as conn:
         result = conn.execute(
             text(
                 """
-                INSERT INTO platform_eval_runs (feature_code, agent_version_under_test, triggered_by, total_cases, status)
-                VALUES (:feature_code, :agent_version_under_test, :triggered_by, :total_cases, 'running')
+                INSERT INTO platform_eval_runs (run_id, feature_code, agent_version_under_test, triggered_by, total_cases, status)
+                VALUES (coalesce(cast(:run_id as uuid), gen_random_uuid()), :feature_code, :agent_version_under_test,
+                        :triggered_by, :total_cases, 'running')
                 RETURNING run_id
                 """
             ),
             {
+                "run_id": str(run_id) if run_id else None,
                 "feature_code": feature_code,
                 "agent_version_under_test": agent_version_under_test,
                 "triggered_by": triggered_by,

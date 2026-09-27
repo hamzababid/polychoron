@@ -130,6 +130,9 @@ class TypologyMatch(BaseModel):
     # itself (constitution-addendum A5). Defaults to [] so existing
     # code constructing this model is unaffected.
     regulatory_citations: list[RegulatoryCitation] = []
+    # The promoted version of the matched typology that was in the
+    # prompt (migration 014) — None for no_significant_pattern.
+    typology_version: int | None = None
     matched_at: datetime = Field(default_factory=datetime.utcnow)
     agent_version: str
 

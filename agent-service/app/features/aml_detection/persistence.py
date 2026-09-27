@@ -64,11 +64,11 @@ def save_typology_match(match: TypologyMatch) -> None:
                 INSERT INTO aml_typology_matches (
                     case_id, typology_code, typology_label, confidence,
                     matched_indicators, plain_language_rationale, regulatory_citations,
-                    matched_at, agent_version
+                    matched_at, agent_version, typology_version
                 ) VALUES (
                     :case_id, :typology_code, :typology_label, :confidence,
                     cast(:matched_indicators as jsonb), :plain_language_rationale,
-                    cast(:regulatory_citations as jsonb), :matched_at, :agent_version
+                    cast(:regulatory_citations as jsonb), :matched_at, :agent_version, :typology_version
                 )
                 ON CONFLICT (case_id) DO UPDATE SET
                     typology_code = EXCLUDED.typology_code,
@@ -78,7 +78,8 @@ def save_typology_match(match: TypologyMatch) -> None:
                     plain_language_rationale = EXCLUDED.plain_language_rationale,
                     regulatory_citations = EXCLUDED.regulatory_citations,
                     matched_at = EXCLUDED.matched_at,
-                    agent_version = EXCLUDED.agent_version
+                    agent_version = EXCLUDED.agent_version,
+                    typology_version = EXCLUDED.typology_version
                 """
             ),
             {
@@ -91,6 +92,7 @@ def save_typology_match(match: TypologyMatch) -> None:
                 "regulatory_citations": json.dumps([c.model_dump(mode="json") for c in match.regulatory_citations]),
                 "matched_at": match.matched_at,
                 "agent_version": match.agent_version,
+                "typology_version": match.typology_version,
             },
         )
         conn.commit()
@@ -118,7 +120,8 @@ def save_case_assessment(assessment: CaseAssessment) -> None:
                     str_fields_draft = EXCLUDED.str_fields_draft,
                     regulatory_context_used = EXCLUDED.regulatory_context_used,
                     assessed_at = EXCLUDED.assessed_at,
-                    agent_version = EXCLUDED.agent_version
+                    agent_version = EXCLUDED.agent_version,
+                    typology_version = EXCLUDED.typology_version
                 """
             ),
             {

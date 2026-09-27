@@ -22,7 +22,14 @@ export function getAmlBreadcrumbs(pathname: string, base: string): Crumb[] {
     return [{ label: 'goAML Tracker' }];
   }
   if (segments[0] === 'typologies') {
-    return [{ label: 'Typology Console' }];
+    // screens/06-typology-rules-console.md — routed screens, like the KB.
+    const library: Crumb = { label: 'Typology Console', to: `${base}/typologies` };
+    if (!segments[1]) return [{ label: 'Typology Console' }];
+    if (segments[1] === 'new') return [library, { label: 'New typology' }];
+    const typology: Crumb = { label: segments[1], to: `${base}/typologies/${segments[1]}` };
+    if (segments[2] === 'edit') return [library, typology, { label: 'Edit' }];
+    if (segments[2] === 'compare') return [library, typology, { label: 'Compare versions' }];
+    return [library, { label: segments[1] }];
   }
   if (segments[0] === 'governance') {
     return [{ label: 'Model Governance' }];

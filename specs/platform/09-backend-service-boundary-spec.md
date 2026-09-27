@@ -59,6 +59,7 @@ split, which would add real complexity with no benefit at this stage.
 | `STRFiling` | `CaseAssessment` |
 | `PlatformUser`, `PlatformRole`, `Tenant` | `PlatformAgentActivityLogEntry` |
 | | `TenantInferenceProfile` |
+| `aml_typology_configs`, `aml_typology_config_versions`, `aml_typology_promotions`, `aml_typology_backtest_jobs` (Typology Console) | `platform_eval_runs`, `platform_eval_case_results` (incl. Typology Console regression runs — NestJS starts them as a Temporal background job, never inserts rows) |
 | `regulatory_source_files` (raw bytes — too large for a Temporal payload) | `regulatory_documents`, `regulatory_chunks`, `regulatory_document_changes`, `regulatory_chunking_profiles` (NestJS changes them only via awaited Temporal commands — see spec 10's pipeline section) |
 
 Both services read freely across this line (e.g. NestJS's Alert Queue
