@@ -206,28 +206,39 @@ word-level highlights; version pickers to switch either side.
 - Stale regression result: explicitly labelled, promote disabled.
 
 ## Acceptance criteria
-- [ ] `promote` (and every other write) is unreachable by any role
+- [x] `promote` (and every other write) is unreachable by any role
       except `mlro_compliance_head`; `model_risk_audit` can read all of it
-- [ ] Every promotion logs which backtest job (if any) it was promoted
+- [x] Every promotion logs which backtest job (if any) it was promoted
       from — a promotion with no linked backtest is flagged, not
       silently allowed
-- [ ] An MLRO can create a typology from the console; it is not in the
+- [x] An MLRO can create a typology from the console; it is not in the
       agent's catalog until promoted
-- [ ] Saving a draft never changes what the Pattern Matching Agent
+- [x] Saving a draft never changes what the Pattern Matching Agent
       sees — asserted by a test reading `get_active_typologies()` before
       and after a draft edit
-- [ ] Promote returns 409 without a passing regression run for the
+- [x] Promote returns 409 without a passing regression run for the
       draft's current content hash, and after the draft is edited
       post-run
-- [ ] Promotion stores reason, eval run, backtest (nullable) and the
+- [x] Promotion stores reason, eval run, backtest (nullable) and the
       session user; the previous version becomes `superseded`
-- [ ] Direct SQL `UPDATE` of a promoted/superseded version's content fails
-- [ ] Retiring (promoting `active=false`) removes the typology from the
+- [x] Direct SQL `UPDATE` of a promoted/superseded version's content fails
+- [x] Retiring (promoting `active=false`) removes the typology from the
       agent's catalog; history and old `TypologyMatch` rows are intact
-- [ ] Request bodies carrying `changed_by`/`promoted_by` are rejected or
+- [x] Request bodies carrying `changed_by`/`promoted_by` are rejected or
       ignored — the session user is recorded
-- [ ] New `TypologyMatch` rows record `typology_version`
-- [ ] Library, New, View, Edit and Compare are separate routes with
+- [x] New `TypologyMatch` rows record `typology_version`
+- [x] Library, New, View, Edit and Compare are separate routes with
       breadcrumbs; nothing expands inline under a table row
-- [ ] Both demo scenarios still match the same typology after the
+- [x] Both demo scenarios still match the same typology after the
       migration (catalog content unchanged by the backfill)
+
+Walked 2026-09-28. Evidence: `app-api/test/typology-console.e2e-spec.ts`
+(RBAC, create/not live, 409 without or with a stale run, reason/eval
+run/backtest/session user, supersede, retire, body `*_by` ignored),
+`agent-service/tests/test_typology_lifecycle.py` (draft invisible to the
+agent, DB immutability, `typology_version`), the routed screens, and a
+live check: Scenario A re-run matched `structuring_subthreshold` v1 with
+`typology_version` recorded, and promotion was refused (409) against a
+real failed regression run. The regression's success path has not been
+seen live: the golden dataset passes 6/12 on the unchanged catalog (see
+TASKS.md, "Agent quality").

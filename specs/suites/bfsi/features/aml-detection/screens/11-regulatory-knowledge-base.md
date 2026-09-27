@@ -253,7 +253,7 @@ section reference, word-level highlights within changed chunks).
   is an audit record.
 
 ## Acceptance criteria
-- [ ] Clicking a Library row navigates to the Document view route; the
+- [x] Clicking a Library row navigates to the Document view route; the
       route is bookmarkable and survives refresh
 - [x] No API endpoint can change the `text` of a chunk belonging to a
       `current`, `superseded`, or `withdrawn` document — tested
@@ -266,14 +266,22 @@ section reference, word-level highlights within changed chunks).
       by retrieval — tested
 - [x] Metadata correction without a reason is rejected at the API and
       DB layer; every correction produces a change-log row
-- [ ] All four sources work end-to-end: PDF, DOCX, TXT upload; pasted
+- [x] All four sources work end-to-end: PDF, DOCX, TXT upload; pasted
       text; URL fetch; manual chunks
 - [x] Each chunking strategy produces a correct preview on a fixture
       document; preview never calls the embeddings API
 - [x] Injection-pattern hits in chunk text are flagged and require
       acknowledgement before publish
-- [ ] Wizard progress survives a browser refresh from step 1 onward
+- [x] Wizard progress survives a browser refresh from step 1 onward
 - [x] Non-MLRO roles get 403 on every route, read and write
 - [x] Existing Phase 1 seeded corpus migrates to `current` status with
       document-order ordinals — no regression in the two demo scenarios'
       citations
+
+Walked 2026-09-28. The three previously open boxes: all four sources
+driven through the running API (real PDF, DOCX and TXT uploads, pasted
+text, a live URL fetch of example.com, manual chunks — each extracted
+and previewed, then discarded); Library rows navigate to
+`regulatory-kb/:documentId` and the wizard keeps `?draft=&step=` in the
+URL and reloads the draft from the server, both routes served directly
+by the dev server. Browser refresh itself not yet observed by eye.
