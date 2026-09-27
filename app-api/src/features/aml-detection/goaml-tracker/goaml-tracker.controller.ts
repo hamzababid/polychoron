@@ -2,7 +2,7 @@ import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/co
 import { ApiTags } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsInt, IsOptional, Max, Min } from 'class-validator';
-import { GoamlTrackerService, type FilingDetail, type FilingSummary } from './goaml-tracker.service.js';
+import { GoamlTrackerService, type FilingDetail, type FilingPortfolioCounts, type FilingSummary } from './goaml-tracker.service.js';
 import { AddFollowupDto } from '../dto/add-followup.dto.js';
 import { SessionGuard } from '../../../common/auth/session.guard.js';
 import { RolesGuard } from '../../../common/auth/roles.guard.js';
@@ -35,11 +35,13 @@ export class GoamlTrackerController {
   constructor(private readonly goamlTrackerService: GoamlTrackerService) {}
 
   @Get()
-  async list(@Query() query: ListFilingsQueryDto): Promise<{ items: FilingSummary[]; total: number; page: number; pageSize: number }> {
+  async list(
+    @Query() query: ListFilingsQueryDto,
+  ): Promise<{ items: FilingSummary[]; total: number; page: number; pageSize: number; counts: FilingPortfolioCounts }> {
     const page = query.page ?? 1;
     const pageSize = query.page_size ?? 20;
-    const { items, total } = await this.goamlTrackerService.list(page, pageSize);
-    return { items, total, page, pageSize };
+    const { items, total, counts } = await this.goamlTrackerService.list(page, pageSize);
+    return { items, total, page, pageSize, counts };
   }
 
   @Get(':filingId')

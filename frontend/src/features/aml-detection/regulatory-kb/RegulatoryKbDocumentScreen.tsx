@@ -24,6 +24,7 @@ import type {
 } from '../api/types';
 import { useToast } from '../../../shell/ToastProvider';
 import { Pagination } from '../shared/Pagination';
+import { usePagedList } from '../shared/usePagedList';
 import { useFeatureBasePath } from '../useFeatureBasePath';
 import { ConfirmDialog, JobProgress, StatusBadge, Tile } from './kbShared';
 import { SOURCE_TYPES, WARNING_LABEL, errorMessage, formatBytes, formatDate, useEmbedJob } from './kbUtils';
@@ -106,6 +107,12 @@ export function RegulatoryKbDocumentScreen() {
       void publish();
     }
   });
+
+  // Every list pages: a long document has hundreds of chunks, and a
+  // long-lived one accumulates versions and corrections.
+  const chunkPaging = usePagedList(chunks, { resetKey: `${documentId}|${chunkQuery}` });
+  const versionPaging = usePagedList(versions, { pageSizeOptions: [5, 10, 25], initialPageSize: 5, resetKey: documentId });
+  const changePaging = usePagedList(changes, { pageSizeOptions: [5, 10, 25], initialPageSize: 5, resetKey: documentId });
 
   if (error) return <div className="aml-status aml-status--error">{error}</div>;
   if (!doc) return <div className="aml-status">Loading document…</div>;
@@ -274,7 +281,7 @@ export function RegulatoryKbDocumentScreen() {
               ) : chunks.length === 0 ? (
                 <div className="kb-muted">{chunkQuery ? 'No chunks match.' : 'No chunks yet.'}</div>
               ) : (
-                chunks.map((c) => (
+                chunkPaging.pageItems.map((c) => (
                   <div key={c.chunkId} className="kb-viewchunk">
                     <div className="kb-viewchunk__head">
                       <span className="kb-chunk__ordinal">{c.ordinal}</span>
@@ -298,6 +305,7 @@ export function RegulatoryKbDocumentScreen() {
                   </div>
                 ))
               )}
+              {chunkPaging.needed && <Pagination {...chunkPaging.props} noun={chunkQuery ? 'Matching chunks' : 'Chunks'} />}
             </Tile>
 
             <Tile title="Test retrieval">
@@ -460,7 +468,7 @@ export function RegulatoryKbDocumentScreen() {
 
             <Tile title="Version history">
               <ol className="kb-timeline">
-                {versions.map((v) => (
+                {versionPaging.pageItems.map((v) => (
                   <li key={v.documentId} className={v.documentId === documentId ? 'kb-timeline__me' : ''}>
                     <div>
                       {v.documentId === documentId ? <strong>v{v.versionNumber}</strong> : <Link to={`${base}/regulatory-kb/${v.documentId}`}>v{v.versionNumber}</Link>}{' '}
@@ -472,6 +480,7 @@ export function RegulatoryKbDocumentScreen() {
                   </li>
                 ))}
               </ol>
+              {versionPaging.needed && <Pagination {...versionPaging.props} noun="Versions" />}
               {olderVersions.length > 0 && (
                 <div className="kb-inline">
                   <select className="input" value={compareWith} onChange={(e) => setCompareWith(e.target.value)}>
@@ -494,7 +503,7 @@ export function RegulatoryKbDocumentScreen() {
                 <div className="kb-muted">No corrections recorded.</div>
               ) : (
                 <ul className="kb-changes">
-                  {changes.map((c) => (
+                  {changePaging.pageItems.map((c) => (
                     <li key={c.changeId}>
                       <div>
                         <strong>{c.fieldName.replace(/_/g, ' ')}</strong>: <span className="kb-strike">{c.oldValue ?? '—'}</span> → {c.newValue ?? '—'}
@@ -506,6 +515,7 @@ export function RegulatoryKbDocumentScreen() {
                   ))}
                 </ul>
               )}
+              {changePaging.needed && <Pagination {...changePaging.props} noun="Changes" />}
             </Tile>
           </div>
         </div>

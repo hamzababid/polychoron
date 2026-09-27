@@ -3,6 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { getActivityLog, getCase, recordDisposition } from '../api/client';
 import type { ActivityLogEntry, AgentRecommendation, CaseDetail, DispositionType } from '../api/types';
 import { LinkedEntityGraph } from '../shared/LinkedEntityGraph';
+import { Pagination } from '../shared/Pagination';
+import { usePagedList } from '../shared/usePagedList';
 import { useAuth } from '../../../auth/AuthContext';
 import { useFeatureBasePath } from '../useFeatureBasePath';
 import { useToast } from '../../../shell/ToastProvider';
@@ -70,6 +72,13 @@ export function CaseWorkspaceScreen() {
   useEffect(() => {
     load();
   }, [load]);
+
+  // Evidence lists grow with the customer's history; each pages on its own.
+  const evidence = caseDetail?.evidence;
+  const txnPaging = usePagedList(evidence?.transaction_timeline, { resetKey: caseId });
+  const priorPaging = usePagedList(evidence?.prior_cases, { pageSizeOptions: [5, 10, 25], initialPageSize: 5, resetKey: caseId });
+  const screeningPaging = usePagedList(evidence?.screening_results, { pageSizeOptions: [5, 10, 25], initialPageSize: 5, resetKey: caseId });
+  const logPaging = usePagedList(activityLog, { resetKey: caseId });
 
   if (error) return <div className="aml-status aml-status--error">Could not load case: {error}</div>;
   if (!caseDetail) return <div className="aml-status">Loading case…</div>;
@@ -206,7 +215,7 @@ export function CaseWorkspaceScreen() {
                         </tr>
                       </thead>
                       <tbody>
-                        {caseDetail.evidence.transaction_timeline.map((t) => (
+                        {txnPaging.pageItems.map((t) => (
                           <tr key={t.txn_ref}>
                             <td>{t.txn_ref}</td>
                             <td>
@@ -219,6 +228,7 @@ export function CaseWorkspaceScreen() {
                         ))}
                       </tbody>
                     </table>
+                    {txnPaging.needed && <Pagination {...txnPaging.props} noun="Transactions" />}
                   </div>
                 </div>
 
@@ -248,7 +258,7 @@ export function CaseWorkspaceScreen() {
                       <div className="case-workspace__muted">None on file.</div>
                     ) : (
                       <ul className="case-workspace__list">
-                        {caseDetail.evidence.prior_cases.map((p) => (
+                        {priorPaging.pageItems.map((p) => (
                           <li key={p.case_id}>
                             {p.typology} · opened {new Date(p.opened_at).toLocaleDateString()}
                             {p.final_disposition && ` · ${p.final_disposition}`}
@@ -256,6 +266,7 @@ export function CaseWorkspaceScreen() {
                         ))}
                       </ul>
                     )}
+                    {priorPaging.needed && <Pagination {...priorPaging.props} noun="Prior cases" />}
                   </div>
                 </div>
 
@@ -272,13 +283,14 @@ export function CaseWorkspaceScreen() {
                       <div className="case-workspace__muted">Clean — no screening matches.</div>
                     ) : (
                       <ul className="case-workspace__list">
-                        {caseDetail.evidence.screening_results.map((s, i) => (
-                          <li key={i}>
+                        {screeningPaging.pageItems.map((s, i) => (
+                          <li key={screeningPaging.offset + i}>
                             {s.list_source}: {s.matched_name} ({(s.match_confidence * 100).toFixed(0)}%)
                           </li>
                         ))}
                       </ul>
                     )}
+                    {screeningPaging.needed && <Pagination {...screeningPaging.props} noun="Matches" />}
                   </div>
                 </div>
               </>
@@ -421,13 +433,14 @@ export function CaseWorkspaceScreen() {
             </button>
             {showActivityLog && activityLog && (
               <div className="case-workspace__log">
-                {activityLog.map((e) => (
+                {logPaging.pageItems.map((e) => (
                   <div key={e.logId} className="case-workspace__logEntry">
                     <strong>{e.agentName}</strong> v{e.agentVersion} · {e.modelProvider} · {e.latencyMs}ms
                     {e.confidence !== null && ` · conf. ${e.confidence.toFixed(2)}`}
                     <div className="case-workspace__logSources">sources: {e.dataSourcesQueried.join(', ') || 'none'}</div>
                   </div>
                 ))}
+                {logPaging.needed && <Pagination {...logPaging.props} noun="Entries" />}
               </div>
             )}
           </div>

@@ -851,6 +851,28 @@ served and compiled by the dev server; **not yet looked at in a browser**.
       `screens/06-typology-rules-console.md`; demo scenarios
       re-verified end to end
 
+### UI convention — every list is paginated (owner, 2026-09-27)
+Applies to every screen, existing and future: no list renders an
+unbounded number of rows. Lists that grow at the database level page on
+the server (`page` / `page_size`, `{items, total, page, pageSize}`);
+lists that belong to one record (a document's chunks, a case's
+transactions) page client-side via `shared/usePagedList.ts`. Both render
+`shared/Pagination.tsx`. A bounded top-N (dashboard's 3 most-aging
+alerts, retrieval test's top 8) or a fixed set (data-lineage sources,
+current model version per agent) is not a list for this purpose.
+- [x] KB wizard step 4 chunks — paged inside a scrolling frame
+- [x] KB Document view: chunks, versions, change log; KB Compare chunk diff
+- [x] Typology Console: library table, version history, regression case results
+- [x] goAML Tracker: filings wired to the existing server paging; the
+      portfolio strip's counts now come from the server across all
+      filings (they were counted from the first 50 rows, so wrong past
+      50); FMU follow-up log
+- [x] Reporting: report history → server-paged (`GET .../reports/history`
+      now returns a page, not every report)
+- [x] Case Workspace: transactions, prior cases, screening matches,
+      agent activity log
+- [x] Customer 360: accounts, case history, screening history
+
 ### MLOps tracing layer (platform-wide, not a screen)
 - [ ] OpenTelemetry spans for every agent node execution
       (`agent-service`)

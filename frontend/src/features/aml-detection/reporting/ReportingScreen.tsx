@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { downloadReport, generateReport, getReportingSummary, listReportHistory } from '../api/client';
-import type { ReportHistoryEntry, ReportingBreakdownBy, ReportingSummary } from '../api/types';
+import type { Paginated, ReportHistoryEntry, ReportingBreakdownBy, ReportingSummary } from '../api/types';
+import { Pagination } from '../shared/Pagination';
 import { useAuth } from '../../../auth/AuthContext';
 import { useToast } from '../../../shell/ToastProvider';
 import './reporting.css';
@@ -46,7 +47,10 @@ export function ReportingScreen() {
   const [breakdownBy, setBreakdownBy] = useState<ReportingBreakdownBy>('type');
 
   const [summary, setSummary] = useState<ReportingSummary | null>(null);
-  const [history, setHistory] = useState<ReportHistoryEntry[] | null>(null);
+  // Server-paged: every generated report is retained, so this only grows.
+  const [history, setHistory] = useState<Paginated<ReportHistoryEntry> | null>(null);
+  const [historyPage, setHistoryPage] = useState(1);
+  const [historyPageSize, setHistoryPageSize] = useState(10);
   const [error, setError] = useState<string | null>(null);
   const [reportName, setReportName] = useState('Board MI pack');
   const [generating, setGenerating] = useState(false);
@@ -66,8 +70,10 @@ export function ReportingScreen() {
   }, [periodBounds, comparePrevious, breakdownBy]);
 
   const loadHistory = useCallback(() => {
-    listReportHistory().then(setHistory).catch(() => undefined);
-  }, []);
+    listReportHistory({ page: historyPage, pageSize: historyPageSize })
+      .then(setHistory)
+      .catch(() => undefined);
+  }, [historyPage, historyPageSize]);
 
   useEffect(() => {
     loadSummary();
@@ -92,7 +98,9 @@ export function ReportingScreen() {
         generated_by: session.user.userId,
       });
       toast.success(`${report.reportId.slice(0, 8)} generated — figures fixed as at ${new Date().toLocaleString()}.`);
-      loadHistory();
+      // Newest first: the new report is on page 1.
+      if (historyPage === 1) loadHistory();
+      else setHistoryPage(1);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : String(err));
     } finally {
@@ -370,7 +378,7 @@ export function ReportingScreen() {
             </span>
           </div>
           <div className="tile-body">
-            {!history || history.length === 0 ? (
+            {!history || history.total === 0 ? (
               <div className="reporting__muted">No reports generated yet.</div>
             ) : (
               <>
@@ -382,7 +390,7 @@ export function ReportingScreen() {
                     Action
                   </div>
                 </div>
-                {history.map((h) => (
+                {history.items.map((h) => (
                   <div key={h.reportId} className="reporting__historyRow">
                     <div>
                       <div style={{ fontSize: 12.5 }}>{h.reportName}</div>
@@ -403,6 +411,17 @@ export function ReportingScreen() {
                     </div>
                   </div>
                 ))}
+                <Pagination
+                  page={history.page}
+                  pageSize={history.pageSize}
+                  total={history.total}
+                  noun="Reports"
+                  onPageChange={setHistoryPage}
+                  onPageSizeChange={(n) => {
+                    setHistoryPageSize(n);
+                    setHistoryPage(1);
+                  }}
+                />
               </>
             )}
           </div>

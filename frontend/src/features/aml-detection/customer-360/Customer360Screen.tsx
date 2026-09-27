@@ -3,6 +3,8 @@ import { Link, useParams } from 'react-router-dom';
 import { getCustomer360 } from '../api/client';
 import type { Customer360Response } from '../api/types';
 import { LinkedEntityGraph } from '../shared/LinkedEntityGraph';
+import { Pagination } from '../shared/Pagination';
+import { usePagedList } from '../shared/usePagedList';
 import { useFeatureBasePath } from '../useFeatureBasePath';
 import './customer-360.css';
 
@@ -25,6 +27,11 @@ export function Customer360Screen() {
       .then(setData)
       .catch((err: unknown) => setError(err instanceof Error ? err.message : String(err)));
   }, [customerId]);
+
+  // Each history grows with the customer's time at the bank; each pages on its own.
+  const accountPaging = usePagedList(data?.accounts, { resetKey: customerId });
+  const casePaging = usePagedList(data?.priorCases, { resetKey: customerId });
+  const screeningPaging = usePagedList(data?.screeningHistory, { resetKey: customerId });
 
   if (error) return <div className="aml-status aml-status--error">Could not load customer: {error}</div>;
   if (!data) return <div className="aml-status">Loading customer…</div>;
@@ -109,7 +116,7 @@ export function Customer360Screen() {
                   </tr>
                 </thead>
                 <tbody>
-                  {data.accounts.map((a) => (
+                  {accountPaging.pageItems.map((a) => (
                     <tr key={a.accountId}>
                       <td>{a.accountId}</td>
                       <td>
@@ -125,6 +132,7 @@ export function Customer360Screen() {
                 </tbody>
               </table>
             )}
+            {accountPaging.needed && <Pagination {...accountPaging.props} noun="Accounts" />}
           </div>
         </div>
 
@@ -141,7 +149,7 @@ export function Customer360Screen() {
               <div className="customer-360__muted">None on file.</div>
             ) : (
               <ul className="customer-360__list">
-                {data.priorCases.map((p) => (
+                {casePaging.pageItems.map((p) => (
                   <li key={p.caseId}>
                     <Link to={`${base}/cases/${p.caseId}`}>{p.typologyLabel ?? 'Case ' + p.caseId.slice(0, 8)}</Link> · opened{' '}
                     {new Date(p.openedAt).toLocaleDateString()}
@@ -151,6 +159,7 @@ export function Customer360Screen() {
                 ))}
               </ul>
             )}
+            {casePaging.needed && <Pagination {...casePaging.props} noun="Cases" />}
           </div>
         </div>
 
@@ -180,8 +189,8 @@ export function Customer360Screen() {
               <div className="customer-360__muted">No prior sanctions/PEP hits.</div>
             ) : (
               <ul className="customer-360__list">
-                {data.screeningHistory.map((s, i) => (
-                  <li key={i}>
+                {screeningPaging.pageItems.map((s, i) => (
+                  <li key={screeningPaging.offset + i}>
                     {s.list_source}: {s.matched_name} ({(s.match_confidence * 100).toFixed(0)}%) —{' '}
                     <Link to={`${base}/cases/${s.caseId}`}>case {s.caseId.slice(0, 8)}</Link>
                     {s.disposition && ` · ${s.disposition.replace('_', ' ')}`}
@@ -189,6 +198,7 @@ export function Customer360Screen() {
                 ))}
               </ul>
             )}
+            {screeningPaging.needed && <Pagination {...screeningPaging.props} noun="Hits" />}
           </div>
         </div>
       </div>

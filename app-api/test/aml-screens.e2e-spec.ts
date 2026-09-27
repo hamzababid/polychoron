@@ -277,6 +277,25 @@ describe('AML screens (e2e)', () => {
       expect(body.total).toBeGreaterThanOrEqual(0);
     });
 
+    it('pages the list but counts the portfolio across every filing', async () => {
+      const res = await request(app.getHttpServer())
+        .get('/api/v1/features/aml_detection/filings')
+        .query({ page_size: 1 })
+        .set('x-session-id', complianceOfficerSessionId)
+        .expect(200);
+      const body = res.body as {
+        items: unknown[];
+        total: number;
+        pageSize: number;
+        counts: { total: number; awaiting: number; acknowledged: number; retentionDue: number };
+      };
+      expect(body.pageSize).toBe(1);
+      expect(body.items.length).toBeLessThanOrEqual(1);
+      // The strip's total is every filing, never just the page shown.
+      expect(body.counts.total).toBe(body.total);
+      expect(body.counts.awaiting + body.counts.acknowledged).toBeLessThanOrEqual(body.counts.total);
+    });
+
     it('simulates acknowledgment on a submitted filing', async () => {
       const caseId = await createFixtureCase({ status: 'pending_filing', withAssessment: true });
       await request(app.getHttpServer())
