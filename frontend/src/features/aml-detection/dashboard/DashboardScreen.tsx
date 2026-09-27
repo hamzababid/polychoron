@@ -561,7 +561,7 @@ function DispositionBreakdownBars({ breakdown }: { breakdown: DashboardTrends['d
             <div style={{ fontSize: 13 }}>
               <strong>{Math.round(agreedPct)}%</strong> agreed with the agent's recommendation
             </div>
-            <div style={{ fontSize: 11, color: 'var(--color-neutral-700)' }}>{agreedWithAgent} dispositions</div>
+            <div style={{ fontSize: 11, color: 'var(--color-neutral-700)' }}>{agreedWithAgent} {agreedWithAgent === 1 ? 'disposition' : 'dispositions'}</div>
           </div>
         </div>
         <div style={{ display: 'flex', gap: 9, alignItems: 'flex-start' }}>
@@ -570,7 +570,7 @@ function DispositionBreakdownBars({ breakdown }: { breakdown: DashboardTrends['d
             <div style={{ fontSize: 13 }}>
               <strong>{Math.round(overridePct)}%</strong> overrode the agent's recommendation
             </div>
-            <div style={{ fontSize: 11, color: 'var(--color-neutral-700)' }}>{overrodeAgent} dispositions, each with a logged reason</div>
+            <div style={{ fontSize: 11, color: 'var(--color-neutral-700)' }}>{overrodeAgent} {overrodeAgent === 1 ? 'disposition' : 'dispositions'}, each with a logged reason</div>
           </div>
         </div>
       </div>

@@ -50,6 +50,7 @@ _DELETE_IN_ORDER = [
     "aml_filing_edits",
     "aml_fmu_followups",
     "aml_str_filings",
+    "aml_sampling_reviews",
     "aml_dispositions",
     "aml_case_assessments",
     "aml_typology_matches",

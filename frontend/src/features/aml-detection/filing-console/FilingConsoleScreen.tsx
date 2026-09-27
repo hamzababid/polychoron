@@ -7,6 +7,7 @@ import { useFeatureBasePath } from '../useFeatureBasePath';
 import { useToast } from '../../../shell/ToastProvider';
 import './filing-console.css';
 import { Loader } from '../../../shell/Loader';
+import { recommendationLabel } from '../shared/recommendation';
 
 // Mirrors agent-service/app/features/aml_detection/typology_catalog.py's
 // Phase 1 catalog — the officer can retag to either of these, or leave
@@ -159,7 +160,7 @@ export function FilingConsoleScreen() {
                 </div>
                 <div className="filing-console__cell">
                   <div className="aml-label">Agent recommendation</div>
-                  <div className="filing-console__val">{draft.recommendation.replace('_', ' ')}</div>
+                  <div className="filing-console__val">{recommendationLabel(draft.recommendation)}</div>
                 </div>
               </div>
             </div>

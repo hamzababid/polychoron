@@ -220,7 +220,7 @@ export function GoamlTrackerScreen() {
                   }}
                 >
                   <div className="tcell">
-                    <span className="aml-tag">{f.reportType.toUpperCase()}</span>
+                    <span className="aml-tag">{f.reportType.replace('_', '-').toUpperCase()}</span>
                   </div>
                   <div className="tcell" style={{ fontSize: 12, fontVariantNumeric: 'tabular-nums' }}>
                     {f.caseId.slice(0, 8)}
