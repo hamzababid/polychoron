@@ -6,7 +6,7 @@ import { DispositionDto } from './dto/disposition.dto.js';
 import { ListAlertsQueryDto } from './dto/list-alerts-query.dto.js';
 import { SearchQueryDto } from './dto/search-query.dto.js';
 import { CaseStatus } from './entities/aml-case.entity.js';
-import { AlertQueueService, type AlertQueueRow } from './alert-queue/alert-queue.service.js';
+import { AlertQueueService, type AlertQueueFacets, type AlertQueueRow } from './alert-queue/alert-queue.service.js';
 import { CaseWorkspaceService, type ActivityLogEntry, type CaseDetail } from './case-workspace/case-workspace.service.js';
 import { SessionGuard } from '../../common/auth/session.guard.js';
 import { CurrentUser } from '../../common/auth/current-user.decorator.js';
@@ -34,16 +34,36 @@ export class AmlDetectionController {
 
   @UseGuards(SessionGuard)
   @Get('alerts')
-  async listAlerts(@Query() query: ListAlertsQueryDto): Promise<{ items: AlertQueueRow[]; total: number; page: number; pageSize: number }> {
+  async listAlerts(
+    @Query() query: ListAlertsQueryDto,
+    @CurrentUser() user: PlatformUser,
+  ): Promise<{ items: AlertQueueRow[]; total: number; page: number; pageSize: number }> {
     const page = query.page ?? 1;
     const pageSize = query.page_size ?? 20;
     const { items, total } = await this.alertQueueService.list({
+      q: query.q,
       status: query.status,
       riskTier: query.risk_tier,
+      typology: query.typology,
+      recommendation: query.recommendation,
+      assignee: query.assignee === 'me' ? user.userId : query.assignee,
+      receivedFrom: query.received_from,
+      receivedTo: query.received_to,
+      receivedAfter: query.received_after,
+      sla: query.sla,
+      agentState: query.agent_state,
+      sort: query.sort ?? 'received',
+      dir: query.dir ?? 'desc',
       page,
       pageSize,
     });
     return { items, total, page, pageSize };
+  }
+
+  @UseGuards(SessionGuard)
+  @Get('alerts/facets')
+  async alertFacets(): Promise<AlertQueueFacets> {
+    return this.alertQueueService.facets();
   }
 
   @UseGuards(SessionGuard)

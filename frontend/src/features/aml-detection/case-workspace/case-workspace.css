@@ -210,3 +210,14 @@
 .case-workspace__logSources {
   color: var(--color-neutral-600);
 }
+
+/* Informational, not an error: e.g. a case closed before AML Detection
+   existed, which has no agent output by design. */
+.case-workspace__notice {
+  background: var(--color-neutral-100);
+  border: 1px solid var(--color-divider);
+  color: var(--color-neutral-800);
+  padding: 8px 10px;
+  font-size: 12.5px;
+  line-height: 1.5;
+}

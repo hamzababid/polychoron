@@ -167,8 +167,25 @@ export function CaseWorkspaceScreen() {
             </span>
           </div>
           <div className="case-workspace__scroll">
-            {caseDetail.evidence === null && caseDetail.status !== 'open' && (
-              <div className="case-workspace__warning">Evidence is unavailable for this case — showing what's known.</div>
+            {caseDetail.agentState === 'not_run' && (
+              <div className="case-workspace__notice">
+                <strong>No agent record.</strong> This case was closed
+                {caseDetail.closedAt ? ` on ${new Date(caseDetail.closedAt).toLocaleDateString()}` : ''} without the agent chain — typically a case
+                decided before AML Detection was in use — so there is no agent evidence, typology match or assessment. The officer’s recorded
+                decision is shown on the right.
+              </div>
+            )}
+            {caseDetail.agentState === 'stalled' && (
+              <div className="case-workspace__warning">
+                <strong>The agent chain didn’t finish.</strong> It started on this case but produced no assessment, so review it manually —
+                anything the agents did complete is shown below, and the agent activity log shows how far it got.
+              </div>
+            )}
+            {caseDetail.agentState === 'kill_switch' && (
+              <div className="case-workspace__warning">
+                <strong>Manual review — kill switch.</strong> AML Detection was disabled for this tenant when the case arrived, so the agents
+                gathered evidence only and made no assessment.
+              </div>
             )}
 
             {caseDetail.evidence ? (
@@ -295,7 +312,9 @@ export function CaseWorkspaceScreen() {
                 </div>
               </>
             ) : (
-              <div className="tile aml-status">Evidence is still being assembled by the agent chain…</div>
+              caseDetail.agentState === 'processing' && (
+                <div className="tile aml-status">Evidence is still being assembled by the agent chain…</div>
+              )
             )}
           </div>
         </div>
