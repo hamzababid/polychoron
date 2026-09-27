@@ -4,6 +4,7 @@ import { DataSource } from 'typeorm';
 import { AmlCase, CaseStatus } from '../entities/aml-case.entity.js';
 import type { PlatformUser } from '../../../platform/entities/index.js';
 import { RISK_TIER_RANGES, type RiskTierFilter, riskTierForScore, SLA_HOURS_BY_TIER } from '../sla.js';
+import { agentStateSql, type AgentState } from '../agent-state.js';
 
 export type { RiskTierFilter };
 
@@ -16,6 +17,7 @@ export interface AlertQueueFilters {
 
 export interface AlertQueueRow {
   caseId: string;
+  agentState: AgentState;
   sourceAlertId: string;
   customerId: string;
   customerName: string | null;
@@ -56,6 +58,7 @@ interface AlertQueueRawRow {
   typology_label: string | null;
   customer_name: string | null;
   evidence_incomplete: boolean | null;
+  agent_state: AgentState;
 }
 
 @Injectable()
@@ -101,7 +104,8 @@ export class AlertQueueService {
          a.risk_score, a.recommendation, a.recommendation_confidence, a.draft_narrative,
          t.typology_code, t.typology_label,
          e.kyc ->> 'customer_name' AS customer_name,
-         e.evidence_incomplete
+         e.evidence_incomplete,
+         ${agentStateSql()} AS agent_state
        FROM aml_cases c
        LEFT JOIN aml_case_assessments a ON a.case_id = c.case_id
        LEFT JOIN aml_typology_matches t ON t.case_id = c.case_id
@@ -132,7 +136,8 @@ export class AlertQueueService {
          a.risk_score, a.recommendation, a.recommendation_confidence, a.draft_narrative,
          t.typology_code, t.typology_label,
          e.kyc ->> 'customer_name' AS customer_name,
-         e.evidence_incomplete
+         e.evidence_incomplete,
+         ${agentStateSql()} AS agent_state
        FROM aml_cases c
        LEFT JOIN aml_case_assessments a ON a.case_id = c.case_id
        LEFT JOIN aml_typology_matches t ON t.case_id = c.case_id
@@ -192,6 +197,7 @@ export class AlertQueueService {
       slaTargetHours,
       slaRemainingHours,
       pastSla: slaRemainingHours !== null && slaRemainingHours < 0,
+      agentState: r.agent_state,
       evidenceIncomplete: r.evidence_incomplete ?? false,
     };
   }

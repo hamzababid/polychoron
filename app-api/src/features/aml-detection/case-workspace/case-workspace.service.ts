@@ -3,6 +3,7 @@ import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { AmlCase } from '../entities/aml-case.entity.js';
 import { FEATURE_CODE } from '../aml-detection.service.js';
+import { agentStateSql, type AgentState } from '../agent-state.js';
 
 export interface CaseDetail {
   caseId: string;
@@ -17,6 +18,7 @@ export interface CaseDetail {
   assessment: Record<string, unknown> | null;
   disposition: Record<string, unknown> | null;
   filing: Record<string, unknown> | null;
+  agentState: AgentState;
 }
 
 export interface ActivityLogEntry {
@@ -42,12 +44,20 @@ export class CaseWorkspaceService {
       throw new NotFoundException(`No AML case with case_id=${caseId}`);
     }
 
-    const [evidenceRows, typologyRows, assessmentRows, dispositionRows, filingRows] = await Promise.all([
+    const [evidenceRows, typologyRows, assessmentRows, dispositionRows, filingRows, [{ agent_state: agentState }]] = await Promise.all([
       this.dataSource.query('SELECT * FROM aml_evidence_bundles WHERE case_id = $1', [caseId]),
       this.dataSource.query('SELECT * FROM aml_typology_matches WHERE case_id = $1', [caseId]),
       this.dataSource.query('SELECT * FROM aml_case_assessments WHERE case_id = $1', [caseId]),
       this.dataSource.query('SELECT * FROM aml_dispositions WHERE case_id = $1', [caseId]),
       this.dataSource.query('SELECT * FROM aml_str_filings WHERE case_id = $1', [caseId]),
+      this.dataSource.query(
+        `SELECT ${agentStateSql()} AS agent_state
+         FROM aml_cases c
+         LEFT JOIN aml_case_assessments a ON a.case_id = c.case_id
+         LEFT JOIN aml_evidence_bundles e ON e.case_id = c.case_id
+         WHERE c.case_id = $1`,
+        [caseId],
+      ) as Promise<Array<{ agent_state: AgentState }>>,
     ]);
 
     return {
@@ -63,6 +73,7 @@ export class CaseWorkspaceService {
       assessment: assessmentRows[0] ?? null,
       disposition: dispositionRows[0] ?? null,
       filing: filingRows[0] ?? null,
+      agentState,
     };
   }
 

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { claimAlert, getDashboardSummary, listAlerts } from '../api/client';
-import type { AlertQueueRow, CaseStatus, DashboardSummary, RiskTier } from '../api/types';
+import type { AgentState, AlertQueueRow, CaseStatus, DashboardSummary, RiskTier } from '../api/types';
 import { Pagination } from '../shared/Pagination';
 import { useFeatureBasePath } from '../useFeatureBasePath';
 import { useToast } from '../../../shell/ToastProvider';
@@ -11,6 +11,16 @@ const DEFAULT_PAGE_SIZE = 10;
 const PAGE_SIZE_OPTIONS = [10, 25, 50];
 
 const RISK_TIERS: RiskTier[] = ['critical', 'high', 'medium', 'low'];
+// Shown in place of a risk score when there isn't one — only
+// "processing" means the agent is actually still working.
+const AGENT_STATE_LABEL: Record<AgentState, string> = {
+  assessed: '—',
+  processing: 'processing…',
+  stalled: 'agent didn’t finish',
+  kill_switch: 'manual review (kill switch)',
+  not_run: 'no agent record',
+};
+
 const STATUSES: CaseStatus[] = ['open', 'claimed', 'investigating', 'escalated', 'pending_filing', 'cleared', 'filed'];
 const TIER_COLOR: Record<RiskTier, string> = {
   critical: 'var(--color-alert)',
@@ -186,7 +196,7 @@ export function AlertQueueScreen() {
                     {r.riskScore}
                   </span>
                 ) : (
-                  <span className="alert-queue__pending">processing…</span>
+                  <span className={`alert-queue__pending alert-queue__pending--${r.agentState}`}>{AGENT_STATE_LABEL[r.agentState]}</span>
                 )}
               </div>
               <div className="qcell">{r.typologyLabel ? <span className="aml-tag">{r.typologyLabel}</span> : '—'}</div>

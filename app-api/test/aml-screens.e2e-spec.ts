@@ -187,6 +187,46 @@ describe('AML screens (e2e)', () => {
       expect(detail.assessment).not.toBeNull();
     });
 
+    describe('agent state', () => {
+      const agentStateOf = async (caseId: string) =>
+        (
+          (
+            await request(app.getHttpServer())
+              .get(`/api/v1/features/aml_detection/cases/${caseId}`)
+              .set('x-session-id', analystSessionId)
+              .expect(200)
+          ).body as { agentState: string }
+        ).agentState;
+
+      it('is assessed once Case & Narrative has written an assessment', async () => {
+        expect(await agentStateOf(await createFixtureCase({ status: 'open', withAssessment: true }))).toBe('assessed');
+      });
+
+      it('is not_run for a closed case the agent never touched (e.g. the seeded prior case), not "processing"', async () => {
+        expect(await agentStateOf(await createFixtureCase({ status: 'cleared', withAssessment: false }))).toBe('not_run');
+      });
+
+      it('is processing for a new case with no assessment yet', async () => {
+        expect(await agentStateOf(await createFixtureCase({ status: 'open', withAssessment: false }))).toBe('processing');
+      });
+
+      it('is stalled when the agent started long ago but never produced an assessment', async () => {
+        const caseId = await createFixtureCase({ status: 'open', withAssessment: false });
+        await dataSource.query(`UPDATE aml_cases SET created_at = now() - interval '2 hours' WHERE case_id = $1`, [caseId]);
+        await dataSource.query(
+          `INSERT INTO platform_agent_activity_log (tenant_id, suite_code, feature_code, external_case_ref, agent_name, agent_version,
+             model_provider, input_payload, output_payload, latency_ms, data_sources_queried, "timestamp")
+           VALUES ($1, 'bfsi', 'aml_detection', $2, 'pattern_matching', 'v1', 'test', '{}', '{}', 1, '{}', now() - interval '2 hours')`,
+          [DEMO_TENANT_ID, caseId],
+        );
+        try {
+          expect(await agentStateOf(caseId)).toBe('stalled');
+        } finally {
+          await dataSource.query(`DELETE FROM platform_agent_activity_log WHERE external_case_ref = $1`, [caseId]);
+        }
+      });
+    });
+
     it('returns the activity log (empty for a fixture case with no agent invocations)', async () => {
       const caseId = await createFixtureCase({ status: 'open', withAssessment: true });
 

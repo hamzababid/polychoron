@@ -29,6 +29,13 @@
   this list can grow large, filter server-side
 
 ## States
+- **Agent state** (added 2026-09-27 — a seeded pre-system case showed
+  "processing…" forever): a case without a risk score shows why, from
+  app-api's `agent-state.ts` — *processing* (activity within 15 min),
+  *agent didn't finish* (started, no assessment — review manually),
+  *manual review (kill switch)*, or *no agent record* (closed without
+  the agent ever running, e.g. decided before AML Detection existed).
+  Never "processing" for a case that can't still be processed.
 - Empty (filtered to zero results): show "no alerts match these
   filters," not a generic empty state
 - Row past SLA: red timer + subtle row highlight

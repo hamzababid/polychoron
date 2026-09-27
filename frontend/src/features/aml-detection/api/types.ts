@@ -6,8 +6,13 @@ export type AgentRecommendation = 'clear' | 'escalate' | 'recommend_str' | 'reco
 export type DispositionType = 'clear' | 'enhanced_monitoring' | 'escalate_senior' | 'file_str' | 'file_ctr';
 export type FilingSubmissionStatus = 'draft' | 'submitted' | 'acknowledged' | 'feedback_received' | 'not_yet_drafted';
 
+/** What the agent chain has produced for a case (app-api agent-state.ts):
+ * a missing risk score only means "processing" while it really is. */
+export type AgentState = 'assessed' | 'kill_switch' | 'not_run' | 'processing' | 'stalled';
+
 export interface AlertQueueRow {
   caseId: string;
+  agentState: AgentState;
   sourceAlertId: string;
   customerId: string;
   customerName: string | null;
@@ -167,6 +172,7 @@ export interface CaseDetail {
   assessment: CaseAssessmentRow | null;
   disposition: DispositionRow | null;
   filing: FilingRow | null;
+  agentState: AgentState;
 }
 
 export interface ActivityLogEntry {

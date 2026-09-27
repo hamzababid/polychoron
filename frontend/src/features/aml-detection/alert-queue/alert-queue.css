@@ -140,3 +140,17 @@
 /* Pagination controls now live in ../shared/Pagination.tsx +
    ../shared/pagination.css — shared with ModelGovernanceScreen rather
    than duplicated per screen. */
+
+.alert-queue__pending--stalled {
+  color: var(--color-alert);
+  font-style: normal;
+}
+
+.alert-queue__pending--kill_switch {
+  color: var(--color-alert);
+  font-style: normal;
+}
+
+.alert-queue__pending--not_run {
+  font-style: normal;
+}
