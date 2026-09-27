@@ -84,7 +84,7 @@ export function useEmbedJob(onDone: (job: IngestionJobStatus) => void) {
     if (timer.current) clearInterval(timer.current);
     setJob({ jobId, kind: 'embed', status: 'running' });
     timer.current = setInterval(() => {
-      getRegulatoryJob(jobId)
+      getRegulatoryJob(jobId, { background: true })
         .then((updated) => {
           setJob(updated);
           if (updated.status !== 'running') {

@@ -873,6 +873,21 @@ current model version per agent) is not a list for this purpose.
       agent activity log
 - [x] Customer 360: accounts, case history, screening history
 
+### UI convention — loading indicators (owner, 2026-09-27)
+Platform-level, so every feature loads the same way:
+- `shell/ActivityBar` (mounted once in `App.tsx`): a thin bar across the
+  top while any foreground `apiFetch` is in flight — page data and
+  actions (claim, save, publish) alike. Shown after 150 ms, held for at
+  least 400 ms, so fast calls don't flicker.
+- `shell/Loader`: spinner + label for a page or panel still loading
+  (`page` variant for app start-up); `Spinner` for inline use. Never a
+  bare "Loading…" string.
+- Polling passes `apiFetch(..., { background: true })` so progress
+  checks don't flash the bar: new-alert check, regression and backtest
+  progress, KB embedding jobs.
+- Honours `prefers-reduced-motion` (pulse / steady bar, no spin or slide).
+- [x] Built and applied to every screen's loading state
+
 ### MLOps tracing layer (platform-wide, not a screen)
 - [ ] OpenTelemetry spans for every agent node execution
       (`agent-service`)

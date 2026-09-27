@@ -7,6 +7,7 @@ import { Pagination } from '../shared/Pagination';
 import { usePagedList } from '../shared/usePagedList';
 import { useFeatureBasePath } from '../useFeatureBasePath';
 import './customer-360.css';
+import { Loader } from '../../../shell/Loader';
 
 /** specs/suites/bfsi/features/aml-detection/screens/08-customer-360.md
  * Read-only aggregation screen — no disposition/filing actions live
@@ -34,7 +35,7 @@ export function Customer360Screen() {
   const screeningPaging = usePagedList(data?.screeningHistory, { resetKey: customerId });
 
   if (error) return <div className="aml-status aml-status--error">Could not load customer: {error}</div>;
-  if (!data) return <div className="aml-status">Loading customer…</div>;
+  if (!data) return <Loader label="Loading customer…" />;
 
   const displayName = data.kyc?.customer_name ?? customerId;
 

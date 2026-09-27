@@ -1,4 +1,4 @@
-import { ApiError, apiFetch, getSessionId } from '../../../auth/apiClient';
+import { ApiError, apiFetch, getSessionId, type ApiFetchOptions } from '../../../auth/apiClient';
 import type {
   ActivityLogEntry,
   AlertQueueFacets,
@@ -59,7 +59,7 @@ export function searchCases(q: string) {
   return apiFetch<AlertQueueRow[]>(`${BASE}/search?q=${encodeURIComponent(q)}`);
 }
 
-export function listAlerts(params: AlertQueueQuery) {
+export function listAlerts(params: AlertQueueQuery, options?: ApiFetchOptions) {
   const query = new URLSearchParams();
   const set = (key: string, value: string | number | undefined) => {
     if (value !== undefined && value !== '') query.set(key, String(value));
@@ -83,7 +83,7 @@ export function listAlerts(params: AlertQueueQuery) {
   set('page', params.page);
   set('page_size', params.pageSize);
   const qs = query.toString();
-  return apiFetch<Paginated<AlertQueueRow>>(`${BASE}/alerts${qs ? `?${qs}` : ''}`);
+  return apiFetch<Paginated<AlertQueueRow>>(`${BASE}/alerts${qs ? `?${qs}` : ''}`, undefined, options);
 }
 
 export function getAlertFacets() {
@@ -212,16 +212,16 @@ export function startTypologyRegression(code: string) {
   return apiFetch<{ runId: string; candidateKey: string }>(`${TYPOLOGIES}/${code}/draft/regression`, { method: 'POST' });
 }
 
-export function getRegressionRun(runId: string) {
-  return apiFetch<RegressionRun>(`${TYPOLOGIES}/regression-runs/${runId}`);
+export function getRegressionRun(runId: string, options?: ApiFetchOptions) {
+  return apiFetch<RegressionRun>(`${TYPOLOGIES}/regression-runs/${runId}`, undefined, options);
 }
 
 export function startTypologyBacktest(code: string) {
   return apiFetch<BacktestJob>(`${TYPOLOGIES}/${code}/backtest`, { method: 'POST' });
 }
 
-export function getBacktestJob(jobId: string) {
-  return apiFetch<BacktestJob>(`${TYPOLOGIES}/backtest-jobs/${jobId}`);
+export function getBacktestJob(jobId: string, options?: ApiFetchOptions) {
+  return apiFetch<BacktestJob>(`${TYPOLOGIES}/backtest-jobs/${jobId}`, undefined, options);
 }
 
 export function promoteTypology(code: string, body: { backtest_job_id?: string; reason: string }) {
@@ -464,8 +464,8 @@ export function previewRegulatoryRetrieval(body: { query: string; top_k?: number
   return apiFetch<{ results: RetrievalPreviewResult[] }>(`${KB}/retrieval-preview`, { method: 'POST', body: JSON.stringify(body) });
 }
 
-export function getRegulatoryJob(jobId: string) {
-  return apiFetch<IngestionJobStatus>(`${KB}/jobs/${jobId}`);
+export function getRegulatoryJob(jobId: string, options?: ApiFetchOptions) {
+  return apiFetch<IngestionJobStatus>(`${KB}/jobs/${jobId}`, undefined, options);
 }
 
 /** The original uploaded/fetched file, fetched with the session header

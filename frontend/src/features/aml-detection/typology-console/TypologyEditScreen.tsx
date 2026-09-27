@@ -19,6 +19,7 @@ import { TypologyStatusBadge } from './TypologyStatusBadge';
 import { ChecklistItem, RegressionResults, RegressionSummary, VersionContent, VersionDiff, VersionTile } from './typologyShared';
 import { errorText, isRunning, useCanWriteTypologies } from './typologyUtils';
 import './typology-console.css';
+import { Loader } from '../../../shell/Loader';
 
 const POLL_MS = 3000;
 
@@ -74,7 +75,7 @@ export function TypologyEditScreen() {
       if (runPoll.current) clearInterval(runPoll.current);
       const tick = async () => {
         try {
-          const updated = await getRegressionRun(runId);
+          const updated = await getRegressionRun(runId, { background: true });
           if (isRunning(updated)) {
             setRun((prev) => ({ ...updated, stale: prev?.stale }));
             return;
@@ -111,7 +112,7 @@ export function TypologyEditScreen() {
 
   if (ready && !canWrite) return <Navigate to={`${base}/typologies/${code}`} replace />;
   if (error) return <div className="aml-status aml-status--error">{error}</div>;
-  if (!detail) return <div className="aml-status">Loading typology…</div>;
+  if (!detail) return <Loader label="Loading typology…" />;
 
   const { live, draft } = detail;
   const title = live?.typologyLabel ?? draft?.typologyLabel ?? code;
@@ -237,7 +238,7 @@ export function TypologyEditScreen() {
       setBacktest(job);
       if (backtestPoll.current) clearInterval(backtestPoll.current);
       backtestPoll.current = setInterval(() => {
-        void getBacktestJob(job.jobId).then((updated) => {
+        void getBacktestJob(job.jobId, { background: true }).then((updated) => {
           setBacktest(updated);
           if (updated.status === 'complete' || updated.status === 'failed') {
             if (backtestPoll.current) clearInterval(backtestPoll.current);

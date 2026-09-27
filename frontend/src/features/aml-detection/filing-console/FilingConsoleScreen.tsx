@@ -6,6 +6,7 @@ import { useAuth } from '../../../auth/AuthContext';
 import { useFeatureBasePath } from '../useFeatureBasePath';
 import { useToast } from '../../../shell/ToastProvider';
 import './filing-console.css';
+import { Loader } from '../../../shell/Loader';
 
 // Mirrors agent-service/app/features/aml_detection/typology_catalog.py's
 // Phase 1 catalog — the officer can retag to either of these, or leave
@@ -62,7 +63,7 @@ export function FilingConsoleScreen() {
   }, [load]);
 
   if (error) return <div className="aml-status aml-status--error">Could not load filing draft: {error}</div>;
-  if (!draft || !payload) return <div className="aml-status">Loading filing draft…</div>;
+  if (!draft || !payload) return <Loader label="Loading filing draft…" />;
 
   const isFinal = draft.submissionStatus === 'submitted' || draft.submissionStatus === 'acknowledged';
   const tippingOffComplete = checklistItems.noContact && checklistItems.noFreeze && checklistItems.noDisclosure;

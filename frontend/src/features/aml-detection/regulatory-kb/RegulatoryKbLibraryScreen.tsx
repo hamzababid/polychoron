@@ -7,6 +7,7 @@ import { useFeatureBasePath } from '../useFeatureBasePath';
 import { StatusBadge } from './kbShared';
 import { SOURCE_TYPES, STATUS_LABEL, errorMessage, formatDate, useIssuingAuthorities } from './kbUtils';
 import './regulatory-kb.css';
+import { Loader } from '../../../shell/Loader';
 
 const ALL_STATUSES: RegulatoryDocumentStatus[] = ['current', 'draft', 'superseded', 'withdrawn'];
 const DEFAULT_STATUSES: RegulatoryDocumentStatus[] = ['current', 'draft'];
@@ -120,7 +121,7 @@ export function RegulatoryKbLibraryScreen() {
 
       <div className="kb-scroll scrollcol">
         {error && <div className="aml-status aml-status--error">{error}</div>}
-        {!error && !data && <div className="aml-status">Loading regulatory knowledge base…</div>}
+        {!error && !data && <Loader label="Loading regulatory knowledge base…" />}
         {data && (
           <>
             <table className="table kb-table">

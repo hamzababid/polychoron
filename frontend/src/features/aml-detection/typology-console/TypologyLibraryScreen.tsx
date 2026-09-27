@@ -9,6 +9,7 @@ import { KillSwitchDialog, type KillSwitchAction } from './KillSwitchDialog';
 import { TypologyStatusBadge } from './TypologyStatusBadge';
 import { useCanWriteTypologies } from './typologyUtils';
 import './typology-console.css';
+import { Loader } from '../../../shell/Loader';
 
 // "Tuning candidates only" (design-exports/.../Typology Rules
 // Console.dc.html) flags rules with weak STR conversion — a real
@@ -98,7 +99,7 @@ export function TypologyLibraryScreen() {
   const featureKillSwitch = killSwitches.find((k) => k.typologyCode === null) ?? null;
 
   if (error) return <div className="aml-status aml-status--error">{error}</div>;
-  if (!overview) return <div className="aml-status">Loading typology console…</div>;
+  if (!overview) return <Loader label="Loading typology console…" />;
 
   const liveCount = rows.filter((r) => r.status === 'live').length;
   const retiredCount = rows.filter((r) => r.status === 'retired').length;

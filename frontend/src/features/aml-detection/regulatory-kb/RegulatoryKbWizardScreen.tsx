@@ -33,6 +33,7 @@ import { emptyChunk, fromDraftChunks, type EditableChunk } from './chunkModel';
 import { ConfirmDialog, JobProgress, MetadataForm, RetrievalForm, Tile } from './kbShared';
 import { DEFAULT_CHUNKING, errorMessage, formatBytes, metadataFromDocument, metadataToInput, missingRequired, useEmbedJob, type MetadataValues, type RetrievalValues } from './kbUtils';
 import './regulatory-kb.css';
+import { Loader } from '../../../shell/Loader';
 
 const STEPS = ['Source', 'Metadata', 'Chunking', 'Preview & adjust', 'Retrieval', 'Review & publish'] as const;
 const METHODS: { value: RegulatorySourceMethod; label: string; hint: string }[] = [
@@ -371,7 +372,7 @@ export function RegulatoryKbWizardScreen() {
   };
 
   if (loadError) return <div className="aml-status aml-status--error">{loadError}</div>;
-  if (draftId && !doc) return <div className="aml-status">Loading draft…</div>;
+  if (draftId && !doc) return <Loader label="Loading draft…" />;
 
   const next = (n: number) => goTo(isManual && n === 3 ? 4 : n);
   const back = (n: number) => goTo(isManual && n === 3 ? 2 : n);
@@ -628,7 +629,7 @@ export function RegulatoryKbWizardScreen() {
                 injected instruction must be acknowledged before publishing.
               </p>
               {!chunks ? (
-                <div className="aml-status">Loading chunks…</div>
+                <Loader label="Loading chunks…" />
               ) : (
                 <ChunkEditor
                   chunks={chunks}

@@ -244,3 +244,92 @@ a.tile:hover { border-color: var(--color-accent); box-shadow: var(--shadow-sm); 
 .filterbar select:hover, .filterbar .filter-pill:hover { border-color: var(--color-accent); }
 
 .scrollcol { overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--color-neutral-400) transparent; }
+
+/* — Loading (shell/Loader.tsx, shell/ActivityBar.tsx) — one look for
+   every screen while data or an action is in flight. — */
+.spinner {
+  display: inline-block;
+  flex: none;
+  box-sizing: border-box;
+  border-radius: 50%;
+  border: 2px solid var(--color-neutral-300);
+  border-top-color: var(--color-accent-800);
+  animation: spinner-rotate 0.75s linear infinite;
+}
+
+@keyframes spinner-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 140px;
+  padding: 2rem;
+  color: var(--color-neutral-700);
+  font-size: 13px;
+}
+
+.loader--page {
+  min-height: 100vh;
+  font-size: 14px;
+}
+
+.activity-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: 1000;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.activity-bar--visible {
+  opacity: 1;
+}
+
+.activity-bar__track {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 40%;
+  background: var(--color-accent-700);
+  animation: activity-bar-slide 1.1s ease-in-out infinite;
+}
+
+@keyframes activity-bar-slide {
+  from {
+    left: -40%;
+  }
+  to {
+    left: 100%;
+  }
+}
+
+/* No spinning or sliding for people who've asked for less motion —
+   a steady bar and a pulsing ring still say "working". */
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: spinner-pulse 1.4s ease-in-out infinite;
+  }
+
+  .activity-bar__track {
+    left: 0;
+    width: 100%;
+    animation: none;
+  }
+
+  @keyframes spinner-pulse {
+    50% {
+      opacity: 0.35;
+    }
+  }
+}

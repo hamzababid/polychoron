@@ -25,6 +25,7 @@ import { useAuth } from '../../../auth/AuthContext';
 import { useFeatureBasePath } from '../useFeatureBasePath';
 import { useToast } from '../../../shell/ToastProvider';
 import './model-governance.css';
+import { Loader } from '../../../shell/Loader';
 
 const MLRO = 'aml_detection.mlro_compliance_head';
 const MODEL_RISK_AUDIT = 'platform.model_risk_audit';
@@ -145,7 +146,7 @@ export function ModelGovernanceScreen() {
   }, [canSeeFullAudit, violationsPage, violationsPageSize]);
 
   if (error) return <div className="aml-status aml-status--error">Could not load governance data: {error}</div>;
-  if (!sampling) return <div className="aml-status">Loading model governance…</div>;
+  if (!sampling) return <Loader label="Loading model governance…" />;
 
   const handleSubmitReview = async () => {
     if (!reviewingCaseId || reviewerAgreed === '' || !session) return;
