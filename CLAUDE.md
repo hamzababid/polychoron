@@ -29,6 +29,10 @@ constitution) → **Tasks** (break into small testable units, following
 ```
 app-api/                              NestJS — all screen-facing endpoints, RBAC, disposition/filing logic
 agent-service/                        FastAPI (Python) — LangGraph nodes, Temporal workflows, model router
+frontend/                             React + Vite — platform shell (src/shell: nav, ActivityBar, Loader,
+                                      toasts) and feature screens (src/features/<feature>/)
+infra/                                docker-compose.yml (full local stack) + db/migrations (shared schema,
+                                      applied by db/migrate.py — the only place schema changes)
 specs/
   platform/                          Shared across every suite and feature
     00-constitution.md                Non-negotiable rules — read before any code
@@ -65,7 +69,8 @@ TASKS.md                               Ordered, checkable task list — work thr
 docs/
   architecture/blueprint.html            As-built architecture drawing set (C4, ERDs, flows,
                                           sequences) — update alongside any change that makes a
-                                          sheet inaccurate; not auto-generated
+                                          sheet inaccurate, bump that sheet's REV and add a row to
+                                          the cover's revision history; not auto-generated
 design-exports/
   bfsi/aml-detection/                  Drop your Claude Design exports here
   platform/                            Platform-level screen exports (e.g. Admin)

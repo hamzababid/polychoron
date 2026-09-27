@@ -845,8 +845,8 @@ separate screens, like the KB")**
 served and compiled by the dev server; **not yet looked at in a browser**.
 
 **Close-out**
-- [ ] Update `docs/architecture/blueprint.html` (typology ERD + the
-      promotion flow)
+- [x] Update `docs/architecture/blueprint.html` (typology ERD + the
+      promotion flow) — done 2026-09-27 as REV B: A-303 redrawn, A-504 added, plus A-103/A-104/A-201/A-302 and a new A-305 (evals/guardrails, previously undrawn)
 - [ ] Walk every acceptance-criteria box in
       `screens/06-typology-rules-console.md`; demo scenarios
       re-verified end to end
