@@ -379,10 +379,11 @@ export function CaseWorkspaceScreen() {
               <div className="aml-source-ai" style={{ marginTop: 10 }}>
                 <div className="ai-band">AI-CITED REGULATIONS · SUPPORTING CONTEXT, NOT A DETERMINATION</div>
                 <div style={{ padding: '12px 14px' }}>
-                  {caseDetail.regulatoryCitations.length === 0 ? (
+                  {/* ?? []: an API that predates citations must not blank the whole case. */}
+                  {(caseDetail.regulatoryCitations ?? []).length === 0 ? (
                     <div className="case-workspace__muted">The agent cited no regulatory passage for this match.</div>
                   ) : (
-                    caseDetail.regulatoryCitations.map((c) => (
+                    (caseDetail.regulatoryCitations ?? []).map((c) => (
                       <div key={c.chunkId} className="case-workspace__citation">
                         <div className="case-workspace__citationHead">
                           <strong>{c.documentTitle}</strong> · {c.sectionReference}
