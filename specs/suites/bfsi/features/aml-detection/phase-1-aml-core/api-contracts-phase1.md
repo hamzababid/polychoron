@@ -17,7 +17,7 @@
   (`{items, total, page, pageSize}`). Query (all optional; multi-selects
   comma-separated; extended 2026-09-27 — see `screens/02-alert-queue.md`,
   "Sorting, filtering and views"):
-  `q` (alert ID / customer ID or name / case-ID prefix) · `status` ·
+  `q` (alert ID / customer ID or name / CNIC / case-ID prefix) · `status` ·
   `risk_tier` (+ `unscored`) · `typology` (+ `none`) · `recommendation`
   (+ `none`) · `assignee` (`me` / `unassigned` / user ID) ·
   `received_from`, `received_to` (ISO, `to` exclusive) ·

@@ -49,6 +49,8 @@ never separately-maintained numbers — the acceptance criterion below):
 ## Interactions
 - Every tile/chart click navigates to Alert Queue pre-filtered to match
   (e.g. clicking "critical" tile → `/alerts?risk_tier=critical`)
+  — built 2026-09-27 (tiles first opened the queue unfiltered): each
+  tier count → `?risk_tier=<tier>`, Aging alerts → `?sla=past`
 
 ## Acceptance criteria
 - [ ] All figures match what Reporting & MI shows for the same period

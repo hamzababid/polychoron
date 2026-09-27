@@ -37,6 +37,16 @@ export class FilingConsoleService {
     @InjectRepository(AmlFilingEdit) private readonly filingEdits: Repository<AmlFilingEdit>,
   ) {}
 
+  async liveTypologyOptions(): Promise<Array<{ code: string; label: string }>> {
+    return (await this.dataSource.query(
+      `SELECT c.typology_code AS code, v.typology_label AS label
+       FROM aml_typology_configs c
+       JOIN aml_typology_config_versions v ON v.typology_code = c.typology_code AND v.version = c.production_version
+       WHERE v.active
+       ORDER BY v.typology_label`,
+    )) as Array<{ code: string; label: string }>;
+  }
+
   async getFilingDraft(caseId: string): Promise<FilingDraftResponse> {
     const existingFiling = await this.filings.findOneBy({ caseId });
     if (existingFiling) {

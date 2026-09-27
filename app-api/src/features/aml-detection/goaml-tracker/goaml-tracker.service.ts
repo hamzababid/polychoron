@@ -18,6 +18,7 @@ export interface FilingSummary {
   goamlReference: string | null;
   submittedAt: string | null;
   acknowledgedAt: string | null;
+  feedbackReceivedAt: string | null;
   retentionExpiry: string | null;
   retentionReviewDue: boolean;
 }
@@ -117,8 +118,38 @@ export class GoamlTrackerService {
     if (!filing) {
       throw new NotFoundException(`No filing with filing_id=${filingId}`);
     }
-    const saved = await this.followups.save({ filingId, note, createdBy });
+    const text = note.trim();
+    if (!text) throw new BadRequestException('A follow-up note must not be empty');
+    const saved = await this.followups.save({ filingId, note: text, createdBy });
     return { followupId: saved.followupId };
+  }
+
+  /** The third tracker step (screens/05, "Recording FMU feedback"): an
+   * officer logs the FMU's feedback on an acknowledged filing. Status,
+   * timestamp and the follow-up note land together or not at all. A
+   * real officer action, not demo-only — the feedback reaches the bank
+   * by its own channels and is recorded here. */
+  async recordFeedback(filingId: string, note: string, recordedBy: string): Promise<FilingSummary> {
+    const text = note.trim();
+    if (!text) throw new BadRequestException('Describe the FMU feedback');
+    return this.dataSource.transaction(async (tx) => {
+      const [filing] = (await tx.query(`SELECT submission_status FROM aml_str_filings WHERE filing_id = $1 FOR UPDATE`, [
+        filingId,
+      ])) as Array<{ submission_status: string }>;
+      if (!filing) throw new NotFoundException(`No filing with filing_id=${filingId}`);
+      if (filing.submission_status !== FilingSubmissionStatus.ACKNOWLEDGED) {
+        throw new BadRequestException(
+          `Filing ${filingId} is ${filing.submission_status} — FMU feedback can only be recorded once it is acknowledged`,
+        );
+      }
+      await tx.query(
+        `UPDATE aml_str_filings SET submission_status = $1, feedback_received_at = now() WHERE filing_id = $2`,
+        [FilingSubmissionStatus.FEEDBACK_RECEIVED, filingId],
+      );
+      await tx.getRepository(AmlFmuFollowup).save({ filingId, note: `FMU feedback received: ${text}`, createdBy: recordedBy });
+      const updated = await tx.getRepository(AmlStrFiling).findOneByOrFail({ filingId });
+      return this.toSummary(updated);
+    });
   }
 
   private toSummary(filing: AmlStrFiling): FilingSummary {
@@ -134,6 +165,7 @@ export class GoamlTrackerService {
       goamlReference: filing.goamlReference ?? null,
       submittedAt: filing.submittedAt ? filing.submittedAt.toISOString() : null,
       acknowledgedAt: filing.acknowledgedAt ? filing.acknowledgedAt.toISOString() : null,
+      feedbackReceivedAt: filing.feedbackReceivedAt ? filing.feedbackReceivedAt.toISOString() : null,
       retentionExpiry: filing.retentionExpiry ? filing.retentionExpiry.toISOString() : null,
       retentionReviewDue,
     };

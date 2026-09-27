@@ -205,3 +205,22 @@
   line-height: 1.5;
   margin: 0 0 14px;
 }
+
+/* Recording the FMU's feedback (screens/05, "Recording FMU feedback"). */
+.goaml-tracker__feedback {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.goaml-tracker__feedback textarea {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.goaml-tracker__feedbackActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}

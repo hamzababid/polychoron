@@ -222,3 +222,13 @@
 .dashboard__agingRow:hover {
   background: color-mix(in srgb, var(--color-accent) 6%, transparent);
 }
+
+/* Each tier count opens the Alert Queue filtered to that tier. */
+.dashboard__tierLink {
+  cursor: pointer;
+}
+
+.dashboard__tierLink:hover,
+.dashboard__tierLink:focus-visible {
+  text-decoration: underline;
+}

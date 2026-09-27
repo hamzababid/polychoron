@@ -123,6 +123,20 @@ export interface EvidenceBundleRow {
   screening_results: ScreeningResult[];
   assembled_at: string;
   agent_version: string;
+  // Guardrail G2: sources the Evidence Gathering Agent couldn't reach.
+  data_gaps?: string[];
+  evidence_incomplete?: boolean;
+}
+
+/** A regulation the Pattern Matching Agent cited, with the passage. */
+export interface RegulatoryCitationView {
+  chunkId: string;
+  documentId: string | null;
+  documentTitle: string;
+  documentStatus: string | null;
+  sectionReference: string;
+  relevanceScore: number;
+  text: string | null;
 }
 
 export interface MatchedIndicator {
@@ -204,6 +218,7 @@ export interface CaseDetail {
   disposition: DispositionRow | null;
   filing: FilingRow | null;
   agentState: AgentState;
+  regulatoryCitations: RegulatoryCitationView[];
 }
 
 export interface ActivityLogEntry {
@@ -248,6 +263,7 @@ export interface FilingSummary {
   goamlReference: string | null;
   submittedAt: string | null;
   acknowledgedAt: string | null;
+  feedbackReceivedAt: string | null;
   retentionExpiry: string | null;
   retentionReviewDue: boolean;
 }

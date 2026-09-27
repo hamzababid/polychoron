@@ -18,6 +18,14 @@ import { RequireRoles } from '../../../common/auth/roles.decorator.js';
 export class FilingConsoleController {
   constructor(private readonly filingConsoleService: FilingConsoleService) {}
 
+  /** Typology tag options: the live catalog (promoted, active). The
+   * screen keeps the filing's current tag selectable even if it has
+   * since been retired. */
+  @Get(':caseId/filing/typology-options')
+  async typologyOptions(): Promise<Array<{ code: string; label: string }>> {
+    return this.filingConsoleService.liveTypologyOptions();
+  }
+
   @Get(':caseId/filing-draft')
   async getFilingDraft(@Param('caseId') caseId: string): Promise<FilingDraftResponse> {
     return this.filingConsoleService.getFilingDraft(caseId);

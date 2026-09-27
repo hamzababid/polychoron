@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { attestFiling, getFilingDraft, submitFiling } from '../api/client';
+import { attestFiling, getFilingDraft, getFilingTypologyOptions, submitFiling } from '../api/client';
 import type { FilingDraftResponse, StrFieldsDraft } from '../api/types';
 import { useAuth } from '../../../auth/AuthContext';
 import { useFeatureBasePath } from '../useFeatureBasePath';
@@ -11,10 +11,6 @@ import { Loader } from '../../../shell/Loader';
 // Mirrors agent-service/app/features/aml_detection/typology_catalog.py's
 // Phase 1 catalog — the officer can retag to either of these, or leave
 // the agent's original tag.
-const TYPOLOGY_OPTIONS = [
-  { code: 'structuring_subthreshold', label: 'Structuring — sub-threshold cash deposits' },
-  { code: 'deposit_velocity_shift', label: 'Deposit velocity shift' },
-];
 
 function SectionHead({ n, title, note }: { n: number; title: string; note?: string }) {
   return (
@@ -47,6 +43,9 @@ export function FilingConsoleScreen() {
   const [narrative, setNarrative] = useState('');
   const [checklistItems, setChecklistItems] = useState({ noContact: false, noFreeze: false, noDisclosure: false });
   const [attestationConfirmed, setAttestationConfirmed] = useState(false);
+  // Typology tag options = the live catalog (promoted, active), from the
+  // server — never a hard-coded list (screens/04).
+  const [typologyOptions, setTypologyOptions] = useState<{ code: string; label: string }[]>([]);
 
   const load = useCallback(() => {
     getFilingDraft(caseId)
@@ -62,10 +61,17 @@ export function FilingConsoleScreen() {
     load();
   }, [load]);
 
+  useEffect(() => {
+    getFilingTypologyOptions(caseId)
+      .then(setTypologyOptions)
+      .catch(() => setTypologyOptions([]));
+  }, [caseId]);
+
   if (error) return <div className="aml-status aml-status--error">Could not load filing draft: {error}</div>;
   if (!draft || !payload) return <Loader label="Loading filing draft…" />;
 
-  const isFinal = draft.submissionStatus === 'submitted' || draft.submissionStatus === 'acknowledged';
+  // Submitted and every later FMU stage are read-only.
+  const isFinal = ['submitted', 'acknowledged', 'feedback_received'].includes(draft.submissionStatus);
   const tippingOffComplete = checklistItems.noContact && checklistItems.noFreeze && checklistItems.noDisclosure;
   const canSubmit = tippingOffComplete && attestationConfirmed;
   const checksMet = [checklistItems.noContact, checklistItems.noFreeze, checklistItems.noDisclosure].filter(Boolean).length;
@@ -198,10 +204,10 @@ export function FilingConsoleScreen() {
                 <label className="field">
                   <span>Typology tag</span>
                   <select className="input" value={payload.typology_tag} onChange={(e) => setPayload({ ...payload, typology_tag: e.target.value })}>
-                    {!TYPOLOGY_OPTIONS.some((o) => o.code === payload.typology_tag) && (
-                      <option value={payload.typology_tag}>{payload.typology_tag} (agent-assigned)</option>
+                    {!typologyOptions.some((o) => o.code === payload.typology_tag) && (
+                      <option value={payload.typology_tag}>{payload.typology_tag} (current tag — not a live typology)</option>
                     )}
-                    {TYPOLOGY_OPTIONS.map((o) => (
+                    {typologyOptions.map((o) => (
                       <option key={o.code} value={o.code}>
                         {o.label}
                       </option>
