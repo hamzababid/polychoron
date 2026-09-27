@@ -162,6 +162,119 @@ describe('AML screens (e2e)', () => {
       }
     });
 
+    describe('sorting, filtering and views', () => {
+      // An isolated set: one search token matches only these, with
+      // backdated received times so the expected order is exact.
+      const token = `QTEST-${Date.now()}`;
+      let older: string; // 3 days ago, risk 85 (critical, 24 h SLA → past due)
+      let middle: string; // 1 day ago, risk 30 (medium, 96 h SLA)
+      let newest: string; // just now, unscored, no typology match
+      let closed: string; // cleared
+
+      // What the screen sends for its default "Open work" view — the
+      // API itself applies no status filter unless asked.
+      const OPEN_WORK = 'open,claimed,investigating,escalated,pending_filing';
+      const list = async (query: Record<string, string>, session = analystSessionId) =>
+        (
+          (
+            await request(app.getHttpServer())
+              .get('/api/v1/features/aml_detection/alerts')
+              .query({ q: token, page_size: '50', status: OPEN_WORK, ...query })
+              .set('x-session-id', session)
+              .expect(200)
+          ).body as { items: Array<{ caseId: string; pinned: boolean; riskScore: number | null }>; total: number }
+        ).items.map((i) => i.caseId);
+
+      const tag = async (caseId: string, suffix: string, receivedDaysAgo: number) => {
+        await dataSource.query(
+          `UPDATE aml_cases SET alert = jsonb_set(alert, '{source_alert_id}', to_jsonb($2::text)),
+             created_at = now() - make_interval(days => $3) WHERE case_id = $1`,
+          [caseId, `${token}-${suffix}`, receivedDaysAgo],
+        );
+      };
+
+      beforeAll(async () => {
+        older = await createFixtureCase({ status: 'open', withAssessment: true });
+        middle = await createFixtureCase({ status: 'open', withAssessment: true });
+        newest = await createFixtureCase({ status: 'open', withAssessment: false });
+        closed = await createFixtureCase({ status: 'cleared', withAssessment: false });
+        await tag(older, 'older', 3);
+        await tag(middle, 'middle', 1);
+        await tag(newest, 'newest', 0);
+        await tag(closed, 'closed', 2);
+        await dataSource.query(`UPDATE aml_case_assessments SET risk_score = 30 WHERE case_id = $1`, [middle]);
+      });
+
+      it('sorts newest first by default, and lists every status when none is given', async () => {
+        expect(await list({})).toEqual([newest, middle, older]);
+        const everything = (
+          await request(app.getHttpServer())
+            .get('/api/v1/features/aml_detection/alerts')
+            .query({ q: token })
+            .set('x-session-id', analystSessionId)
+            .expect(200)
+        ).body as { items: Array<{ caseId: string }> };
+        expect(everything.items.map((i) => i.caseId)).toEqual([newest, middle, closed, older]);
+      });
+
+      it('sorts by risk either way, unscored always last', async () => {
+        expect(await list({ sort: 'risk', dir: 'desc' })).toEqual([older, middle, newest]);
+        expect(await list({ sort: 'risk', dir: 'asc' })).toEqual([middle, older, newest]);
+      });
+
+      it('includes closed cases only when asked', async () => {
+        expect(await list({ status: 'cleared' })).toEqual([closed]);
+        expect((await list({ status: 'open,cleared' })).sort()).toEqual([older, middle, newest, closed].sort());
+      });
+
+      it('filters by received window, tier, typology and SLA', async () => {
+        const twoDaysAgo = new Date(Date.now() - 2 * 86_400_000).toISOString();
+        expect(await list({ received_from: twoDaysAgo })).toEqual([newest, middle]);
+        expect(await list({ received_to: twoDaysAgo })).toEqual([older]);
+        expect(await list({ risk_tier: 'unscored' })).toEqual([newest]);
+        expect(await list({ risk_tier: 'critical,medium' })).toEqual([middle, older]);
+        expect(await list({ typology: 'none' })).toEqual([newest]);
+        // SLA is open work only: the cleared case is never "past due".
+        expect(await list({ sla: 'past', status: 'open,cleared' })).toEqual([older]);
+      });
+
+      it('filters by assignee, with "me" resolved from the session', async () => {
+        await request(app.getHttpServer())
+          .post(`/api/v1/features/aml_detection/alerts/${middle}/claim`)
+          .set('x-session-id', analystSessionId)
+          .expect(201);
+        expect(await list({ assignee: 'me' })).toEqual([middle]);
+        expect(await list({ assignee: 'me' }, complianceOfficerSessionId)).toEqual([]);
+        expect(await list({ assignee: 'unassigned' })).toEqual([newest, older]);
+      });
+
+      it('pins open evidence-incomplete cases above any sort (guardrail G2)', async () => {
+        await dataSource.query(`UPDATE aml_evidence_bundles SET evidence_incomplete = true WHERE case_id = $1`, [older]);
+        try {
+          expect(await list({})).toEqual([older, newest, middle]);
+          expect(await list({ sort: 'risk', dir: 'asc' })).toEqual([older, middle, newest]);
+        } finally {
+          await dataSource.query(`UPDATE aml_evidence_bundles SET evidence_incomplete = false WHERE case_id = $1`, [older]);
+        }
+      });
+
+      it('rejects unknown filter values and serves facets', async () => {
+        await request(app.getHttpServer())
+          .get('/api/v1/features/aml_detection/alerts')
+          .query({ sort: 'bogus' })
+          .set('x-session-id', analystSessionId)
+          .expect(400);
+        const facets = (
+          await request(app.getHttpServer())
+            .get('/api/v1/features/aml_detection/alerts/facets')
+            .set('x-session-id', analystSessionId)
+            .expect(200)
+        ).body as { typologies: Array<{ code: string }>; assignees: Array<{ userId: string }> };
+        expect(facets.typologies.some((t) => t.code === 'structuring_subthreshold')).toBe(true);
+        expect(facets.assignees.some((a) => a.userId === 'demo-analyst-1')).toBe(true);
+      });
+    });
+
     it('lets an analyst claim an open alert', async () => {
       const caseId = await createFixtureCase({ status: 'open', withAssessment: false });
 

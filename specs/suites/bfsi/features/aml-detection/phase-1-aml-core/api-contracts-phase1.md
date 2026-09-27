@@ -13,7 +13,23 @@
   in `OPEN` status, triggers the agent chain asynchronously.
 
 ## Alert Queue
-- `GET /api/v1/features/aml_detection/alerts?status=&risk_tier=` → paginated `Case` summaries
+- `GET /api/v1/features/aml_detection/alerts` → paginated `Case` summaries
+  (`{items, total, page, pageSize}`). Query (all optional; multi-selects
+  comma-separated; extended 2026-09-27 — see `screens/02-alert-queue.md`,
+  "Sorting, filtering and views"):
+  `q` (alert ID / customer ID or name / case-ID prefix) · `status` ·
+  `risk_tier` (+ `unscored`) · `typology` (+ `none`) · `recommendation`
+  (+ `none`) · `assignee` (`me` / `unassigned` / user ID) ·
+  `received_from`, `received_to` (ISO, `to` exclusive) ·
+  `received_after` (new-arrival check) · `sla` (`past` / `due_24h`, open
+  work only) · `agent_state` (`needs_attention` / `processing` /
+  `not_run` / …) · `sort` (`received` default / `risk` / `sla` /
+  `customer` / `status`) · `dir` · `page` · `page_size` (≤ 100). No
+  `status` = every status; the screen's default view sends open work.
+  Open evidence-incomplete cases come first under any sort (G2).
+- `GET /api/v1/features/aml_detection/alerts/facets` → `{typologies:
+  [{code, label}], assignees: [{userId, name}]}` — filter options that
+  occur in cases
 - `POST /api/v1/features/aml_detection/alerts/{case_id}/claim`
 
 ## Case Workspace

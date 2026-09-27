@@ -31,6 +31,37 @@ export interface AlertQueueRow {
   slaTargetHours: number | null;
   slaRemainingHours: number | null;
   pastSla: boolean;
+  // Guardrail G2: the Evidence Gathering Agent couldn't reach every source.
+  evidenceIncomplete: boolean;
+  // Open + evidence incomplete → pinned above the sorted rows (G2).
+  pinned: boolean;
+}
+
+export type AlertSort = 'received' | 'risk' | 'sla' | 'customer' | 'status';
+
+/** GET .../alerts query (screens/02-alert-queue.md — "Sorting,
+ * filtering and views"). Multi-selects are sent comma-separated. */
+export interface AlertQueueQuery {
+  q?: string;
+  status?: CaseStatus[];
+  riskTier?: string[];
+  typology?: string[];
+  recommendation?: string[];
+  assignee?: string;
+  receivedFrom?: string;
+  receivedTo?: string;
+  receivedAfter?: string;
+  sla?: 'past' | 'due_24h';
+  agentState?: string[];
+  sort?: AlertSort;
+  dir?: 'asc' | 'desc';
+  page?: number;
+  pageSize?: number;
+}
+
+export interface AlertQueueFacets {
+  typologies: { code: string; label: string }[];
+  assignees: { userId: string; name: string }[];
 }
 
 export interface Paginated<T> {

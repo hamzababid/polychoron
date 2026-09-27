@@ -1,6 +1,8 @@
 import { ApiError, apiFetch, getSessionId } from '../../../auth/apiClient';
 import type {
   ActivityLogEntry,
+  AlertQueueFacets,
+  AlertQueueQuery,
   AlertQueueRow,
   BacktestJob,
   CaseDetail,
@@ -39,7 +41,6 @@ import type {
   ReportHistoryEntry,
   ReportingBreakdownBy,
   ReportingSummary,
-  RiskTier,
   SamplingOverview,
   SamplingReviewRow,
   StrFieldsDraft,
@@ -57,14 +58,35 @@ export function searchCases(q: string) {
   return apiFetch<AlertQueueRow[]>(`${BASE}/search?q=${encodeURIComponent(q)}`);
 }
 
-export function listAlerts(params: { status?: CaseStatus; riskTier?: RiskTier; page?: number; pageSize?: number }) {
+export function listAlerts(params: AlertQueueQuery) {
   const query = new URLSearchParams();
-  if (params.status) query.set('status', params.status);
-  if (params.riskTier) query.set('risk_tier', params.riskTier);
-  if (params.page) query.set('page', String(params.page));
-  if (params.pageSize) query.set('page_size', String(params.pageSize));
+  const set = (key: string, value: string | number | undefined) => {
+    if (value !== undefined && value !== '') query.set(key, String(value));
+  };
+  const list = (key: string, values: string[] | undefined) => {
+    if (values?.length) query.set(key, values.join(','));
+  };
+  set('q', params.q);
+  list('status', params.status);
+  list('risk_tier', params.riskTier);
+  list('typology', params.typology);
+  list('recommendation', params.recommendation);
+  set('assignee', params.assignee);
+  set('received_from', params.receivedFrom);
+  set('received_to', params.receivedTo);
+  set('received_after', params.receivedAfter);
+  set('sla', params.sla);
+  list('agent_state', params.agentState);
+  set('sort', params.sort);
+  set('dir', params.dir);
+  set('page', params.page);
+  set('page_size', params.pageSize);
   const qs = query.toString();
   return apiFetch<Paginated<AlertQueueRow>>(`${BASE}/alerts${qs ? `?${qs}` : ''}`);
+}
+
+export function getAlertFacets() {
+  return apiFetch<AlertQueueFacets>(`${BASE}/alerts/facets`);
 }
 
 export function claimAlert(caseId: string) {

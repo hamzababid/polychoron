@@ -23,7 +23,7 @@
 
 .qrow {
   display: grid;
-  grid-template-columns: 86px 208px 1fr 150px 132px 150px 110px;
+  grid-template-columns: 124px 96px 190px minmax(180px, 1fr) 140px 116px 130px 150px 128px;
   align-items: center;
   border-bottom: 1px solid var(--color-divider);
   cursor: pointer;
@@ -153,4 +153,202 @@
 
 .alert-queue__pending--not_run {
   font-style: normal;
+}
+
+/* — Sorting, filtering and views (screens/02-alert-queue.md) — */
+
+/* The grid keeps its columns legible on a narrow window by scrolling
+   sideways inside the list rather than squeezing every cell. */
+.alert-queue__grid {
+  min-width: 1180px;
+}
+
+.alert-queue__views {
+  flex: none;
+  display: flex;
+  gap: 2px;
+  padding: 0 18px;
+  border-bottom: 1px solid var(--color-divider);
+  background: var(--color-bg);
+  overflow-x: auto;
+}
+
+.alert-queue__view {
+  border: none;
+  background: none;
+  padding: 9px 12px 8px;
+  font-size: 12.5px;
+  color: var(--color-neutral-700);
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: var(--font-body);
+}
+
+.alert-queue__view:hover {
+  color: var(--color-text);
+}
+
+.alert-queue__view--active {
+  color: var(--color-text);
+  font-weight: 600;
+  border-bottom-color: var(--color-accent-800);
+}
+
+.alert-queue__view--custom {
+  cursor: default;
+  font-style: italic;
+  color: var(--color-accent-800);
+  border-bottom-color: var(--color-accent-400);
+}
+
+.alert-queue__search {
+  width: 250px;
+  font-size: 12.5px;
+}
+
+.alert-queue__range {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+}
+
+.alert-queue__range .input {
+  font-size: 12px;
+  padding: 3px 6px;
+}
+
+.alert-queue__chips {
+  flex: none;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 18px;
+  border-bottom: 1px solid var(--color-divider);
+  background: var(--color-bg);
+}
+
+.alert-queue__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 4px 2px 9px;
+  font-size: 11.5px;
+  border: 1px solid var(--color-accent-400);
+  background: var(--color-accent-100);
+  color: var(--color-accent-800);
+}
+
+.alert-queue__chip button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  padding: 0 3px;
+  color: inherit;
+}
+
+.alert-queue__clearAll {
+  border: none;
+  background: none;
+  font-size: 11.5px;
+  color: var(--color-accent-800);
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.alert-queue__newBanner {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 18px;
+  font-size: 12.5px;
+  background: color-mix(in srgb, #d9a441 16%, transparent);
+  color: #5e3f07;
+  border-bottom: 1px solid var(--color-divider);
+}
+
+.qsort {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: none;
+  background: none;
+  padding: 0;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.qsort:hover,
+.qsort--active {
+  color: var(--color-text);
+}
+
+.qsort__arrow {
+  font-size: 9px;
+  opacity: 0.45;
+}
+
+.qsort--active .qsort__arrow {
+  opacity: 1;
+  color: var(--color-accent-800);
+}
+
+.alert-queue__date {
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.alert-queue__time {
+  font-size: 11px;
+  color: var(--color-neutral-700);
+  font-variant-numeric: tabular-nums;
+}
+
+.alert-queue__status {
+  display: inline-block;
+  font-size: 10.5px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 1px 6px;
+  border: 1px solid var(--color-divider);
+  color: var(--color-neutral-800);
+  background: var(--color-bg);
+  white-space: nowrap;
+}
+
+.alert-queue__status--open {
+  border-color: var(--color-accent-700);
+  color: var(--color-accent-800);
+}
+
+.alert-queue__status--escalated,
+.alert-queue__status--pending_filing {
+  border-color: var(--color-alert);
+  color: var(--color-alert);
+}
+
+.alert-queue__status--cleared,
+.alert-queue__status--filed {
+  color: var(--color-neutral-600);
+  background: var(--color-neutral-100);
+}
+
+.alert-queue__evidenceFlag {
+  margin-top: 3px;
+  font-size: 10px;
+  color: var(--color-alert);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.qrow--pinned {
+  box-shadow: inset 3px 0 0 var(--color-alert);
 }
