@@ -120,8 +120,7 @@ def save_case_assessment(assessment: CaseAssessment) -> None:
                     str_fields_draft = EXCLUDED.str_fields_draft,
                     regulatory_context_used = EXCLUDED.regulatory_context_used,
                     assessed_at = EXCLUDED.assessed_at,
-                    agent_version = EXCLUDED.agent_version,
-                    typology_version = EXCLUDED.typology_version
+                    agent_version = EXCLUDED.agent_version
                 """
             ),
             {
