@@ -32,6 +32,14 @@
   before submit is enabled (mirrors the server-side model constraint —
   do not rely on server validation alone, this must be a real UX gate)
 
+- Regulatory citations (added 2026-09-27 — they were stored but never
+  shown) → `TypologyMatch.regulatory_citations`, enriched server-side
+  with each chunk's document id/status and passage text: document
+  title, section reference, relevance, the passage itself, and — for
+  `mlro_compliance_head`, who can open the KB — a link to the document.
+  Labelled AI-cited supporting context, never a determination
+  (constitution-addendum A5).
+
 ## Interactions
 - Disposition submit → `POST /api/v1/cases/{case_id}/disposition`
 - If disposition is `file_str`/`file_ctr` → navigate to Filing Console
@@ -47,7 +55,8 @@
   Never "processing" for a case that can't still be processed.
 - Partial evidence (Evidence Agent flagged a data-source gap) → show a
   visible warning banner, do not silently present incomplete evidence
-  as complete
+  as complete — listing each `EvidenceBundle.data_gaps` entry (built
+  2026-09-27; until then only the Alert Queue showed the flag)
 - Case already disposed (read-only view for closed cases) → all
   editable fields render as read-only, disposition history shown instead
   of the action row

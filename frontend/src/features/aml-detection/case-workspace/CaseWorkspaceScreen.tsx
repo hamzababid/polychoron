@@ -85,6 +85,8 @@ export function CaseWorkspaceScreen() {
   if (!caseDetail) return <Loader label="Loading case…" />;
 
   const canFile = session ? FILING_ROLES.some((r) => session.user.roleCodes.includes(r)) : false;
+  // Only the MLRO can open the Regulatory KB (screens/11).
+  const canOpenKb = !!session?.user.roleCodes.includes('aml_detection.mlro_compliance_head');
   const isDisposed = caseDetail.disposition !== null;
   const recommendedDisposition = caseDetail.assessment
     ? RECOMMENDATION_TO_DISPOSITION[caseDetail.assessment.recommendation]
@@ -168,6 +170,17 @@ export function CaseWorkspaceScreen() {
             </span>
           </div>
           <div className="case-workspace__scroll">
+            {caseDetail.evidence?.evidence_incomplete && (
+              <div className="case-workspace__warning" role="alert">
+                <strong>Evidence incomplete.</strong> The agents couldn’t reach every data source, so the evidence below is partial — check
+                these before relying on the assessment:
+                <ul className="case-workspace__gaps">
+                  {(caseDetail.evidence.data_gaps ?? []).map((gap) => (
+                    <li key={gap}>{gap}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
             {caseDetail.agentState === 'not_run' && (
               <div className="case-workspace__notice">
                 <strong>No agent record.</strong> This case was closed
@@ -358,6 +371,43 @@ export function CaseWorkspaceScreen() {
                       </li>
                     ))}
                   </ul>
+                </div>
+              </div>
+            )}
+
+            {caseDetail.typologyMatch && (
+              <div className="aml-source-ai" style={{ marginTop: 10 }}>
+                <div className="ai-band">AI-CITED REGULATIONS · SUPPORTING CONTEXT, NOT A DETERMINATION</div>
+                <div style={{ padding: '12px 14px' }}>
+                  {caseDetail.regulatoryCitations.length === 0 ? (
+                    <div className="case-workspace__muted">The agent cited no regulatory passage for this match.</div>
+                  ) : (
+                    caseDetail.regulatoryCitations.map((c) => (
+                      <div key={c.chunkId} className="case-workspace__citation">
+                        <div className="case-workspace__citationHead">
+                          <strong>{c.documentTitle}</strong> · {c.sectionReference}
+                          <span className="case-workspace__citationScore" title="How closely the passage matched the case (0–1)">
+                            relevance {c.relevanceScore.toFixed(2)}
+                          </span>
+                        </div>
+                        {c.text && <blockquote className="case-workspace__citationText">{c.text}</blockquote>}
+                        <div className="case-workspace__citationMeta">
+                          {c.documentStatus && c.documentStatus !== 'current' && <span>This version is now {c.documentStatus}; the passage is shown as cited. </span>}
+                          {canOpenKb && c.documentId && (
+                            <a
+                              href={`${base}/regulatory-kb/${c.documentId}`}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                navigate(`${base}/regulatory-kb/${c.documentId}`);
+                              }}
+                            >
+                              Open in the Knowledge Base →
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
             )}

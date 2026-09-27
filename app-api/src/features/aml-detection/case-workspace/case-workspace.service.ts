@@ -19,6 +19,19 @@ export interface CaseDetail {
   disposition: Record<string, unknown> | null;
   filing: Record<string, unknown> | null;
   agentState: AgentState;
+  // The typology match's regulatory citations, enriched with the cited
+  // passage and its document so the officer can read what was relied on.
+  regulatoryCitations: RegulatoryCitationView[];
+}
+
+export interface RegulatoryCitationView {
+  chunkId: string;
+  documentId: string | null;
+  documentTitle: string;
+  documentStatus: string | null;
+  sectionReference: string;
+  relevanceScore: number;
+  text: string | null;
 }
 
 export interface ActivityLogEntry {
@@ -60,6 +73,8 @@ export class CaseWorkspaceService {
       ) as Promise<Array<{ agent_state: AgentState }>>,
     ]);
 
+    const regulatoryCitations = await this.enrichCitations(typologyRows[0]?.regulatory_citations);
+
     return {
       caseId: amlCase.caseId,
       tenantId: amlCase.tenantId,
@@ -74,7 +89,42 @@ export class CaseWorkspaceService {
       disposition: dispositionRows[0] ?? null,
       filing: filingRows[0] ?? null,
       agentState,
+      regulatoryCitations,
     };
+  }
+
+  /** Stored citations carry chunk_id, title, section and relevance as the
+   * agent saw them; the passage text and its document come from the KB.
+   * Published chunk text is immutable (migration 013), so this is exactly
+   * the passage the case cited, whatever has happened to the document
+   * since. */
+  private async enrichCitations(stored: unknown): Promise<RegulatoryCitationView[]> {
+    const citations = (Array.isArray(stored) ? stored : []) as Array<{
+      chunk_id: string;
+      document_title: string;
+      section_reference: string;
+      relevance_score: number;
+    }>;
+    if (citations.length === 0) return [];
+    const rows = (await this.dataSource.query(
+      `SELECT c.chunk_id::text AS chunk_id, c.document_id, c.text, d.status
+       FROM regulatory_chunks c JOIN regulatory_documents d ON d.document_id = c.document_id
+       WHERE c.chunk_id::text = ANY($1)`,
+      [citations.map((c) => c.chunk_id)],
+    )) as Array<{ chunk_id: string; document_id: string; text: string; status: string }>;
+    const byId = new Map(rows.map((r) => [r.chunk_id, r]));
+    return citations.map((c) => {
+      const found = byId.get(c.chunk_id);
+      return {
+        chunkId: c.chunk_id,
+        documentId: found?.document_id ?? null,
+        documentTitle: c.document_title,
+        documentStatus: found?.status ?? null,
+        sectionReference: c.section_reference,
+        relevanceScore: c.relevance_score,
+        text: found?.text ?? null,
+      };
+    });
   }
 
   async getActivityLog(caseId: string): Promise<ActivityLogEntry[]> {

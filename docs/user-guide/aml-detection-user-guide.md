@@ -64,7 +64,7 @@ Everything sits inside one platform shell: pick your user, choose the BFSI suite
 2. **Suite and feature.** The suite switcher at the top of the sidebar selects the industry suite (BFSI today). Under it, each feature is a group; AML Detection lists only the screens your role can open.
 3. **Your identity.** The foot of the sidebar shows your name and role, and **Log out**. The collapse button narrows the sidebar to icons; your choice is remembered.
 4. **Breadcrumbs.** The line above each page title shows where you are, e.g. *Typology Console / structuring_subthreshold / Edit*. Earlier parts are links back.
-5. **Global search.** The search box in the top bar finds a case by alert ID, customer ID or customer name and shows up to 8 matches. Press Enter to open the first, or click any match to go to its Case Workspace.
+5. **Global search.** The search box in the top bar finds a case by alert ID, customer ID, customer name or CNIC (with or without dashes) and shows up to 8 matches. Press Enter to open the first, or click any match to go to its Case Workspace.
 6. **Loading.** A thin bar across the top of the window means the platform is waiting on the server, whether a page is loading or an action such as Claim or Save is in progress. A page or panel still fetching its data shows a spinner with what it is loading.
 7. **Notifications.** Success and error messages appear briefly in the corner and disappear after 5 seconds. A failed action never clears the screen behind it.
 
@@ -86,7 +86,7 @@ The Dashboard is the programme's command view: how much work is open, how much i
 | Most aging alerts | The 3 most overdue open cases | Click one to open its Case Workspace |
 | Branch risk heat-map | Open cases per branch by risk tier, 10, 25 or 50 branches a page | Where risk is concentrating |
 
-Clicking **Open alerts** or **Aging alerts** opens the Alert Queue. A new tenant with no cases sees a short next-step prompt instead of empty tiles.
+Clicking **Open alerts** opens the Alert Queue; clicking one of its tier counts opens the queue filtered to that tier, and **Aging alerts** opens the Past SLA view. A new tenant with no cases sees a short next-step prompt instead of empty tiles.
 
 SLA deadlines depend on the risk score: critical 24 hours, high 48, medium 96, low 168 (7 days), counted from when the alert arrived.
 
@@ -109,7 +109,7 @@ The Alert Queue is where work starts: it lists cases newest first, lets you narr
 
 **Filters** narrow any view; changing one after picking a view shows *Custom filters*:
 
-- Search by alert ID, customer ID or name, or the start of a case ID.
+- Search by alert ID, customer ID or name, CNIC, or the start of a case ID.
 - Status, risk tier (including *unscored*), typology (including *no match*), recommendation and agent state each allow several choices at once.
 - Assignee: anyone, me, unassigned, or a named colleague.
 - Received: today, last 7 days, last 30 days, or a custom from–to range.
@@ -152,7 +152,7 @@ The Case Workspace is where an officer reads what the agents found and makes the
 | Prior cases | Earlier cases on this customer and how they were decided |
 | Sanctions · PEP · adverse media | Screening matches with their confidence, or *Clean* |
 
-Long lists page at 5 or 10 rows. If the agents didn't finish, the kill switch was on, or the case predates AML Detection, a note at the top of the panel says so instead of the evidence.
+Long lists page at 5 or 10 rows. If the agents couldn't reach every data source, a red Evidence incomplete warning at the top lists which sources failed; check them before relying on the assessment. If the agents didn't finish, the kill switch was on, or the case predates AML Detection, a note at the top of the panel says so instead of the evidence.
 
 **Right panel — Reasoning + decision.** A legend separates the two voices: hatched = AI-drafted, solid = officer.
 
@@ -176,7 +176,7 @@ Long lists page at 5 or 10 rows. If the agents didn't finish, the kill switch wa
 
 **Agent activity log:** *Show agent activity log* lists every agent step — agent and version, model provider, time taken, confidence and the data sources it used.
 
-Regulatory citations the agent relied on are recorded with the case but are not shown on this screen yet; see which cases cite a regulation from its Knowledge Base page (section 11).
+**AI-cited regulations:** under the typology match, each regulation the agent relied on — document title, section, relevance (0–1) and the passage itself, exactly as cited even if the document has since been updated. MLROs also get *Open in the Knowledge Base*. These are supporting context, never a determination.
 
 ## 7. Customer 360
 
@@ -203,7 +203,7 @@ The Filing Console turns a *File STR* or *File CTR* decision into a report for t
 Open it from the case's **Go to Filing Console** button, which appears once a filing disposition is recorded. Analysts cannot open it.
 
 1. **Case summary (read-only):** filing status, risk score and the agent's recommendation, with a link back to the case.
-2. **STR-F fields (officer-editable):** party name, CNIC, address and occupation, total amount and the typology tag, pre-filled by the agent. Changing the typology tag is recorded in the filing's edit trail with the old and new value.
+2. **STR-F fields (officer-editable):** party name, CNIC, address and occupation, total amount and the typology tag, pre-filled by the agent. The tag list is the live typology catalog; a tag that has since been retired stays selectable and is marked as not live. Changing the typology tag is recorded in the filing's edit trail with the old and new value.
 3. **Suspicion narrative:** the agent's draft, which you edit; it goes to the FMU word for word.
 4. **Tipping-off checklist and attestation** — all four boxes are required:
     - No branch staff, relationship manager or call-centre agent has contacted the customer about these transactions.
@@ -225,9 +225,9 @@ The goAML Tracker follows every submitted report through the regulator's pipelin
 
 **Filing detail:** goAML reference, status, submitted and acknowledged dates, retention expiry, and a link to the case.
 
-**FMU follow-up log:** type a note and press **Add** to record any correspondence with the FMU. Notes are dated, show who wrote them, and cannot be edited or deleted.
+**FMU follow-up log:** type a note and press **Add** to record any correspondence with the FMU. Notes are dated, are recorded under your own name, and cannot be edited or deleted.
 
-**Simulate acknowledgment (demo only):** marks a submitted filing as acknowledged by the FMU, standing in for goAML's real response. The Feedback received step is reserved for the live goAML connection.
+**Simulate acknowledgment (demo only):** marks a submitted filing as acknowledged by the FMU, standing in for goAML's real response. Once a filing is acknowledged, **Record FMU feedback** logs what the FMU said and how it reached you: the filing moves to Feedback received with the date, and your note is added to the follow-up log. It can't be undone.
 
 ## 10. Typology & Rules Console (MLRO)
 
@@ -364,11 +364,6 @@ This release is a working demonstration: the decision and filing workflow is rea
 
 | Area | Limit |
 | --- | --- |
-| Case Workspace | Regulatory citations are recorded but not shown; the *evidence incomplete* warning shows in the Alert Queue but not on the case |
-| Filing Console | The typology tag list offers only the two original typologies, not ones created in the console |
-| Dashboard | Tiles open the Alert Queue unfiltered rather than pre-filtered |
-| Global search | Finds alert ID, customer ID and name; CNIC is not searchable despite the hint |
-| goAML Tracker | The *Feedback received* step awaits the live goAML connection |
 | Typology Console | Regression test cases are added by the platform team; promotion needs one MLRO, no second approver; shadow-mode testing on live traffic is not built |
 | Knowledge Base | The typology restriction only excludes a document when none of its typologies is live |
 | Guardrails | Confidence thresholds for routing use fixed defaults and can't be changed on screen |
