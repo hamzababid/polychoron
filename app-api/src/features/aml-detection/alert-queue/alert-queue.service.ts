@@ -130,7 +130,8 @@ export class AlertQueueService {
       const term = p(`%${filters.q.trim()}%`);
       const prefix = p(`${filters.q.trim().toLowerCase()}%`);
       conditions.push(`(c.alert ->> 'source_alert_id' ILIKE ${term} OR c.alert ->> 'customer_id' ILIKE ${term}
-        OR e.kyc ->> 'customer_name' ILIKE ${term} OR c.case_id::text LIKE ${prefix})`);
+        OR e.kyc ->> 'customer_name' ILIKE ${term} OR replace(e.kyc ->> 'cnic', '-', '') ILIKE replace(${term}, '-', '')
+        OR c.case_id::text LIKE ${prefix})`);
     }
     if (filters.status?.length) conditions.push(`c.status = ANY(${p(filters.status)})`);
     if (filters.riskTier?.length) {
@@ -215,7 +216,7 @@ export class AlertQueueService {
 
   /** Global search (shell/TopHeader) — matches on the alert's own
    * fields (source_alert_id, customer_id) and the assembled evidence
-   * bundle's customer_name, whichever exist for a given case at query
+   * bundle's customer_name and CNIC (dashes ignored), whichever exist for a given case at query
    * time. Capped at 8 results; this is a jump-to-case finder, not a
    * general reporting surface. */
   async search(q: string): Promise<AlertQueueRow[]> {
@@ -239,6 +240,7 @@ export class AlertQueueService {
        WHERE c.alert ->> 'source_alert_id' ILIKE $1
           OR c.alert ->> 'customer_id' ILIKE $1
           OR e.kyc ->> 'customer_name' ILIKE $1
+          OR replace(e.kyc ->> 'cnic', '-', '') ILIKE replace($1, '-', '')
        ORDER BY c.created_at DESC
        LIMIT 8`,
       [`%${term}%`],

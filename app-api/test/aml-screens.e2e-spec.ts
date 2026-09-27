@@ -340,6 +340,67 @@ describe('AML screens (e2e)', () => {
       });
     });
 
+    it('returns the cited regulatory passages with their documents', async () => {
+      const caseId = await createFixtureCase({ status: 'open', withAssessment: true });
+      const ids = await dataSource.transaction(async (tx) => {
+        await tx.query(`SET LOCAL polychoron.kb_maintenance = 'on'`);
+        const [doc] = (await tx.query(
+          `INSERT INTO regulatory_documents (feature_code, title, source_type, issuing_authority, version_label, ingested_by, status, document_family_id)
+           VALUES ('aml_detection', 'Citation Test Regulation', 'regulation', 'Test', 'v1', 'demo-mlro-1', 'current', gen_random_uuid())
+           RETURNING document_id`,
+        )) as Array<{ document_id: string }>;
+        const [chunk] = (await tx.query(
+          `INSERT INTO regulatory_chunks (document_id, section_reference, text, ordinal, char_count)
+           VALUES ($1, '7(1)', 'Report suspicious transactions promptly.', 0, 40) RETURNING chunk_id`,
+          [doc.document_id],
+        )) as Array<{ chunk_id: string }>;
+        return { documentId: doc.document_id, chunkId: chunk.chunk_id };
+      });
+      const missingChunk = '00000000-0000-4000-8000-000000000000';
+      await dataSource.query(`UPDATE aml_typology_matches SET regulatory_citations = $2 WHERE case_id = $1`, [
+        caseId,
+        JSON.stringify([
+          { chunk_id: ids.chunkId, document_title: 'Citation Test Regulation', section_reference: '7(1)', relevance_score: 0.81 },
+          { chunk_id: missingChunk, document_title: 'Gone', section_reference: '1', relevance_score: 0.5 },
+        ]),
+      ]);
+      try {
+        const detail = (
+          await request(app.getHttpServer())
+            .get(`/api/v1/features/aml_detection/cases/${caseId}`)
+            .set('x-session-id', analystSessionId)
+            .expect(200)
+        ).body as { regulatoryCitations: Array<{ chunkId: string; documentId: string | null; text: string | null; documentStatus: string | null }> };
+        expect(detail.regulatoryCitations).toEqual([
+          expect.objectContaining({ chunkId: ids.chunkId, documentId: ids.documentId, documentStatus: 'current', text: 'Report suspicious transactions promptly.' }),
+          expect.objectContaining({ chunkId: missingChunk, documentId: null, text: null }),
+        ]);
+      } finally {
+        await dataSource.transaction(async (tx) => {
+          await tx.query(`SET LOCAL polychoron.kb_maintenance = 'on'`);
+          await tx.query(`DELETE FROM regulatory_chunks WHERE document_id = $1`, [ids.documentId]);
+          await tx.query(`DELETE FROM regulatory_documents WHERE document_id = $1`, [ids.documentId]);
+        });
+      }
+    });
+
+    it('finds a case by CNIC, with or without dashes, in search and the queue', async () => {
+      const caseId = await createFixtureCase({ status: 'open', withAssessment: true });
+      const digits = String(Date.now()).slice(-7);
+      const cnic = `35202-${digits}-3`;
+      await dataSource.query(`UPDATE aml_evidence_bundles SET kyc = jsonb_set(kyc, '{cnic}', to_jsonb($2::text)) WHERE case_id = $1`, [caseId, cnic]);
+      for (const q of [cnic, cnic.replace(/-/g, '')]) {
+        const search = (
+          await request(app.getHttpServer()).get('/api/v1/features/aml_detection/search').query({ q }).set('x-session-id', analystSessionId).expect(200)
+        ).body as Array<{ caseId: string }>;
+        expect(search.map((r) => r.caseId)).toContain(caseId);
+        const queue = (
+          await request(app.getHttpServer()).get('/api/v1/features/aml_detection/alerts').query({ q }).set('x-session-id', analystSessionId).expect(200)
+        ).body as { items: Array<{ caseId: string }> };
+        expect(queue.items.map((r) => r.caseId)).toContain(caseId);
+      }
+    });
+
     it('returns the activity log (empty for a fixture case with no agent invocations)', async () => {
       const caseId = await createFixtureCase({ status: 'open', withAssessment: true });
 
@@ -482,6 +543,79 @@ describe('AML screens (e2e)', () => {
         .set('x-session-id', complianceOfficerSessionId)
         .expect(201);
       expect((ackRes.body as { submissionStatus: string }).submissionStatus).toBe('acknowledged');
+    });
+
+    it('records FMU feedback only on an acknowledged filing, with a note, as the session user', async () => {
+      const caseId = await createFixtureCase({ status: 'pending_filing', withAssessment: true });
+      const api = (method: 'get' | 'post', path: string) =>
+        request(app.getHttpServer())[method](`/api/v1/features/aml_detection${path}`).set('x-session-id', complianceOfficerSessionId);
+      await api('post', `/cases/${caseId}/filing/attest`)
+        .send({
+          officer_id: 'demo-compliance-officer-1',
+          officer_name: 'Bilal Siddiqui',
+          officer_role: 'senior_officer_l2',
+          tipping_off_checklist_complete: true,
+          attestation_confirmed: true,
+        })
+        .expect(201);
+      await api('post', `/cases/${caseId}/filing/submit`).expect(201);
+      const filing = ((await api('get', '/filings').query({ page_size: 100 }).expect(200)).body as { items: Array<{ filingId: string; caseId: string }> }).items.find(
+        (f) => f.caseId === caseId,
+      )!;
+
+      // Not yet acknowledged → refused; nothing changes.
+      await api('post', `/filings/${filing.filingId}/feedback`).send({ note: 'too early' }).expect(400);
+      await api('post', `/filings/${filing.filingId}/simulate-acknowledgment`).expect(201);
+      await api('post', `/filings/${filing.filingId}/feedback`).send({ note: '   ' }).expect(400);
+
+      const res = await api('post', `/filings/${filing.filingId}/feedback`).send({ note: 'FMU requested bank statements, 12 Sep' }).expect(201);
+      const summary = res.body as { submissionStatus: string; feedbackReceivedAt: string | null };
+      expect(summary.submissionStatus).toBe('feedback_received');
+      expect(summary.feedbackReceivedAt).not.toBeNull();
+      await api('post', `/filings/${filing.filingId}/feedback`).send({ note: 'again' }).expect(400);
+
+      // A follow-up's author is the session user, whatever the body says.
+      await api('post', `/filings/${filing.filingId}/followups`).send({ note: 'Sent statements', created_by: 'someone-else' }).expect(201);
+      const detail = (await api('get', `/filings/${filing.filingId}`).expect(200)).body as {
+        followups: Array<{ note: string; createdBy: string }>;
+      };
+      expect(detail.followups.map((f) => [f.note, f.createdBy])).toEqual([
+        ['FMU feedback received: FMU requested bank statements, 12 Sep', 'demo-compliance-officer-1'],
+        ['Sent statements', 'demo-compliance-officer-1'],
+      ]);
+    });
+
+    it('offers the live typology catalog as filing tags, to filing roles only', async () => {
+      const caseId = await createFixtureCase({ status: 'pending_filing', withAssessment: true });
+      const code = `test_filing_tag_${Date.now()}`;
+      await dataSource.transaction(async (tx) => {
+        await tx.query(`SET LOCAL polychoron.typology_maintenance = 'on'`);
+        await tx.query(`INSERT INTO aml_typology_configs (typology_code, created_by) VALUES ($1, 'demo-mlro-1')`, [code]);
+        await tx.query(
+          `INSERT INTO aml_typology_config_versions (typology_code, version, typology_label, rule_logic_description, active, status, changed_by, change_reason)
+           VALUES ($1, 1, 'Test filing tag', 'rule', true, 'promoted', 'demo-mlro-1', 'test')`,
+          [code],
+        );
+        await tx.query(`UPDATE aml_typology_configs SET production_version = 1 WHERE typology_code = $1`, [code]);
+      });
+      try {
+        const res = await request(app.getHttpServer())
+          .get(`/api/v1/features/aml_detection/cases/${caseId}/filing/typology-options`)
+          .set('x-session-id', complianceOfficerSessionId)
+          .expect(200);
+        expect((res.body as Array<{ code: string; label: string }>).find((o) => o.code === code)?.label).toBe('Test filing tag');
+        await request(app.getHttpServer())
+          .get(`/api/v1/features/aml_detection/cases/${caseId}/filing/typology-options`)
+          .set('x-session-id', analystSessionId)
+          .expect(403);
+      } finally {
+        await dataSource.transaction(async (tx) => {
+          await tx.query(`SET LOCAL polychoron.typology_maintenance = 'on'`);
+          await tx.query(`UPDATE aml_typology_configs SET production_version = NULL WHERE typology_code = $1`, [code]);
+          await tx.query(`DELETE FROM aml_typology_config_versions WHERE typology_code = $1`, [code]);
+          await tx.query(`DELETE FROM aml_typology_configs WHERE typology_code = $1`, [code]);
+        });
+      }
     });
   });
 

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { addFollowup, getFilingDetail, listFilings, simulateAcknowledgment } from '../api/client';
+import { addFollowup, getFilingDetail, listFilings, recordFmuFeedback, simulateAcknowledgment } from '../api/client';
 import type { FilingDetail, FilingPortfolioCounts, FilingSummary } from '../api/types';
 import { Pagination } from '../shared/Pagination';
 import { usePagedList } from '../shared/usePagedList';
@@ -44,6 +44,10 @@ export function GoamlTrackerScreen() {
   const [detail, setDetail] = useState<FilingDetail | null>(null);
   const [followupNote, setFollowupNote] = useState('');
   const [acking, setAcking] = useState(false);
+  // Recording the FMU's feedback (the tracker's third step).
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const [feedbackNote, setFeedbackNote] = useState('');
+  const [recording, setRecording] = useState(false);
 
   const loadList = useCallback(() => {
     listFilings({ page, pageSize })
@@ -87,10 +91,27 @@ export function GoamlTrackerScreen() {
     }
   };
 
+  const handleRecordFeedback = async () => {
+    if (!selectedId || !feedbackNote.trim()) return;
+    setRecording(true);
+    try {
+      await recordFmuFeedback(selectedId, feedbackNote.trim());
+      setFeedbackOpen(false);
+      setFeedbackNote('');
+      loadList();
+      setDetail(await getFilingDetail(selectedId));
+      toast.success('FMU feedback recorded.');
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : String(err));
+    } finally {
+      setRecording(false);
+    }
+  };
+
   const handleAddFollowup = async () => {
     if (!selectedId || !followupNote.trim() || !session) return;
     try {
-      await addFollowup(selectedId, followupNote, session.user.userId);
+      await addFollowup(selectedId, followupNote);
       setFollowupNote('');
       const updated = await getFilingDetail(selectedId);
       setDetail(updated);
@@ -192,7 +213,11 @@ export function GoamlTrackerScreen() {
                 <div
                   key={f.filingId}
                   className={`trow ${selectedId === f.filingId ? 'trow--selected' : ''}`}
-                  onClick={() => setSelectedId(f.filingId)}
+                  onClick={() => {
+                    setSelectedId(f.filingId);
+                    setFeedbackOpen(false);
+                    setFeedbackNote('');
+                  }}
                 >
                   <div className="tcell">
                     <span className="aml-tag">{f.reportType.toUpperCase()}</span>
@@ -263,6 +288,7 @@ export function GoamlTrackerScreen() {
                   <div className="goaml-tracker__meta">
                     {detail.submittedAt && <div>Submitted: {new Date(detail.submittedAt).toLocaleString()}</div>}
                     {detail.acknowledgedAt && <div>Acknowledged: {new Date(detail.acknowledgedAt).toLocaleString()}</div>}
+                    {detail.feedbackReceivedAt && <div>Feedback received: {new Date(detail.feedbackReceivedAt).toLocaleString()}</div>}
                     {detail.retentionExpiry && <div>Retention expiry: {new Date(detail.retentionExpiry).toLocaleDateString()}</div>}
                   </div>
                   {detail.submissionStatus === 'submitted' && (
@@ -270,9 +296,38 @@ export function GoamlTrackerScreen() {
                       {acking ? 'Simulating…' : 'Simulate acknowledgment (demo only)'}
                     </button>
                   )}
+                  {detail.submissionStatus === 'acknowledged' && !feedbackOpen && (
+                    <button className="aml-btn aml-btn--primary" onClick={() => setFeedbackOpen(true)}>
+                      Record FMU feedback…
+                    </button>
+                  )}
                   <button className="aml-btn" onClick={() => navigate(`${base}/cases/${detail.caseId}`)} style={{ marginLeft: 8 }}>
                     ← Back to case
                   </button>
+                  {feedbackOpen && (
+                    <div className="goaml-tracker__feedback">
+                      <label className="aml-label" htmlFor="fmu-feedback">
+                        FMU feedback — what the FMU said, and how it reached you
+                      </label>
+                      <textarea
+                        id="fmu-feedback"
+                        className="input"
+                        rows={3}
+                        autoFocus
+                        value={feedbackNote}
+                        onChange={(e) => setFeedbackNote(e.target.value)}
+                      />
+                      <div className="goaml-tracker__feedbackActions">
+                        <button className="aml-btn" disabled={recording} onClick={() => setFeedbackOpen(false)}>
+                          Cancel
+                        </button>
+                        <button className="aml-btn aml-btn--primary" disabled={recording || !feedbackNote.trim()} onClick={() => void handleRecordFeedback()}>
+                          {recording ? 'Recording…' : 'Record feedback'}
+                        </button>
+                      </div>
+                      <div className="goaml-tracker__muted">Marks the filing Feedback received and adds this note to the follow-up log. It can't be undone.</div>
+                    </div>
+                  )}
                 </div>
               </div>
 

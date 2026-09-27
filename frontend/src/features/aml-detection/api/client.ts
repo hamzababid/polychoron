@@ -117,6 +117,10 @@ export function recordDisposition(caseId: string, body: RecordDispositionBody) {
   });
 }
 
+export function getFilingTypologyOptions(caseId: string) {
+  return apiFetch<{ code: string; label: string }[]>(`${BASE}/cases/${caseId}/filing/typology-options`);
+}
+
 export function getFilingDraft(caseId: string) {
   return apiFetch<FilingDraftResponse>(`${BASE}/cases/${caseId}/filing-draft`);
 }
@@ -154,14 +158,19 @@ export function getFilingDetail(filingId: string) {
   return apiFetch<FilingDetail>(`${BASE}/filings/${filingId}`);
 }
 
+export function recordFmuFeedback(filingId: string, note: string) {
+  return apiFetch<FilingSummary>(`${BASE}/filings/${filingId}/feedback`, { method: 'POST', body: JSON.stringify({ note }) });
+}
+
 export function simulateAcknowledgment(filingId: string) {
   return apiFetch<FilingSummary>(`${BASE}/filings/${filingId}/simulate-acknowledgment`, { method: 'POST' });
 }
 
-export function addFollowup(filingId: string, note: string, createdBy: string) {
+// The author is the session user (app-api reads it from the session).
+export function addFollowup(filingId: string, note: string) {
   return apiFetch<{ followupId: string }>(`${BASE}/filings/${filingId}/followups`, {
     method: 'POST',
-    body: JSON.stringify({ note, created_by: createdBy }),
+    body: JSON.stringify({ note }),
   });
 }
 

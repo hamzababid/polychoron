@@ -39,3 +39,15 @@
       by nature, confirm this is enforced identically to Filing Console
 - [ ] Retention-expiry calculation is server-computed at submission time
       (`submitted_at + 10 years`), never recalculated client-side
+
+## Recording FMU feedback (added 2026-09-27)
+The third step, *Feedback received*, had nothing that set it. A senior
+officer or MLRO now records it: **Record FMU feedback** on an
+acknowledged filing, with a required note → status
+`feedback_received`, `feedback_received_at` = now, and the note
+appended to the FMU follow-up log as the session user (one
+transaction). Only from `acknowledged`. Unlike *Simulate
+acknowledgment* this is a real officer action, not demo-only: the FMU's
+feedback arrives by the bank's own channels and is logged here.
+- [ ] Refused unless the filing is acknowledged; the note is required
+

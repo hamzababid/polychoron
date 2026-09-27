@@ -3,7 +3,9 @@ import { ApiTags } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsInt, IsOptional, Max, Min } from 'class-validator';
 import { GoamlTrackerService, type FilingDetail, type FilingPortfolioCounts, type FilingSummary } from './goaml-tracker.service.js';
-import { AddFollowupDto } from '../dto/add-followup.dto.js';
+import { AddFollowupDto, RecordFeedbackDto } from '../dto/add-followup.dto.js';
+import { CurrentUser } from '../../../common/auth/current-user.decorator.js';
+import type { PlatformUser } from '../../../platform/entities/index.js';
 import { SessionGuard } from '../../../common/auth/session.guard.js';
 import { RolesGuard } from '../../../common/auth/roles.guard.js';
 import { RequireRoles } from '../../../common/auth/roles.decorator.js';
@@ -57,7 +59,20 @@ export class GoamlTrackerController {
   }
 
   @Post(':filingId/followups')
-  async addFollowup(@Param('filingId') filingId: string, @Body() dto: AddFollowupDto): Promise<{ followupId: string }> {
-    return this.goamlTrackerService.addFollowup(filingId, dto.note, dto.created_by);
+  async addFollowup(
+    @Param('filingId') filingId: string,
+    @Body() dto: AddFollowupDto,
+    @CurrentUser() user: PlatformUser,
+  ): Promise<{ followupId: string }> {
+    return this.goamlTrackerService.addFollowup(filingId, dto.note, user.userId);
+  }
+
+  @Post(':filingId/feedback')
+  async recordFeedback(
+    @Param('filingId') filingId: string,
+    @Body() dto: RecordFeedbackDto,
+    @CurrentUser() user: PlatformUser,
+  ): Promise<FilingSummary> {
+    return this.goamlTrackerService.recordFeedback(filingId, dto.note, user.userId);
   }
 }

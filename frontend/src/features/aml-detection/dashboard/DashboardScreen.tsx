@@ -352,7 +352,25 @@ function DashboardBody({
             </div>
             <div className="dashboard__tierLegend">
               {TIER_ORDER.map((t) => (
-                <span key={t.key}>
+                <span
+                  key={t.key}
+                  role="link"
+                  tabIndex={0}
+                  className="dashboard__tierLink"
+                  title={`Open the ${t.label.toLowerCase()} alerts in the queue`}
+                  onClick={(e) => {
+                    // Inside the tile's own link: go to this tier, not the whole queue.
+                    e.preventDefault();
+                    e.stopPropagation();
+                    navigate(`${base}/alerts?risk_tier=${t.key}`);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key !== 'Enter') return;
+                    e.preventDefault();
+                    e.stopPropagation();
+                    navigate(`${base}/alerts?risk_tier=${t.key}`);
+                  }}
+                >
                   <span className="dot" style={{ background: t.color }} />
                   {t.label} {summary.openAlertsByTier[t.key]}
                 </span>
@@ -388,9 +406,9 @@ function DashboardBody({
           style={aging ? { borderColor: 'var(--color-alert)', borderWidth: 2, background: 'color-mix(in srgb, var(--color-alert) 6%, transparent)' } : undefined}
           onClick={(e) => {
             e.preventDefault();
-            navigate(`${base}/alerts`);
+            navigate(`${base}/alerts?sla=past`);
           }}
-          href={`${base}/alerts`}
+          href={`${base}/alerts?sla=past`}
         >
           <i className="corner tl" />
           <i className="corner tr" />

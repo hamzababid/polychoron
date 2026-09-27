@@ -48,6 +48,10 @@ export class AmlStrFiling {
   @Column({ name: 'acknowledged_at', type: 'timestamptz', nullable: true })
   acknowledgedAt?: Date;
 
+  // Set when an officer records the FMU's feedback (migration 015).
+  @Column({ name: 'feedback_received_at', type: 'timestamptz', nullable: true })
+  feedbackReceivedAt?: Date;
+
   @Column({ name: 'retention_expiry', type: 'timestamptz', nullable: true })
   retentionExpiry?: Date;
 }

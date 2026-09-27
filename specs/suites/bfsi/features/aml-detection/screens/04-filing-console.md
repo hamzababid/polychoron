@@ -14,7 +14,9 @@
   link back to Case Workspace)
 - Pre-populated STR-F fields → `STRFieldsDraft`, lightly editable
   (party details, transaction details); typology tag editable via
-  dropdown (officer override)
+  dropdown (officer override) — options = the live typology catalog
+  (promoted, active), plus the filing's current tag if it is no longer
+  live (2026-09-27: was hard-coded to the two original typologies)
 - Narrative field → agent's `draft_narrative`, editable, labeled
   "AI-drafted — review before submitting"
 - Attestation panel (amber, most visually prominent element on screen):
