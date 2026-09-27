@@ -28,6 +28,13 @@ export interface FilingDetail extends FilingSummary {
   followups: Array<{ followupId: string; note: string; createdBy: string; createdAt: string }>;
 }
 
+export interface FilingPortfolioCounts {
+  total: number;
+  awaiting: number;
+  acknowledged: number;
+  retentionDue: number;
+}
+
 @Injectable()
 export class GoamlTrackerService {
   constructor(
@@ -36,13 +43,32 @@ export class GoamlTrackerService {
     @InjectRepository(AmlFmuFollowup) private readonly followups: Repository<AmlFmuFollowup>,
   ) {}
 
-  async list(page: number, pageSize: number): Promise<{ items: FilingSummary[]; total: number }> {
-    const [rows, total] = await this.filings.findAndCount({
-      order: { submittedAt: 'DESC' },
-      skip: (page - 1) * pageSize,
-      take: pageSize,
-    });
-    return { items: rows.map((f) => this.toSummary(f)), total };
+  async list(page: number, pageSize: number): Promise<{ items: FilingSummary[]; total: number; counts: FilingPortfolioCounts }> {
+    const [[rows, total], counts] = await Promise.all([
+      this.filings.findAndCount({
+        order: { submittedAt: 'DESC' },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
+      this.portfolioCounts(),
+    ]);
+    return { items: rows.map((f) => this.toSummary(f)), total, counts };
+  }
+
+  /** The portfolio strip's numbers, across every filing — not just the
+   * page being shown (they used to be counted client-side from the
+   * first 50 rows). Same retention window as toSummary(). */
+  private async portfolioCounts(): Promise<FilingPortfolioCounts> {
+    const [row] = (await this.dataSource.query(
+      `SELECT count(*)::int AS total,
+              count(*) FILTER (WHERE submission_status = 'submitted')::int AS awaiting,
+              count(*) FILTER (WHERE submission_status IN ('acknowledged', 'feedback_received'))::int AS acknowledged,
+              count(*) FILTER (WHERE retention_expiry IS NOT NULL
+                                 AND retention_expiry <= now() + make_interval(days => $1))::int AS retention_due
+       FROM aml_str_filings`,
+      [RETENTION_REVIEW_WINDOW_DAYS],
+    )) as Array<{ total: number; awaiting: number; acknowledged: number; retention_due: number }>;
+    return { total: row.total, awaiting: row.awaiting, acknowledged: row.acknowledged, retentionDue: row.retention_due };
   }
 
   async getDetail(filingId: string): Promise<FilingDetail> {

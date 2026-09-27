@@ -182,8 +182,11 @@ describe('Reporting & MI (e2e)', () => {
       .get('/api/v1/features/aml_detection/reports/history')
       .set('x-session-id', mlroSessionId)
       .expect(200);
-    const history = historyRes.body as Array<{ reportId: string; contentHash: string }>;
-    const historyEntry = history.find((h) => h.reportId === reportId);
+    // Paged, newest first — the report just generated is on page 1.
+    const history = historyRes.body as { items: Array<{ reportId: string; contentHash: string }>; total: number; page: number };
+    expect(history.page).toBe(1);
+    expect(history.total).toBeGreaterThanOrEqual(1);
+    const historyEntry = history.items.find((h) => h.reportId === reportId);
     expect(historyEntry).toBeDefined();
     expect(historyEntry!.contentHash).toBe(generated.contentHash);
 

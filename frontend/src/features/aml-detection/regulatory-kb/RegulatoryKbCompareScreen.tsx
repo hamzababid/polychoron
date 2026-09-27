@@ -3,6 +3,8 @@ import { Link, useParams } from 'react-router-dom';
 import { compareRegulatoryVersions } from '../api/client';
 import type { RegulatoryCompareResult } from '../api/types';
 import { useFeatureBasePath } from '../useFeatureBasePath';
+import { Pagination } from '../shared/Pagination';
+import { usePagedList } from '../shared/usePagedList';
 import { StatusBadge, Tile } from './kbShared';
 import { errorMessage, formatDate } from './kbUtils';
 import { wordDiff } from './wordDiff';
@@ -26,13 +28,17 @@ export function RegulatoryKbCompareScreen() {
       .catch((err: unknown) => setError(errorMessage(err)));
   }, [documentId, otherId]);
 
+  const shown = data
+    ? [...data.chunks]
+        .filter((c) => showUnchanged || c.status !== 'unchanged')
+        .sort((a, b) => STATUS_ORDER[a.status] - STATUS_ORDER[b.status])
+    : [];
+  const paging = usePagedList(shown, { resetKey: String(showUnchanged) });
+
   if (error) return <div className="aml-status aml-status--error">{error}</div>;
   if (!data) return <div className="aml-status">Comparing versions…</div>;
 
   const counts = data.chunks.reduce<Record<string, number>>((acc, c) => ({ ...acc, [c.status]: (acc[c.status] ?? 0) + 1 }), {});
-  const shown = [...data.chunks]
-    .filter((c) => showUnchanged || c.status !== 'unchanged')
-    .sort((a, b) => STATUS_ORDER[a.status] - STATUS_ORDER[b.status]);
 
   return (
     <div className="kb-screen">
@@ -91,8 +97,8 @@ export function RegulatoryKbCompareScreen() {
           }
         >
           {shown.length === 0 && <div className="kb-muted">No content differences.</div>}
-          {shown.map((c, i) => (
-            <div key={`${c.sectionReference}-${i}`} className={`kb-diffchunk kb-diffchunk--${c.status}`}>
+          {paging.pageItems.map((c, i) => (
+            <div key={`${c.sectionReference}-${paging.offset + i}`} className={`kb-diffchunk kb-diffchunk--${c.status}`}>
               <div className="kb-diffchunk__head">
                 <span className={`kb-diffchunk__badge kb-diffchunk__badge--${c.status}`}>{c.status}</span>
                 <strong>{c.sectionReference}</strong>
@@ -112,6 +118,7 @@ export function RegulatoryKbCompareScreen() {
               )}
             </div>
           ))}
+          {paging.needed && <Pagination {...paging.props} noun="Chunks" />}
         </Tile>
       </div>
     </div>

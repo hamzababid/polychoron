@@ -16,6 +16,7 @@ import type {
   FilingDetail,
   FilingDraftResponse,
   FilingSummary,
+  FilingPortfolioCounts,
   GuardrailViolationsResponse,
   KillSwitchScope,
   IngestionJobStatus,
@@ -124,7 +125,7 @@ export function listFilings(params: { page?: number; pageSize?: number }) {
   if (params.page) query.set('page', String(params.page));
   if (params.pageSize) query.set('page_size', String(params.pageSize));
   const qs = query.toString();
-  return apiFetch<Paginated<FilingSummary>>(`${BASE}/filings${qs ? `?${qs}` : ''}`);
+  return apiFetch<Paginated<FilingSummary> & { counts: FilingPortfolioCounts }>(`${BASE}/filings${qs ? `?${qs}` : ''}`);
 }
 
 export function getFilingDetail(filingId: string) {
@@ -487,8 +488,8 @@ export function generateReport(body: {
   return apiFetch<ReportHistoryEntry>(`${BASE}/reports/generate`, { method: 'POST', body: JSON.stringify(body) });
 }
 
-export function listReportHistory() {
-  return apiFetch<ReportHistoryEntry[]>(`${BASE}/reports/history`);
+export function listReportHistory(params: { page: number; pageSize: number }) {
+  return apiFetch<Paginated<ReportHistoryEntry>>(`${BASE}/reports/history?page=${params.page}&page_size=${params.pageSize}`);
 }
 
 /** Not apiFetch — this is a binary file response, not JSON. Fetches

@@ -194,6 +194,15 @@ export interface FilingDraftResponse {
   acknowledgedAt: string | null;
 }
 
+/** goAML Tracker's portfolio strip — counted server-side across every
+ * filing, not just the page on screen. */
+export interface FilingPortfolioCounts {
+  total: number;
+  awaiting: number;
+  acknowledged: number;
+  retentionDue: number;
+}
+
 export interface FilingSummary {
   filingId: string;
   caseId: string;

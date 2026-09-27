@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { listKillSwitches, listTypologies } from '../api/client';
 import type { KillSwitchScope, TypologyConsoleOverview, TypologyStatus } from '../api/types';
 import { useFeatureBasePath } from '../useFeatureBasePath';
+import { Pagination } from '../shared/Pagination';
+import { usePagedList } from '../shared/usePagedList';
 import { KillSwitchDialog, type KillSwitchAction } from './KillSwitchDialog';
 import { TypologyStatusBadge } from './TypologyStatusBadge';
 import { useCanWriteTypologies } from './typologyUtils';
@@ -91,6 +93,7 @@ export function TypologyLibraryScreen() {
       return true;
     });
   }, [rows, statusFilter, tuningOnly, search]);
+  const paging = usePagedList(filteredRows, { initialPageSize: 25, resetKey: `${statusFilter}|${tuningOnly}|${search}` });
 
   const featureKillSwitch = killSwitches.find((k) => k.typologyCode === null) ?? null;
 
@@ -228,7 +231,7 @@ export function TypologyLibraryScreen() {
             No typologies match these filters.
           </div>
         ) : (
-          filteredRows.map((r) => (
+          paging.pageItems.map((r) => (
             <div
               key={r.typologyCode}
               className={`typology-console__row ${r.status === 'live' ? 'typology-console__row--live' : 'typology-console__row--draft'}`}
@@ -285,6 +288,7 @@ export function TypologyLibraryScreen() {
             </div>
           ))
         )}
+        {paging.needed && <Pagination {...paging.props} noun="Typologies" />}
 
       </div>
 

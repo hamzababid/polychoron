@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import type { RegressionRun, TypologyHistory, TypologyVersion } from '../api/types';
 import { wordDiff } from '../regulatory-kb/wordDiff';
 import { Tile } from '../regulatory-kb/kbShared';
+import { Pagination } from '../shared/Pagination';
+import { usePagedList } from '../shared/usePagedList';
 import { formatDate, isRunning } from './typologyUtils';
 
 /** Shared pieces of the Typology Console's routed screens
@@ -118,32 +120,36 @@ export function RegressionSummary({ run }: { run: RegressionRun }) {
 }
 
 export function RegressionResults({ run }: { run: RegressionRun }) {
+  const paging = usePagedList(run.results, { resetKey: run.runId });
   return (
-    <table className="typology-detail__results">
-      <thead>
-        <tr>
-          <th>Case</th>
-          <th>Expected</th>
-          <th>Actual</th>
-          <th />
-        </tr>
-      </thead>
-      <tbody>
-        {(run.results ?? []).map((r) => (
-          <tr key={r.scenarioName}>
-            <td>{r.scenarioName}</td>
-            <td>
-              {r.expectedTypology ?? 'any'} · {r.expectedRecommendation ?? 'any'}
-            </td>
-            <td>
-              {r.actualTypology ?? '—'} · {r.actualRecommendation ?? '—'}
-              {r.notes && <div className="typology-muted">{r.notes}</div>}
-            </td>
-            <td style={{ color: r.matchedExpected ? 'var(--color-accent-800)' : 'var(--color-alert)' }}>{r.matchedExpected ? 'pass' : 'fail'}</td>
+    <>
+      <table className="typology-detail__results">
+        <thead>
+          <tr>
+            <th>Case</th>
+            <th>Expected</th>
+            <th>Actual</th>
+            <th />
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {paging.pageItems.map((r) => (
+            <tr key={r.scenarioName}>
+              <td>{r.scenarioName}</td>
+              <td>
+                {r.expectedTypology ?? 'any'} · {r.expectedRecommendation ?? 'any'}
+              </td>
+              <td>
+                {r.actualTypology ?? '—'} · {r.actualRecommendation ?? '—'}
+                {r.notes && <div className="typology-muted">{r.notes}</div>}
+              </td>
+              <td style={{ color: r.matchedExpected ? 'var(--color-accent-800)' : 'var(--color-alert)' }}>{r.matchedExpected ? 'pass' : 'fail'}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      {paging.needed && <Pagination {...paging.props} noun="Cases" />}
+    </>
   );
 }
 
@@ -159,6 +165,7 @@ export function HistoryTile({
   productionVersion: number | null;
 }) {
   const promotionsByVersion = new Map(history.promotions.map((p) => [p.promotedVersion, p]));
+  const paging = usePagedList(history.versions, { resetKey: code });
   return (
     <Tile
       title="Version history"
@@ -169,7 +176,7 @@ export function HistoryTile({
       }
     >
       <div style={{ margin: '-11px -13px -13px' }}>
-        {history.versions.map((v) => {
+        {paging.pageItems.map((v) => {
           const promotion = promotionsByVersion.get(v.version);
           const compareTarget = productionVersion != null && v.version !== productionVersion ? productionVersion : null;
           return (
@@ -209,6 +216,11 @@ export function HistoryTile({
           );
         })}
       </div>
+      {paging.needed && (
+        <div style={{ margin: '13px -13px -13px' }}>
+          <Pagination {...paging.props} noun="Versions" />
+        </div>
+      )}
     </Tile>
   );
 }

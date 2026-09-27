@@ -291,9 +291,13 @@ export class ReportingService {
     return toHistoryEntry(saved);
   }
 
-  async getHistory(): Promise<ReportHistoryEntry[]> {
-    const rows = await this.reports.find({ order: { generatedAt: 'DESC' } });
-    return rows.map(toHistoryEntry);
+  async getHistory(page: number, pageSize: number): Promise<{ items: ReportHistoryEntry[]; total: number }> {
+    const [rows, total] = await this.reports.findAndCount({
+      order: { generatedAt: 'DESC' },
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+    });
+    return { items: rows.map(toHistoryEntry), total };
   }
 
   async getReportFile(reportId: string): Promise<ReportFile> {

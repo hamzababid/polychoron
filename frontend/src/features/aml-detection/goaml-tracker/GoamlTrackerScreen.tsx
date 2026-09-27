@@ -1,7 +1,9 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { addFollowup, getFilingDetail, listFilings, simulateAcknowledgment } from '../api/client';
-import type { FilingDetail, FilingSummary } from '../api/types';
+import type { FilingDetail, FilingPortfolioCounts, FilingSummary } from '../api/types';
+import { Pagination } from '../shared/Pagination';
+import { usePagedList } from '../shared/usePagedList';
 import { useAuth } from '../../../auth/AuthContext';
 import { ApiError } from '../../../auth/apiClient';
 import { useToast } from '../../../shell/ToastProvider';
@@ -30,6 +32,12 @@ export function GoamlTrackerScreen() {
   const { session } = useAuth();
   const toast = useToast();
   const [filings, setFilings] = useState<FilingSummary[] | null>(null);
+  // Server-paged list; the portfolio strip's counts come from the
+  // server too, across every filing rather than the page on screen.
+  const [counts, setCounts] = useState<FilingPortfolioCounts | null>(null);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(20);
+  const [total, setTotal] = useState(0);
   const [loadError, setLoadError] = useState<ApiError | Error | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [detail, setDetail] = useState<FilingDetail | null>(null);
@@ -37,13 +45,15 @@ export function GoamlTrackerScreen() {
   const [acking, setAcking] = useState(false);
 
   const loadList = useCallback(() => {
-    listFilings({ pageSize: 50 })
+    listFilings({ page, pageSize })
       .then((res) => {
         setFilings(res.items);
+        setTotal(res.total);
+        setCounts(res.counts);
         setSelectedId((current) => current ?? res.items[0]?.filingId ?? null);
       })
       .catch((err: unknown) => setLoadError(err instanceof Error ? err : new Error(String(err))));
-  }, []);
+  }, [page, pageSize]);
 
   useEffect(() => {
     loadList();
@@ -89,15 +99,7 @@ export function GoamlTrackerScreen() {
     }
   };
 
-  const counts = useMemo(() => {
-    if (!filings) return null;
-    return {
-      total: filings.length,
-      awaiting: filings.filter((f) => f.submissionStatus === 'submitted').length,
-      acknowledged: filings.filter((f) => f.submissionStatus === 'acknowledged' || f.submissionStatus === 'feedback_received').length,
-      retentionDue: filings.filter((f) => f.retentionReviewDue).length,
-    };
-  }, [filings]);
+  const followupPaging = usePagedList(detail?.followups, { pageSizeOptions: [5, 10, 25], initialPageSize: 5, resetKey: detail?.filingId ?? '' });
 
   if (loadError) {
     const isForbidden = loadError instanceof ApiError && loadError.status === 403;
@@ -217,6 +219,19 @@ export function GoamlTrackerScreen() {
               ))
             )}
           </div>
+          {total > 0 && (
+            <Pagination
+              page={page}
+              pageSize={pageSize}
+              total={total}
+              noun="Filings"
+              onPageChange={setPage}
+              onPageSizeChange={(n) => {
+                setPageSize(n);
+                setPage(1);
+              }}
+            />
+          )}
         </div>
 
         <div className="goaml-tracker__detail">
@@ -272,7 +287,7 @@ export function GoamlTrackerScreen() {
                   {detail.followups.length === 0 ? (
                     <div className="goaml-tracker__muted">No follow-up notes yet.</div>
                   ) : (
-                    detail.followups.map((f) => (
+                    followupPaging.pageItems.map((f) => (
                       <div key={f.followupId} className="goaml-tracker__followup">
                         <div className="goaml-tracker__followupMeta">
                           {f.createdBy} · {new Date(f.createdAt).toLocaleString()}
@@ -281,6 +296,7 @@ export function GoamlTrackerScreen() {
                       </div>
                     ))
                   )}
+                  {followupPaging.needed && <Pagination {...followupPaging.props} noun="Notes" />}
                   <div className="goaml-tracker__addFollowup">
                     <input className="input" value={followupNote} onChange={(e) => setFollowupNote(e.target.value)} placeholder="Add a follow-up note…" />
                     <button className="aml-btn" onClick={() => void handleAddFollowup()}>
