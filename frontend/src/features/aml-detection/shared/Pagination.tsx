@@ -5,6 +5,8 @@ interface Props {
   pageSize: number;
   total: number;
   pageSizeOptions?: number[];
+  // What's being paged, capitalised — "Rows" unless a caller says otherwise.
+  noun?: string;
   onPageChange: (page: number) => void;
   onPageSizeChange: (pageSize: number) => void;
 }
@@ -15,12 +17,12 @@ const DEFAULT_PAGE_SIZE_OPTIONS = [10, 25, 50];
  * classes, generalized) so every list screen in this feature shares
  * one implementation instead of drifting — see AlertQueueScreen and
  * ModelGovernanceScreen for the two current callers. */
-export function Pagination({ page, pageSize, total, pageSizeOptions = DEFAULT_PAGE_SIZE_OPTIONS, onPageChange, onPageSizeChange }: Props) {
+export function Pagination({ page, pageSize, total, pageSizeOptions = DEFAULT_PAGE_SIZE_OPTIONS, noun = 'Rows', onPageChange, onPageSizeChange }: Props) {
   const totalPages = Math.max(1, Math.ceil(total / pageSize));
   return (
     <div className="pagination">
       <span>
-        {total === 0 ? '0 rows' : `Rows ${(page - 1) * pageSize + 1}–${Math.min(page * pageSize, total)} of ${total}`}
+        {total === 0 ? `0 ${noun.toLowerCase()}` : `${noun} ${(page - 1) * pageSize + 1}–${Math.min(page * pageSize, total)} of ${total}`}
       </span>
       <label className="pagination__pageSize">
         Show

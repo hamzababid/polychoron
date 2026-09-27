@@ -152,6 +152,13 @@ satisfied.
 - Per-chunk actions: edit, **merge with next**, **split at cursor**,
   delete. Plus **Add chunk** at any position.
 - Totals bar: chunk count, total characters, warnings count.
+- **Long documents** (owner feedback 2026-09-27 — 50+ chunks meant
+  scrolling past all of them to reach the step's actions): chunks sit
+  in a bounded frame that scrolls on its own, paged 10 / 25 / 50 per
+  page, with a **Needs attention only** filter (warnings, unacknowledged
+  injection flags, empty text) and **Go to chunk #**. Back / Save /
+  Continue stay directly below the frame. Split, add or move follows
+  the affected chunk to its page.
 - **Re-chunk** returns to step 3 with a confirm ("discards manual
   adjustments").
 - **Injection scan:** every chunk is run through the existing
