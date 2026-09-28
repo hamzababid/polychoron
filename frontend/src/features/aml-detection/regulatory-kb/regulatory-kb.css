@@ -614,6 +614,31 @@
   color: var(--color-neutral-900);
 }
 
+/* Collapsed: ~6 lines, fading out so the cut reads as "there's more". */
+.kb-viewchunk__text--clamped {
+  max-height: calc(13px * 1.55 * 6);
+  overflow: hidden;
+}
+
+.kb-viewchunk__text--faded {
+  -webkit-mask-image: linear-gradient(to bottom, #000 60%, transparent);
+  mask-image: linear-gradient(to bottom, #000 60%, transparent);
+}
+
+.kb-viewchunk__toggle {
+  margin-top: 4px;
+  padding: 2px 0;
+  background: none;
+  border: none;
+  font-size: 12px;
+  color: var(--color-accent-700);
+  cursor: pointer;
+}
+
+.kb-viewchunk__toggle:hover {
+  text-decoration: underline;
+}
+
 .kb-dl {
   display: grid;
   grid-template-columns: 110px 1fr;
