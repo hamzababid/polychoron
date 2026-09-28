@@ -518,7 +518,7 @@ export function AlertQueueScreen() {
                     <>
                       <span className="alert-queue__rec">
                         <span className="dot" style={{ background: 'var(--color-accent-800)', marginRight: 5 }} />
-                        {humanize(r.recommendation)}
+                        {labelFor(RECOMMENDATIONS, r.recommendation)}
                       </span>
                       {r.recommendationConfidence !== null && <div className="alert-queue__conf">conf. {r.recommendationConfidence.toFixed(2)}</div>}
                     </>

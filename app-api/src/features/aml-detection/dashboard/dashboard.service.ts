@@ -127,7 +127,11 @@ export class DashboardService {
 
   private async getAgentVsHumanOverrideRate(): Promise<number> {
     const rows = (await this.dataSource.query(
-      `SELECT overrides_agent_recommendation FROM aml_dispositions`,
+      // Only cases the agent actually assessed — a disposition with no
+      // agent recommendation (e.g. a pre-platform historical case) can
+      // neither agree with nor override one.
+      `SELECT d.overrides_agent_recommendation FROM aml_dispositions d
+       WHERE EXISTS (SELECT 1 FROM aml_case_assessments a WHERE a.case_id = d.case_id)`,
     )) as Array<{ overrides_agent_recommendation: boolean }>;
     if (rows.length === 0) return 0;
     const overrides = rows.filter((r) => r.overrides_agent_recommendation).length;
@@ -244,6 +248,7 @@ export class DashboardService {
       `SELECT d.overrides_agent_recommendation, count(*)::int AS cnt
        FROM aml_dispositions d
        JOIN aml_cases c ON c.case_id = d.case_id
+       JOIN aml_case_assessments a ON a.case_id = d.case_id
        WHERE c.created_at >= COALESCE($1::timestamptz, date_trunc('month', now()) - interval '${TREND_MONTHS - 1} months')
          AND c.created_at < COALESCE($2::timestamptz, now() + interval '1 day')
        GROUP BY d.overrides_agent_recommendation`,

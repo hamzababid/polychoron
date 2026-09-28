@@ -181,6 +181,28 @@ looks broken that automated tests wouldn't catch.
       functional in the demo, even with only one option in each
 - [x] **Gate: demo runs cleanly — proceeding to AML Phase 2**
 
+### Demo-readiness re-run (2026-09-28)
+Re-ran the full walkthrough on a clean reset, scripted in a headless
+browser (19 checks, one uninterrupted pass, no console or network
+errors). Fixed along the way:
+- demo-script.md had the analyst file the STR, but the role manifest
+  gives `file_str` to senior_officer_l2 only — script now has the
+  analyst show the queue (and the missing File STR option), then the
+  compliance officer claims, files and clears
+- the reset overwrote the analyst's name with "Demo Analyst (Seed)"
+- Scenario A deposits fell after midnight in PKT, so the timeline said
+  9/15 while the narrative said September 14 — moved to 10:00–13:20 PKT
+- "Recommend Str" / "recommend str" labels; goAML type "STR_F"
+- Dashboard override-rate tile (33%) disagreed with the disposition
+  panel (50%) — it counted the pre-platform PRIOR case, which has no
+  agent recommendation to agree with or override
+- reset left `aml_sampling_reviews` rows behind (would fail on its FK)
+- [ ] Escalation hand-off: once an analyst chooses "Escalate to senior
+      officer" the case has a disposition, so a senior officer sees it
+      read-only and cannot take it over and file — needs a spec
+      decision (re-disposition by L2, or escalation as a status rather
+      than a final disposition)
+
 ---
 
 ## ADDITIVE — Regulatory Knowledge Base (added mid-build; layer in without disrupting whatever is currently in progress)

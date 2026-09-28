@@ -44,15 +44,13 @@ def seed_demo_analyst_user() -> None:
                 """
                 INSERT INTO platform_users (user_id, tenant_id, display_name, email, role_codes)
                 VALUES (:id, :tenant_id, :name, :email, :roles)
-                ON CONFLICT (user_id) DO UPDATE SET
-                    display_name = EXCLUDED.display_name,
-                    email = EXCLUDED.email
+                ON CONFLICT (user_id) DO NOTHING
                 """
             ),
             {
                 "id": DEMO_ANALYST_USER_ID,
                 "tenant_id": DEMO_TENANT_ID,
-                "name": "Demo Analyst (Seed)",
+                "name": "Amina Raza (Demo Analyst)",
                 "email": "demo-analyst@example.test",
                 "roles": ["aml_detection.analyst_l1"],
             },

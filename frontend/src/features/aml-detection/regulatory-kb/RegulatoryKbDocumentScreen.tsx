@@ -26,7 +26,7 @@ import { useToast } from '../../../shell/ToastProvider';
 import { Pagination } from '../shared/Pagination';
 import { usePagedList } from '../shared/usePagedList';
 import { useFeatureBasePath } from '../useFeatureBasePath';
-import { ConfirmDialog, JobProgress, StatusBadge, Tile } from './kbShared';
+import { CollapsibleChunkText, ConfirmDialog, JobProgress, StatusBadge, Tile } from './kbShared';
 import { SOURCE_TYPES, WARNING_LABEL, errorMessage, formatBytes, formatDate, useEmbedJob } from './kbUtils';
 import './regulatory-kb.css';
 import { Loader } from '../../../shell/Loader';
@@ -302,7 +302,7 @@ export function RegulatoryKbDocumentScreen() {
                         {c.citedByCaseCount ? `cited by ${c.citedByCaseCount} case${c.citedByCaseCount === 1 ? '' : 's'}` : 'not cited yet'}
                       </span>
                     </div>
-                    <div className="kb-viewchunk__text">{c.text}</div>
+                    <CollapsibleChunkText text={c.text} />
                   </div>
                 ))
               )}

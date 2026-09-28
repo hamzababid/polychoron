@@ -10,6 +10,7 @@ import { useFeatureBasePath } from '../useFeatureBasePath';
 import { useToast } from '../../../shell/ToastProvider';
 import './case-workspace.css';
 import { Loader } from '../../../shell/Loader';
+import { recommendationLabel } from '../shared/recommendation';
 
 const RECOMMENDATION_TO_DISPOSITION: Record<AgentRecommendation, DispositionType> = {
   clear: 'clear',
@@ -421,7 +422,7 @@ export function CaseWorkspaceScreen() {
                 <div style={{ padding: '12px 14px' }}>
                   <p style={{ margin: 0 }}>{caseDetail.assessment.draft_narrative}</p>
                   <div className="case-workspace__conf" style={{ marginTop: 8 }}>
-                    Recommendation: <strong>{caseDetail.assessment.recommendation.replace('_', ' ')}</strong> (confidence{' '}
+                    Recommendation: <strong>{recommendationLabel(caseDetail.assessment.recommendation)}</strong> (confidence{' '}
                     {(caseDetail.assessment.recommendation_confidence * 100).toFixed(0)}%) — advisory only, the officer's disposition governs.
                   </div>
                 </div>

@@ -210,6 +210,10 @@ immediately.
 - **Chunks panel:** ordered by `ordinal` (document order — *not*
   alphabetical by section reference, which the old screen did), with
   in-document search/filter and a per-chunk "cited by N cases" count.
+  Each chunk's text is shown at a fixed height (~6 lines, faded at the
+  cut) with its own **Show full chunk / Collapse** toggle — shown only
+  when the text overflows — so one long chunk never pushes the rest of
+  the page away (owner, 2026-09-28).
 - **Version history timeline** (whole family): each version with
   status, who published, when; **Compare** between any two.
 - **Metadata change log:** append-only table — field, old → new,

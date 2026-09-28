@@ -1,9 +1,45 @@
-import { useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import type { IngestionJobStatus, RegulatoryDocumentStatus, RegulatorySourceType, TypologyRow } from '../api/types';
 import { SOURCE_TYPES, STATUS_LABEL, useIssuingAuthorities, useTypologies, type MetadataValues, type RetrievalValues } from './kbUtils';
 
 /** Shared components of the Regulatory Knowledge Base screens
  * (specs/suites/bfsi/features/aml-detection/screens/11-regulatory-knowledge-base.md). */
+
+/** A chunk's text at a fixed height, so one long chunk can't push the
+ * rest of the page away. Expand/collapse appears only when the text
+ * actually overflows; each chunk keeps its own state. */
+export function CollapsibleChunkText({ text }: { text: string }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [expanded, setExpanded] = useState(false);
+  const [overflows, setOverflows] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    // Measured while collapsed: expanding removes the clamp, so the
+    // comparison would always be equal.
+    const measure = () => {
+      if (!expanded) setOverflows(el.scrollHeight > el.clientHeight + 1);
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [text, expanded]);
+
+  return (
+    <div className="kb-viewchunk__body">
+      <div ref={ref} className={`kb-viewchunk__text${expanded ? '' : ' kb-viewchunk__text--clamped'}${overflows && !expanded ? ' kb-viewchunk__text--faded' : ''}`}>
+        {text}
+      </div>
+      {overflows && (
+        <button type="button" className="kb-viewchunk__toggle" aria-expanded={expanded} onClick={() => setExpanded((v) => !v)}>
+          {expanded ? 'Collapse ▴' : `Show full chunk · ${text.length.toLocaleString()} characters ▾`}
+        </button>
+      )}
+    </div>
+  );
+}
 
 /** Status must be visually unmistakable (screen spec, Library). */
 export function StatusBadge({ status }: { status: RegulatoryDocumentStatus }) {
