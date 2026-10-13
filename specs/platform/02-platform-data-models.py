@@ -57,6 +57,11 @@ class Tenant(BaseModel):
     tenant_name: str
     enabled_suites: list[str] = Field(default_factory=list)  # suite_codes
     enabled_features: list[str] = Field(default_factory=list)  # feature_codes
+    # IANA zone (e.g. "Asia/Karachi"). Storage is always UTC; every time a
+    # person reads (screens, agent prompts and so agent-written text,
+    # filings) is rendered in this zone, so an officer, an examiner in
+    # another country and the agent all name the same clock time.
+    timezone: str = "UTC"
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
 

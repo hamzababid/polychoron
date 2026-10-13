@@ -892,12 +892,19 @@ partial evidence scored as if complete).
 - [ ] Decide per case: tune the agents (prompts, confidence routing)
       or correct the expected answer — with the MLRO, not unilaterally
 - [ ] Re-run until it passes; then watch one promotion succeed live
-- [ ] Timezones disagree on one screen (found 2026-09-29): the agent
+- [x] Timezones disagree on one screen (found 2026-09-29): the agent
       reads transaction timestamps in UTC and sometimes quotes clock
       times ("05:00, 06:50 and 08:20"), while Case Workspace shows the
       same transactions in the browser's local time (10:00, 11:50,
       1:20 PM in PKT). Pick one: pass the tenant's timezone to the
       agents, or label the timeline in UTC
+      (fixed 2026-10-13: `tenants.timezone`, migration 016 — demo bank
+      `Asia/Karachi`. Prompts carry tenant-local times with the offset
+      and name the zone; the session carries the zone and every screen
+      formats through `shell/tenantTime.ts`, zone shown, never the
+      browser's. Live check: narrative now quotes 10:00 / 11:50 / 13:20,
+      matching the timeline; London and New York browsers both show
+      10:00 AM GMT+5.)
 
 ### UI convention — every list is paginated (owner, 2026-09-27)
 Applies to every screen, existing and future: no list renders an

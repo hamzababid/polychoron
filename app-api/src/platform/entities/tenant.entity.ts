@@ -15,6 +15,10 @@ export class Tenant {
   @Column({ name: 'enabled_features', type: 'text', array: true, default: '{}' })
   enabledFeatures!: string[];
 
+  /** IANA zone every screen formats times in (storage stays UTC). */
+  @Column({ name: 'timezone', default: 'UTC' })
+  timezone!: string;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt!: Date;
 }

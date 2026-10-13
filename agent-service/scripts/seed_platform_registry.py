@@ -31,6 +31,7 @@ from app.platform.inference.types import (
 
 DEMO_TENANT_ID = "demo-northbridge-bank"
 DEMO_TENANT_NAME = "Northbridge Bank (Demo)"
+DEMO_TENANT_TIMEZONE = "Asia/Karachi"
 SUITE_CODE = "bfsi"
 FEATURE_CODE = "aml_detection"
 
@@ -88,12 +89,13 @@ def seed_demo_tenant() -> None:
         conn.execute(
             text(
                 """
-                INSERT INTO tenants (tenant_id, tenant_name, enabled_suites, enabled_features)
-                VALUES (:id, :name, :suites, :features)
+                INSERT INTO tenants (tenant_id, tenant_name, enabled_suites, enabled_features, timezone)
+                VALUES (:id, :name, :suites, :features, :tz)
                 ON CONFLICT (tenant_id) DO UPDATE SET
                     tenant_name = EXCLUDED.tenant_name,
                     enabled_suites = EXCLUDED.enabled_suites,
-                    enabled_features = EXCLUDED.enabled_features
+                    enabled_features = EXCLUDED.enabled_features,
+                    timezone = EXCLUDED.timezone
                 """
             ),
             {
@@ -101,6 +103,7 @@ def seed_demo_tenant() -> None:
                 "name": DEMO_TENANT_NAME,
                 "suites": [SUITE_CODE],
                 "features": [FEATURE_CODE],
+                "tz": DEMO_TENANT_TIMEZONE,
             },
         )
         conn.commit()

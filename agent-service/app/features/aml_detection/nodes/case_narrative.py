@@ -36,6 +36,7 @@ from app.platform.guardrails.repository import write_guardrail_violation
 from app.platform.guardrails.sanitize import collect_free_text_matches, sanitize_evidence_for_prompt
 from app.platform.guardrails.types import GuardrailSeverity, GuardrailType
 from app.platform.inference.clients import InferenceClient
+from app.platform.tenant_time import localize_timestamps, tenant_timezone
 
 AGENT_VERSION = "v1"
 
@@ -95,10 +96,11 @@ class CaseNarrativeNode(PlatformAgentNode[CaseNarrativeInput, CaseAssessment]):
         self, input: CaseNarrativeInput, tenant_id: str, external_case_ref: str | UUID, client: InferenceClient
     ) -> tuple[dict, list[str]]:
         self._check_injection(input.evidence, tenant_id, external_case_ref)
+        tz = tenant_timezone(tenant_id)
 
         prompt = (
-            f"{sanitize_evidence_for_prompt(input.evidence)}\n\n"
-            f"Typology match:\n{json.dumps(input.typology_match.model_dump(mode='json'), indent=2)}\n\n"
+            f"{sanitize_evidence_for_prompt(input.evidence, tz)}\n\n"
+            f"Typology match:\n{json.dumps(localize_timestamps(input.typology_match.model_dump(mode='json'), tz), indent=2)}\n\n"
             "Respond with only the JSON object described in the system prompt."
         )
 

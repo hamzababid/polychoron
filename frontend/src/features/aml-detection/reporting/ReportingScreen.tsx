@@ -6,6 +6,7 @@ import { useAuth } from '../../../auth/AuthContext';
 import { useToast } from '../../../shell/ToastProvider';
 import './reporting.css';
 import { Loader } from '../../../shell/Loader';
+import { formatDate, formatDateTime } from '../../../shell/tenantTime';
 
 type PeriodPreset = 'month' | 'quarter' | 'custom';
 
@@ -98,7 +99,7 @@ export function ReportingScreen() {
         format: 'csv',
         generated_by: session.user.userId,
       });
-      toast.success(`${report.reportId.slice(0, 8)} generated — figures fixed as at ${new Date().toLocaleString()}.`);
+      toast.success(`${report.reportId.slice(0, 8)} generated — figures fixed as at ${formatDateTime(new Date())}.`);
       // Newest first: the new report is on page 1.
       if (historyPage === 1) loadHistory();
       else setHistoryPage(1);
@@ -139,9 +140,9 @@ export function ReportingScreen() {
         <div className="reporting__headerCell">
           <div className="aml-label">Period</div>
           <div style={{ fontSize: 13 }}>
-            {new Date(summary.periodStart).toLocaleDateString()} – {new Date(summary.periodEnd).toLocaleDateString()}
+            {formatDate(summary.periodStart)} – {formatDate(summary.periodEnd)}
           </div>
-          <div className="reporting__asOf">figures as of {new Date(summary.asOf).toLocaleString()}</div>
+          <div className="reporting__asOf">figures as of {formatDateTime(summary.asOf)}</div>
         </div>
         <div className="reporting__headerCell">
           <div className="aml-label">Comparison</div>
@@ -398,7 +399,7 @@ export function ReportingScreen() {
                       <div className="reporting__asOf">{h.periodLabel}</div>
                     </div>
                     <div style={{ fontSize: 12.5 }}>
-                      {new Date(h.generatedAt).toLocaleString()}
+                      {formatDateTime(h.generatedAt)}
                       <div className="reporting__asOf">{h.generatedBy}</div>
                     </div>
                     <div style={{ fontSize: 12, color: 'var(--color-neutral-700)' }}>

@@ -11,6 +11,7 @@ import { useToast } from '../../../shell/ToastProvider';
 import './case-workspace.css';
 import { Loader } from '../../../shell/Loader';
 import { recommendationLabel } from '../shared/recommendation';
+import { formatDate, formatDateTime } from '../../../shell/tenantTime';
 
 const RECOMMENDATION_TO_DISPOSITION: Record<AgentRecommendation, DispositionType> = {
   clear: 'clear',
@@ -185,7 +186,7 @@ export function CaseWorkspaceScreen() {
             {caseDetail.agentState === 'not_run' && (
               <div className="case-workspace__notice">
                 <strong>No agent record.</strong> This case was closed
-                {caseDetail.closedAt ? ` on ${new Date(caseDetail.closedAt).toLocaleDateString()}` : ''} without the agent chain — typically a case
+                {caseDetail.closedAt ? ` on ${formatDate(caseDetail.closedAt)}` : ''} without the agent chain — typically a case
                 decided before AML Detection was in use — so there is no agent evidence, typology match or assessment. The officer’s recorded
                 decision is shown on the right.
               </div>
@@ -255,7 +256,7 @@ export function CaseWorkspaceScreen() {
                             </td>
                             <td>{t.channel}</td>
                             <td>{t.branch_code ?? '—'}</td>
-                            <td>{new Date(t.timestamp).toLocaleString()}</td>
+                            <td>{formatDateTime(t.timestamp)}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -292,7 +293,7 @@ export function CaseWorkspaceScreen() {
                       <ul className="case-workspace__list">
                         {priorPaging.pageItems.map((p) => (
                           <li key={p.case_id}>
-                            {p.typology} · opened {new Date(p.opened_at).toLocaleDateString()}
+                            {p.typology} · opened {formatDate(p.opened_at)}
                             {p.final_disposition && ` · ${p.final_disposition}`}
                           </li>
                         ))}

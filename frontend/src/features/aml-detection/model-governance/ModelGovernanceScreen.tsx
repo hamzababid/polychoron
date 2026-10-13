@@ -26,6 +26,7 @@ import { useFeatureBasePath } from '../useFeatureBasePath';
 import { useToast } from '../../../shell/ToastProvider';
 import './model-governance.css';
 import { Loader } from '../../../shell/Loader';
+import { formatDate, formatDateTime } from '../../../shell/tenantTime';
 
 const MLRO = 'aml_detection.mlro_compliance_head';
 const MODEL_RISK_AUDIT = 'platform.model_risk_audit';
@@ -185,7 +186,7 @@ export function ModelGovernanceScreen() {
         <div className="model-governance__reportHeaderCell">
           <div className="aml-label">Observation window</div>
           <div style={{ fontSize: 13 }}>Trailing 6 months</div>
-          <div className="model-governance__asOf">as of {new Date(sampling.asOf).toLocaleString()}</div>
+          <div className="model-governance__asOf">as of {formatDateTime(sampling.asOf)}</div>
         </div>
         {!isExaminerOnly && (
           <div className="model-governance__reportHeaderCell">
@@ -208,7 +209,7 @@ export function ModelGovernanceScreen() {
             <div className="tile-head model-governance__phead">
               <span className="model-governance__num">01</span>
               <h4 style={{ margin: 0 }}>Model version in production</h4>
-              <span className="model-governance__asOf model-governance__pheadAsOf">as of {new Date(modelVersions.asOf).toLocaleString()}</span>
+              <span className="model-governance__asOf model-governance__pheadAsOf">as of {formatDateTime(modelVersions.asOf)}</span>
             </div>
             {modelVersions.current.length === 0 ? (
               <div className="tile-body model-governance__muted">No agent invocations observed yet.</div>
@@ -222,7 +223,7 @@ export function ModelGovernanceScreen() {
                         {v.agentVersion}
                       </span>
                       <span style={{ fontSize: 11.5, color: 'var(--color-neutral-700)' }}>
-                        {v.modelProvider} · last invoked {new Date(v.lastInvokedAt).toLocaleString()}
+                        {v.modelProvider} · last invoked {formatDateTime(v.lastInvokedAt)}
                       </span>
                     </div>
                   ))}
@@ -250,7 +251,7 @@ export function ModelGovernanceScreen() {
                         <div className="model-governance__asOf">{h.agentVersion}</div>
                       </div>
                       <div style={{ fontSize: 11.5, color: 'var(--color-neutral-700)' }}>
-                        {new Date(h.firstSeenAt).toLocaleDateString()} – {new Date(h.lastSeenAt).toLocaleDateString()}
+                        {formatDate(h.firstSeenAt)} – {formatDate(h.lastSeenAt)}
                       </div>
                       <div style={{ fontSize: 11.5, color: 'var(--color-neutral-700)', textAlign: 'right' }}>{h.invocationCount} invocations</div>
                     </div>
@@ -279,7 +280,7 @@ export function ModelGovernanceScreen() {
           <div className="tile-head model-governance__phead">
             <span className="model-governance__num">{canSeeFullAudit ? '02' : '01'}</span>
             <h4 style={{ margin: 0 }}>Sampling &amp; drift check — primary control</h4>
-            <span className="model-governance__asOf model-governance__pheadAsOf">as of {new Date(sampling.asOf).toLocaleString()}</span>
+            <span className="model-governance__asOf model-governance__pheadAsOf">as of {formatDateTime(sampling.asOf)}</span>
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 1, background: 'var(--color-divider)' }}>
@@ -339,7 +340,7 @@ export function ModelGovernanceScreen() {
                     {sampling.pendingReview.items.map((p) => (
                       <li key={p.caseId}>
                         <Link to={`${base}/cases/${p.caseId}`}>{p.caseId.slice(0, 8)}</Link> · {p.dispositionType.replace('_', ' ')} ·{' '}
-                        {new Date(p.dispositionedAt).toLocaleDateString()}
+                        {formatDate(p.dispositionedAt)}
                         {canWrite && (
                           <button className="aml-btn" style={{ marginLeft: 10 }} onClick={() => setReviewingCaseId(p.caseId)}>
                             Review
@@ -403,7 +404,7 @@ export function ModelGovernanceScreen() {
                       <li key={r.reviewId} style={{ borderLeft: `3px solid ${r.reviewerAgreed ? 'var(--color-accent-700)' : 'var(--color-alert)'}`, paddingLeft: 8 }}>
                         <Link to={`${base}/cases/${r.caseId}`}>{r.caseId.slice(0, 8)}</Link> · {r.originalDisposition.replace('_', ' ')} ·{' '}
                         <span style={{ color: r.reviewerAgreed ? 'var(--color-accent-800)' : 'var(--color-alert)' }}>{r.reviewerAgreed ? 'agreed' : 'disagreed'}</span> ·{' '}
-                        {new Date(r.reviewedAt).toLocaleDateString()}
+                        {formatDate(r.reviewedAt)}
                         {r.reviewerNotes && ` — ${r.reviewerNotes}`}
                       </li>
                     ))}
@@ -443,7 +444,7 @@ export function ModelGovernanceScreen() {
               <span className="model-governance__num">03</span>
               <h4 style={{ margin: 0 }}>Consistency check — like cases, like outcomes</h4>
               <span style={{ fontSize: 11.5, color: 'var(--color-neutral-700)' }}>STR conversion by typology, broken out by branch</span>
-              <span className="model-governance__asOf model-governance__pheadAsOf">as of {new Date(consistency.asOf).toLocaleString()}</span>
+              <span className="model-governance__asOf model-governance__pheadAsOf">as of {formatDateTime(consistency.asOf)}</span>
             </div>
             {consistency.rows.items.length === 0 ? (
               <div className="tile-body model-governance__muted">No branch-attributed cases yet.</div>
@@ -514,7 +515,7 @@ export function ModelGovernanceScreen() {
               <span className="model-governance__num">04</span>
               <h4 style={{ margin: 0 }}>Data lineage &amp; feed status</h4>
               <span style={{ fontSize: 11.5, color: 'var(--color-neutral-700)' }}>Every input the agent reads, and when it last refreshed</span>
-              <span className="model-governance__asOf model-governance__pheadAsOf">as of {new Date(lineage.asOf).toLocaleString()}</span>
+              <span className="model-governance__asOf model-governance__pheadAsOf">as of {formatDateTime(lineage.asOf)}</span>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '210px 1fr 190px 170px 150px', background: 'var(--color-neutral-100)', borderBottom: '1px solid var(--color-text)' }}>
               <div className="model-governance__ahd">Source system</div>
@@ -540,7 +541,7 @@ export function ModelGovernanceScreen() {
                     <div style={{ fontSize: 13 }}>{e.label}</div>
                   </div>
                   <div style={{ padding: '9px 11px', fontSize: 12, color: 'var(--color-neutral-800)', lineHeight: 1.4 }}>{e.usedFor}</div>
-                  <div style={{ padding: '9px 11px', fontSize: 12.5 }}>{e.lastRefreshAt ? new Date(e.lastRefreshAt).toLocaleString() : '—'}</div>
+                  <div style={{ padding: '9px 11px', fontSize: 12.5 }}>{e.lastRefreshAt ? formatDateTime(e.lastRefreshAt) : '—'}</div>
                   <div style={{ padding: '9px 11px', fontSize: 12, color: 'var(--color-neutral-700)' }}>{e.cadence}</div>
                   <div style={{ padding: '9px 11px' }}>
                     <span
@@ -622,7 +623,7 @@ export function ModelGovernanceScreen() {
                         }}
                       >
                         <div>{r.agentVersionUnderTest}</div>
-                        <div style={{ color: 'var(--color-neutral-700)' }}>{new Date(r.startedAt).toLocaleString()}</div>
+                        <div style={{ color: 'var(--color-neutral-700)' }}>{formatDateTime(r.startedAt)}</div>
                         <div>
                           {r.passed}/{r.totalCases} passed
                         </div>
@@ -696,7 +697,7 @@ export function ModelGovernanceScreen() {
                         </span>
                         <Link to={`${base}/cases/${v.externalCaseRef}`}>{v.externalCaseRef.slice(0, 8)}</Link>
                         {' · '}
-                        {v.guardrailType} ({v.nodeName}) · {new Date(v.detectedAt).toLocaleString()}
+                        {v.guardrailType} ({v.nodeName}) · {formatDateTime(v.detectedAt)}
                         <div style={{ color: 'var(--color-neutral-700)', marginTop: 2 }}>{v.details}</div>
                       </div>
                     ))}

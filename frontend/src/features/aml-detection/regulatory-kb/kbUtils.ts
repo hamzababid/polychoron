@@ -8,6 +8,7 @@ import type {
   RegulatorySourceType,
   TypologyRow,
 } from '../api/types';
+import { formatDate as formatTenantDate, formatDateTime } from '../../../shell/tenantTime';
 
 /** Non-component helpers shared by the Regulatory Knowledge Base
  * screens (components live in kbShared.tsx). */
@@ -47,10 +48,9 @@ export const WARNING_LABEL: Record<string, string> = {
 
 export function formatDate(iso: string | null | undefined, withTime = false): string {
   if (!iso) return '—';
-  const d = new Date(iso);
   return withTime
-    ? d.toLocaleString(undefined, { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
-    : d.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' });
+    ? formatDateTime(iso, { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+    : formatTenantDate(iso, { year: 'numeric', month: 'short', day: 'numeric' });
 }
 
 export function formatBytes(n: number): string {

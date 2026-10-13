@@ -130,6 +130,15 @@ describe('AML screens (e2e)', () => {
     await app.close();
   });
 
+  describe('Demo login', () => {
+    it("carries the tenant's timezone, which every screen formats times in", async () => {
+      const res = await request(app.getHttpServer()).post('/api/v1/auth/demo-login').send({ user_id: 'demo-analyst-1' }).expect(201);
+      const tenant = (res.body as { tenant: { tenantId: string; timezone: string } }).tenant;
+      expect(tenant.tenantId).toBe('demo-northbridge-bank');
+      expect(tenant.timezone).toBe('Asia/Karachi');
+    });
+  });
+
   describe('Alert Queue', () => {
     it('rejects an unauthenticated request', async () => {
       await request(app.getHttpServer()).get('/api/v1/features/aml_detection/alerts').expect(401);

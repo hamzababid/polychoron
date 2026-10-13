@@ -2,7 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { randomUUID } from 'node:crypto';
 import { Repository } from 'typeorm';
-import { PlatformSession, PlatformUser } from '../entities/index.js';
+import { PlatformSession, PlatformUser, Tenant } from '../entities/index.js';
 
 export interface DemoSessionResponse {
   sessionId: string;
@@ -12,6 +12,8 @@ export interface DemoSessionResponse {
     email: string;
     roleCodes: string[];
   };
+  /** Screens format every time in tenant.timezone, not the browser's zone. */
+  tenant: { tenantId: string; tenantName: string; timezone: string };
   createdAt: string;
 }
 
@@ -33,6 +35,7 @@ export class AuthService {
   constructor(
     @InjectRepository(PlatformUser) private readonly users: Repository<PlatformUser>,
     @InjectRepository(PlatformSession) private readonly sessions: Repository<PlatformSession>,
+    @InjectRepository(Tenant) private readonly tenants: Repository<Tenant>,
   ) {}
 
   async demoLogin(userId: string): Promise<DemoSessionResponse> {
@@ -41,6 +44,7 @@ export class AuthService {
       throw new UnauthorizedException(`No demo user with user_id=${userId}`);
     }
 
+    const tenant = await this.tenants.findOneByOrFail({ tenantId: user.tenantId });
     const session = await this.sessions.save({
       sessionId: randomUUID(),
       userId: user.userId,
@@ -54,6 +58,7 @@ export class AuthService {
         email: user.email,
         roleCodes: user.roleCodes,
       },
+      tenant: { tenantId: tenant.tenantId, tenantName: tenant.tenantName, timezone: tenant.timezone },
       createdAt: session.createdAt.toISOString(),
     };
   }

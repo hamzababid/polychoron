@@ -6,7 +6,9 @@
 ## Auth (demo stub — see constitution rule 9, do not over-build this)
 - `POST /api/v1/auth/demo-login` → Body: `{user_id}`. Returns a
   `DemoSession`. No password, no MFA — this is a seeded-user picker,
-  not real authentication.
+  not real authentication. The session carries the user's tenant —
+  `tenant: {tenantId, tenantName, timezone}` (added 2026-10-13) — and
+  every screen formats times in `tenant.timezone`, never the browser's.
 
 ## Ingestion
 - `POST /api/v1/features/aml_detection/alerts/ingest` → Body: `InboundAlert`. Creates a `Case`

@@ -4,6 +4,7 @@ import type { KillSwitchScope } from '../api/types';
 import { useAuth } from '../../../auth/AuthContext';
 import { useToast } from '../../../shell/ToastProvider';
 import { errorText } from './typologyUtils';
+import { formatDateTime } from '../../../shell/tenantTime';
 
 export type KillSwitchAction =
   | { action: 'disable'; typologyCode: string | null; typologyLabel?: string }
@@ -83,7 +84,7 @@ export function KillSwitchDialog({ request, onDone, onCancel }: { request: KillS
             </>
           ) : (
             <p style={{ margin: '0 0 8px' }}>
-              Normal agent processing resumes immediately. Disabled since {new Date(request.target.disabledAt).toLocaleString()}: “
+              Normal agent processing resumes immediately. Disabled since {formatDateTime(request.target.disabledAt)}: “
               {request.target.reason}”
             </p>
           )}

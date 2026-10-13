@@ -8,6 +8,7 @@ import { useFeatureBasePath } from '../useFeatureBasePath';
 import { useToast } from '../../../shell/ToastProvider';
 import './alert-queue.css';
 import { Loader } from '../../../shell/Loader';
+import { formatDate, formatDateTime, formatTime } from '../../../shell/tenantTime';
 
 const DEFAULT_PAGE_SIZE = 10;
 const PAGE_SIZE_OPTIONS = [10, 25, 50];
@@ -478,10 +479,10 @@ export function AlertQueueScreen() {
               >
                 <div className="qcell">
                   <div className="alert-queue__date">
-                    {new Date(r.createdAt).toLocaleDateString(undefined, { day: '2-digit', month: 'short', year: 'numeric' })}
+                    {formatDate(r.createdAt, { day: '2-digit', month: 'short', year: 'numeric' })}
                   </div>
-                  <div className="alert-queue__time" title={new Date(r.createdAt).toLocaleString()}>
-                    {new Date(r.createdAt).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })} · {formatAge(r.createdAt)}
+                  <div className="alert-queue__time" title={formatDateTime(r.createdAt)}>
+                    {formatTime(r.createdAt, { hour: '2-digit', minute: '2-digit' })} · {formatAge(r.createdAt)}
                   </div>
                 </div>
                 <div className="qcell">

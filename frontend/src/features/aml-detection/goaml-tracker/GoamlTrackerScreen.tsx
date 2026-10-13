@@ -10,6 +10,7 @@ import { useToast } from '../../../shell/ToastProvider';
 import { useFeatureBasePath } from '../useFeatureBasePath';
 import './goaml-tracker.css';
 import { Loader } from '../../../shell/Loader';
+import { formatDate, formatDateTime } from '../../../shell/tenantTime';
 
 const STEPS = ['submitted', 'acknowledged', 'feedback_received'] as const;
 const STEP_LABELS = ['Submitted', 'Acknowledged by FMU', 'Feedback received'];
@@ -286,10 +287,10 @@ export function GoamlTrackerScreen() {
                     ))}
                   </div>
                   <div className="goaml-tracker__meta">
-                    {detail.submittedAt && <div>Submitted: {new Date(detail.submittedAt).toLocaleString()}</div>}
-                    {detail.acknowledgedAt && <div>Acknowledged: {new Date(detail.acknowledgedAt).toLocaleString()}</div>}
-                    {detail.feedbackReceivedAt && <div>Feedback received: {new Date(detail.feedbackReceivedAt).toLocaleString()}</div>}
-                    {detail.retentionExpiry && <div>Retention expiry: {new Date(detail.retentionExpiry).toLocaleDateString()}</div>}
+                    {detail.submittedAt && <div>Submitted: {formatDateTime(detail.submittedAt)}</div>}
+                    {detail.acknowledgedAt && <div>Acknowledged: {formatDateTime(detail.acknowledgedAt)}</div>}
+                    {detail.feedbackReceivedAt && <div>Feedback received: {formatDateTime(detail.feedbackReceivedAt)}</div>}
+                    {detail.retentionExpiry && <div>Retention expiry: {formatDate(detail.retentionExpiry)}</div>}
                   </div>
                   {detail.submissionStatus === 'submitted' && (
                     <button className="aml-btn aml-btn--primary" disabled={acking} onClick={() => void handleAcknowledge()}>
@@ -346,7 +347,7 @@ export function GoamlTrackerScreen() {
                     followupPaging.pageItems.map((f) => (
                       <div key={f.followupId} className="goaml-tracker__followup">
                         <div className="goaml-tracker__followupMeta">
-                          {f.createdBy} · {new Date(f.createdAt).toLocaleString()}
+                          {f.createdBy} · {formatDateTime(f.createdAt)}
                         </div>
                         <div>{f.note}</div>
                       </div>

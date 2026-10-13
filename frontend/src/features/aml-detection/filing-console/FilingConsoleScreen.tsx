@@ -8,6 +8,7 @@ import { useToast } from '../../../shell/ToastProvider';
 import './filing-console.css';
 import { Loader } from '../../../shell/Loader';
 import { recommendationLabel } from '../shared/recommendation';
+import { formatDateTime } from '../../../shell/tenantTime';
 
 // Mirrors agent-service/app/features/aml_detection/typology_catalog.py's
 // Phase 1 catalog — the officer can retag to either of these, or leave
@@ -131,8 +132,8 @@ export function FilingConsoleScreen() {
           <div className="tile-body">
             <div className="filing-console__finalStatus">{draft.submissionStatus}</div>
             {draft.goamlReference && <div>goAML reference: {draft.goamlReference}</div>}
-            {draft.submittedAt && <div>Submitted: {new Date(draft.submittedAt).toLocaleString()}</div>}
-            {draft.acknowledgedAt && <div>Acknowledged: {new Date(draft.acknowledgedAt).toLocaleString()}</div>}
+            {draft.submittedAt && <div>Submitted: {formatDateTime(draft.submittedAt)}</div>}
+            {draft.acknowledgedAt && <div>Acknowledged: {formatDateTime(draft.acknowledgedAt)}</div>}
             <button className="aml-btn" onClick={() => navigate(`${base}/filings`)} style={{ marginTop: 10 }}>
               Go to goAML Tracker
             </button>

@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import { setTenantTimeZone } from '../shell/tenantTime';
 
 export interface DemoSessionUser {
   userId: string;
@@ -10,6 +11,8 @@ export interface DemoSessionUser {
 export interface DemoSession {
   sessionId: string;
   user: DemoSessionUser;
+  /** Screens format every time in tenant.timezone, not the browser's zone. */
+  tenant: { tenantId: string; tenantName: string; timezone: string };
   createdAt: string;
 }
 
@@ -39,7 +42,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
       try {
-        setSession(JSON.parse(stored) as DemoSession);
+        const parsed = JSON.parse(stored) as DemoSession;
+        // Sessions saved before tenant time zones existed: sign in again.
+        if (parsed.tenant?.timezone) {
+          setTenantTimeZone(parsed.tenant.timezone);
+          setSession(parsed);
+        } else {
+          localStorage.removeItem(STORAGE_KEY);
+        }
       } catch {
         localStorage.removeItem(STORAGE_KEY);
       }
@@ -58,11 +68,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
     const newSession = (await res.json()) as DemoSession;
     localStorage.setItem(STORAGE_KEY, JSON.stringify(newSession));
+    setTenantTimeZone(newSession.tenant.timezone);
     setSession(newSession);
   };
 
   const logout = () => {
     localStorage.removeItem(STORAGE_KEY);
+    setTenantTimeZone(undefined);
     setSession(null);
   };
 

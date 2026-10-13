@@ -11,6 +11,7 @@ import { HistoryTile, RegressionSummary, VersionContent, VersionDiff, VersionTil
 import { errorText, formatDate, useCanWriteTypologies } from './typologyUtils';
 import './typology-console.css';
 import { Loader } from '../../../shell/Loader';
+import { formatDateTime } from '../../../shell/tenantTime';
 
 /** Screen 3 — Typology view (screens/06-typology-rules-console.md).
  * Read-only: what is live, what is in progress, and how it got here.
@@ -102,7 +103,7 @@ export function TypologyViewScreen() {
 
       {killSwitch && (
         <div className="typology-banner typology-banner--alert">
-          Kill switch on since {new Date(killSwitch.disabledAt).toLocaleString()} ({killSwitch.disabledBy}): “{killSwitch.reason}”. Excluded from
+          Kill switch on since {formatDateTime(killSwitch.disabledAt)} ({killSwitch.disabledBy}): “{killSwitch.reason}”. Excluded from
           the agent’s catalog regardless of version.
         </div>
       )}

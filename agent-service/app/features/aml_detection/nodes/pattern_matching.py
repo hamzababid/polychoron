@@ -33,6 +33,7 @@ from app.platform.guardrails.sanitize import collect_free_text_matches, sanitize
 from app.platform.guardrails.types import GuardrailSeverity, GuardrailType
 from app.platform.inference.clients import InferenceClient
 from app.platform.regulatory.repository import retrieve_regulatory_context
+from app.platform.tenant_time import tenant_timezone
 
 logger = logging.getLogger(__name__)
 
@@ -111,7 +112,7 @@ class PatternMatchingNode(PlatformAgentNode[EvidenceBundle, TypologyMatch]):
 
         prompt = (
             f"{active_catalog_as_prompt_block(tenant_id, self.feature_code, self._catalog_override)}\n\n"
-            f"{sanitize_evidence_for_prompt(input)}\n\n"
+            f"{sanitize_evidence_for_prompt(input, tenant_timezone(tenant_id))}\n\n"
             f"{_candidate_citations_block(candidate_citations)}\n\n"
             "Respond with only the JSON object described in the system prompt."
         )

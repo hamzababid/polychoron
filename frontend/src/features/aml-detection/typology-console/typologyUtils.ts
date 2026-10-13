@@ -1,5 +1,6 @@
 import type { RegressionRun } from '../api/types';
 import { useAuth } from '../../../auth/AuthContext';
+import { formatDate as formatTenantDate } from '../../../shell/tenantTime';
 
 /** Non-component helpers for the Typology Console screens (kept apart
  * from typologyShared.tsx so that file only exports components). */
@@ -16,4 +17,4 @@ export const errorText = (err: unknown) => (err instanceof Error ? err.message :
 
 export const isRunning = (run: RegressionRun | null | undefined) => run?.status === 'queued' || run?.status === 'running';
 
-export const formatDate = (iso: string | null | undefined) => (iso ? new Date(iso).toLocaleDateString() : '—');
+export const formatDate = (iso: string | null | undefined) => (iso ? formatTenantDate(iso) : '—');

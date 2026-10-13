@@ -8,6 +8,7 @@ import { usePagedList } from '../shared/usePagedList';
 import { useFeatureBasePath } from '../useFeatureBasePath';
 import './customer-360.css';
 import { Loader } from '../../../shell/Loader';
+import { formatDate } from '../../../shell/tenantTime';
 
 /** specs/suites/bfsi/features/aml-detection/screens/08-customer-360.md
  * Read-only aggregation screen — no disposition/filing actions live
@@ -92,7 +93,7 @@ export function Customer360Screen() {
               )}
               <div>KYC risk: {data.kyc.kyc_risk_rating}</div>
               <div>{data.kyc.address}</div>
-              <div>Account opened {new Date(data.kyc.account_opening_date).toLocaleDateString()}</div>
+              <div>Account opened {formatDate(data.kyc.account_opening_date)}</div>
             </div>
           </div>
         )}
@@ -153,8 +154,8 @@ export function Customer360Screen() {
                 {casePaging.pageItems.map((p) => (
                   <li key={p.caseId}>
                     <Link to={`${base}/cases/${p.caseId}`}>{p.typologyLabel ?? 'Case ' + p.caseId.slice(0, 8)}</Link> · opened{' '}
-                    {new Date(p.openedAt).toLocaleDateString()}
-                    {p.closedAt && ` · closed ${new Date(p.closedAt).toLocaleDateString()}`}
+                    {formatDate(p.openedAt)}
+                    {p.closedAt && ` · closed ${formatDate(p.closedAt)}`}
                     {p.finalDisposition && ` · ${p.finalDisposition.replace('_', ' ')}`}
                   </li>
                 ))}

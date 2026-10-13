@@ -10,6 +10,7 @@ import { TypologyStatusBadge } from './TypologyStatusBadge';
 import { useCanWriteTypologies } from './typologyUtils';
 import './typology-console.css';
 import { Loader } from '../../../shell/Loader';
+import { formatDate, formatDateTime } from '../../../shell/tenantTime';
 
 // "Tuning candidates only" (design-exports/.../Typology Rules
 // Console.dc.html) flags rules with weak STR conversion — a real
@@ -139,7 +140,7 @@ export function TypologyLibraryScreen() {
           <div className="aml-label">Change control</div>
           <div style={{ fontSize: 12 }}>
             {overview.lastPromotion
-              ? `Last promotion: ${overview.lastPromotion.typologyLabel} v${overview.lastPromotion.promotedVersion} by ${overview.lastPromotion.promotedBy}, ${new Date(overview.lastPromotion.promotedAt).toLocaleDateString()}`
+              ? `Last promotion: ${overview.lastPromotion.typologyLabel} v${overview.lastPromotion.promotedVersion} by ${overview.lastPromotion.promotedBy}, ${formatDate(overview.lastPromotion.promotedAt)}`
               : 'No promotions recorded yet.'}
           </div>
         </div>
@@ -164,7 +165,7 @@ export function TypologyLibraryScreen() {
           <>
             <span style={{ fontSize: 12.5, color: 'var(--color-alert)' }}>
               AML Detection is DISABLED for this tenant — every new alert routes straight to manual review. Disabled by{' '}
-              {featureKillSwitch.disabledBy} on {new Date(featureKillSwitch.disabledAt).toLocaleString()}: “{featureKillSwitch.reason}”
+              {featureKillSwitch.disabledBy} on {formatDateTime(featureKillSwitch.disabledAt)}: “{featureKillSwitch.reason}”
             </span>
             {canWrite && (
               <button className="aml-btn aml-btn--primary" onClick={() => setKillSwitchRequest({ action: 'reactivate', target: featureKillSwitch })}>
