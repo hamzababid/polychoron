@@ -1,0 +1,36 @@
+import { start, B, W } from './common.mjs';
+import fs from 'fs';
+const { browser, page, errs, settle, login } = await start({ scale: 2 });
+const boxes = JSON.parse(fs.readFileSync(W + 'boxes.json'));
+const panelOf = (text, minH) => page.getByText(text, { exact: false }).first().evaluateHandle((el, minH) => { let p = el; for (let i = 0; i < 8 && p.parentElement; i++) { p = p.parentElement; if (p.getBoundingClientRect().height > minH) break; } return p; }, minH);
+await login('Fatima Noor');
+await page.goto(B + '/governance'); await settle(1500);
+for (const [n, t, h] of [['s8-gov-sampling', 'Sampling & drift check', 600], ['s8-gov-consistency', 'Consistency check', 300], ['s8-gov-history', 'Version & change history', 150], ['s6-gov-guardrails', 'Guardrail violations', 150]]) {
+  const el = await panelOf(t, h); await el.asElement().scrollIntoViewIfNeeded(); await page.waitForTimeout(400);
+  await el.asElement().screenshot({ path: W + 'shots/' + n + '.png' });
+  const b = await el.asElement().boundingBox(); boxes[n] = { w: Math.round(b.width), h: Math.round(b.height) };
+}
+await page.goto(B + '/typologies/deposit_velocity_shift/edit'); await settle(1200);
+const ta = page.locator('main textarea').first();
+await ta.click(); await page.keyboard.press('End');
+await page.keyboard.type(' Weight sustained rises above 150% of declared turnover for three or more consecutive weeks.');
+const reason = page.locator('main input:not([type=checkbox]):not([type=search])').last();
+await reason.fill('Tighten escalation for sustained multi-week increases (MLRO review, Sep 2026).');
+await page.mouse.click(5, 5);
+const draft = await panelOf('Unsaved changes', 350); await draft.asElement().screenshot({ path: W + 'shots/s5-draft-panel.png' });
+let b = await draft.asElement().boundingBox(); boxes['s5-draft-panel'] = { w: Math.round(b.width), h: Math.round(b.height) };
+const tb = await ta.boundingBox(); boxes.typ_textarea_rel = { x: Math.round(tb.x - b.x), y: Math.round(tb.y - b.y), w: Math.round(tb.width), h: Math.round(tb.height) };
+const chk = await panelOf('PROMOTION CHECKLIST', 300); await chk.asElement().scrollIntoViewIfNeeded(); await page.waitForTimeout(400);
+await chk.asElement().screenshot({ path: W + 's5-checklist.png'.replace(/^/, 'shots/') });
+b = await chk.asElement().boundingBox(); boxes['s5-checklist'] = { w: Math.round(b.width), h: Math.round(b.height) };
+await page.goto(B + '/dashboard'); await settle();
+await page.getByText('Log out').click();
+await login('Bilal Siddiqui');
+await page.goto(B + '/filings'); await settle(1500);
+const hdr = await panelOf('Retention expiry', 150);
+const hb = await hdr.asElement().boundingBox();
+await page.screenshot({ path: W + 'shots/s7-submitted-crop.png', clip: { x: hb.x, y: hb.y, width: hb.width, height: 128 } });
+boxes['s7-submitted-crop'] = { w: Math.round(hb.width), h: 128 };
+fs.writeFileSync(W + 'boxes.json', JSON.stringify(boxes, null, 1));
+console.log(JSON.stringify(Object.fromEntries(Object.entries(boxes).filter(([k]) => k.startsWith('s')))), boxes.typ_textarea_rel);
+console.log('ERRS', errs); await browser.close();
